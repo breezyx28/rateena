@@ -23,6 +23,7 @@ import {
   vendorProductsSuccess,
   vendorProductAdded,
   vendorUpdatedSuccess,
+  clearVendorError,
 } from "./reducer";
 
 export const vendorsList = () => async (dispatch: any) => {
@@ -101,6 +102,9 @@ export const getVendorUsers = (vendorId: any) => async (dispatch: any) => {
 
 export const addVendorMutation = (formData: any) => async (dispatch: any) => {
   try {
+    // Clear any previous errors before starting
+    dispatch(clearVendorError());
+
     let response;
 
     response = postAddVendor(formData);
@@ -109,6 +113,7 @@ export const addVendorMutation = (formData: any) => async (dispatch: any) => {
 
     if (data) {
       dispatch(vendorSuccess(data));
+      dispatch(vendorUpdatedSuccess());
       dispatch(vendorsList());
     }
   } catch (error: any) {
@@ -121,6 +126,9 @@ export const addVendorMutation = (formData: any) => async (dispatch: any) => {
 export const addVendorUserMutation =
   (body: any, vendorId: any) => async (dispatch: any) => {
     try {
+      // Clear any previous errors before starting
+      dispatch(clearVendorError());
+
       let response;
 
       response = postAddVendorUser({ ...body, vendorId });
@@ -160,6 +168,9 @@ export const getVendorCategoriesQuery =
 export const addVendorCategoryMutation =
   (body: any, vendorId: any) => async (dispatch: any) => {
     try {
+      // Clear any previous errors before starting
+      dispatch(clearVendorError());
+
       let response;
 
       response = postAddVendorCategory({ ...body, vendorId });

@@ -20,6 +20,7 @@ import { addVendorUserMutation, getVendorUsers } from "slices/thunks";
 import * as Yup from "yup";
 import { useFormik } from "formik";
 import { toast, ToastContainer } from "react-toastify";
+import { formatErrorMessage, errorToastManager } from "helpers/error-helper";
 
 const VendorUsers = () => {
   const { vendorId } = useParams<{ vendorId: string }>();
@@ -59,6 +60,8 @@ const VendorUsers = () => {
     }
     if (vendorError) {
       console.log("vendorError: ", vendorError);
+      // Use error toast manager to prevent duplicate toasts
+      errorToastManager.showError(vendorError, toast.error);
     }
   }, [vendorUsers, vendorError, vendorUserAddedSuccess]);
 

@@ -1,12 +1,5 @@
 import React, { useState } from "react";
-import {
-  Alert,
-  Col,
-  Form,
-  Input,
-  Label,
-  Row,
-} from "reactstrap";
+import { Alert, Col, Form, Input, Label, Row } from "reactstrap";
 import { Button, Modal, ModalBody, ModalHeader } from "reactstrap";
 import { useDispatch, useSelector } from "react-redux";
 import { createSelector } from "reselect";
@@ -14,6 +7,11 @@ import { addVendorUserMutation } from "slices/thunks";
 import * as Yup from "yup";
 import { useFormik } from "formik";
 import { toast, ToastContainer } from "react-toastify";
+import {
+  formatErrorMessage,
+  logError,
+  errorToastManager,
+} from "helpers/error-helper";
 
 interface AddModalProps {
   modal_standard: boolean;
@@ -21,7 +19,11 @@ interface AddModalProps {
   vendorId?: string;
 }
 
-const AddModal: React.FC<AddModalProps> = ({ modal_standard, tog_standard, vendorId }) => {
+const AddModal: React.FC<AddModalProps> = ({
+  modal_standard,
+  tog_standard,
+  vendorId,
+}) => {
   const dispatch: any = useDispatch();
 
   const selectLayoutState = (state: any) => state.Vendors;
@@ -41,7 +43,9 @@ const AddModal: React.FC<AddModalProps> = ({ modal_standard, tog_standard, vendo
       tog_standard();
     }
     if (vendorError) {
-      console.log("vendorError: ", vendorError);
+      // Use error toast manager to prevent duplicate toasts
+      errorToastManager.showError(vendorError, toast.error);
+      logError(vendorError, "Add Vendor User");
     }
   }, [vendorUsers, vendorError, vendorUserAddedSuccess]);
 

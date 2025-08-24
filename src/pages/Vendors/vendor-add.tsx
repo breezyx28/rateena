@@ -16,10 +16,16 @@ import * as Yup from "yup";
 import Flatpickr from "react-flatpickr";
 import { useDispatch, useSelector } from "react-redux";
 import { addVendorMutation } from "slices/thunks";
+import { clearVendorError } from "slices/vendors/reducer";
 import { toast, ToastContainer } from "react-toastify";
 import { createSelector } from "reselect";
 import VendorMap from "./vendor-map";
 import VendorUploadFiles from "./vendor-upload-files";
+import {
+  formatErrorMessage,
+  logError,
+  errorToastManager,
+} from "helpers/error-helper";
 
 const VendorAdd = () => {
   document.title = "Vendor Add | Rateena - E-Shop Admin Panel";
@@ -61,11 +67,24 @@ const VendorAdd = () => {
       validation.resetForm();
       setFiles({ identityImageFile: null, licenseImageFile: null });
       setSelectedCoords(null);
+      // Clear any previous errors
+      dispatch(clearVendorError());
+      errorToastManager.clearLastError();
     }
     if (addVendorError) {
-      toast.error("Failed to add vendor");
+      // Use error toast manager to prevent duplicate toasts
+      errorToastManager.showError(addVendorError, toast.error);
+      logError(addVendorError, "Vendor Add");
     }
-  }, [addVendorSuccess, addVendorError]);
+  }, [addVendorSuccess, addVendorError, dispatch]);
+
+  // Cleanup effect to clear errors when component unmounts
+  React.useEffect(() => {
+    return () => {
+      dispatch(clearVendorError());
+      errorToastManager.clearLastError();
+    };
+  }, [dispatch]);
 
   // Formik + Yup (preserve existing inputs; only wire validation/submit)
   const validation = useFormik({
@@ -103,6 +122,10 @@ const VendorAdd = () => {
       vendorType: Yup.string().required("Vendor type is required"),
     }),
     onSubmit: (values) => {
+      // Clear any previous errors before submitting
+      dispatch(clearVendorError());
+      errorToastManager.clearLastError();
+
       const payload = {
         VendorPayload: {
           ...values,

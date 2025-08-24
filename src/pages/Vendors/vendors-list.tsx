@@ -11,6 +11,7 @@ import {
   Label,
 } from "reactstrap";
 import { toast, ToastContainer } from "react-toastify";
+import { formatErrorMessage, errorToastManager } from "helpers/error-helper";
 
 import { useDispatch, useSelector } from "react-redux";
 import { createSelector } from "reselect";
@@ -240,6 +241,8 @@ const VendorsList = () => {
   React.useEffect(() => {
     if (error) {
       console.log("error: ", vendorsListError);
+      // Use error toast manager to prevent duplicate toasts
+      errorToastManager.showError(vendorsListError, toast.error);
       setVendorState({
         currentState: null,
         vendorId: null,

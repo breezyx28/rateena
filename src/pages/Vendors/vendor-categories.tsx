@@ -22,6 +22,7 @@ import {
 import { useFormik } from "formik";
 import { toast, ToastContainer } from "react-toastify";
 import * as Yup from "yup";
+import { formatErrorMessage, errorToastManager } from "helpers/error-helper";
 
 const VendorCategories = () => {
   const { vendorId } = useParams<{ vendorId: string }>();
@@ -61,6 +62,8 @@ const VendorCategories = () => {
     }
     if (vendorError) {
       console.log("vendorError: ", vendorError);
+      // Use error toast manager to prevent duplicate toasts
+      errorToastManager.showError(vendorError, toast.error);
     }
   }, [vendorCategories, vendorError, vendorCategoriesSuccess]);
 

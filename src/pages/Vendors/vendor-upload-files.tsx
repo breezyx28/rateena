@@ -1,16 +1,7 @@
-import React, { useState, useEffect, useCallback, useMemo } from "react";
-import { Card, CardBody, CardHeader, Col, Row } from "reactstrap";
-
-import { FilePond, registerPlugin } from "react-filepond";
-import "filepond/dist/filepond.min.css";
-import FilePondPluginImageExifOrientation from "filepond-plugin-image-exif-orientation";
-import FilePondPluginImagePreview from "filepond-plugin-image-preview";
-import "filepond-plugin-image-preview/dist/filepond-plugin-image-preview.css";
-
+import React, { useState, useEffect, useCallback } from "react";
+import { Card, CardBody, CardHeader, Col, Row, Input } from "reactstrap";
+import { useFormikContext } from "formik";
 import { imgURL } from "services/api-handles";
-
-// Register the plugins once
-registerPlugin(FilePondPluginImageExifOrientation, FilePondPluginImagePreview);
 
 type VendorUploadFilesProps = {
   files: {
@@ -26,43 +17,23 @@ const VendorUploadFiles: React.FC<VendorUploadFilesProps> = ({
   uploadedFiles,
   defaultValues,
 }) => {
-  const [licenseImageFile, setLicenseImage] = useState<any>([]);
-  const [identityImageFile, setIdentityImage] = useState<any>([]);
+  const { errors } = useFormikContext<any>();
+  const [licenseImageFile, setLicenseImageFile] = useState<File | null>(null);
+  const [identityImageFile, setIdentityImageFile] = useState<File | null>(null);
+  const [licensePreview, setLicensePreview] = useState<string | null>(null);
+  const [identityPreview, setIdentityPreview] = useState<string | null>(null);
 
-  // ✅ Precompute default file objects with useMemo
-  const defaultLicense = useMemo(
-    () =>
-      defaultValues?.license
-        ? [
-            {
-              source: `${imgURL}/${defaultValues.license}`,
-              options: { type: "local" },
-            },
-          ]
-        : [],
-    [defaultValues?.license]
-  );
-
-  const defaultIdentity = useMemo(
-    () =>
-      defaultValues?.identity
-        ? [
-            {
-              source: `${imgURL}/${defaultValues.identity}`,
-              options: { type: "local" },
-            },
-          ]
-        : [],
-    [defaultValues?.identity]
-  );
-
-  // ✅ Initialize state whenever default values change
+  // Set default images
   useEffect(() => {
-    setLicenseImage(defaultLicense);
-    setIdentityImage(defaultIdentity);
-  }, [defaultLicense, defaultIdentity]);
+    if (defaultValues?.license) {
+      setLicensePreview(`${imgURL}/${defaultValues.license}`);
+    }
+    if (defaultValues?.identity) {
+      setIdentityPreview(`${imgURL}/${defaultValues.identity}`);
+    }
+  }, [defaultValues]);
 
-  // ✅ Callback for propagating uploaded files
+  // Update parent component when files change
   const updateUploadedFiles = useCallback(() => {
     uploadedFiles({
       licenseImageFile,
@@ -70,10 +41,25 @@ const VendorUploadFiles: React.FC<VendorUploadFilesProps> = ({
     });
   }, [uploadedFiles, licenseImageFile, identityImageFile]);
 
-  // Trigger update when files change
   useEffect(() => {
     updateUploadedFiles();
   }, [licenseImageFile, identityImageFile, updateUploadedFiles]);
+
+  const handleLicenseChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setLicenseImageFile(file);
+      setLicensePreview(URL.createObjectURL(file));
+    }
+  };
+
+  const handleIdentityChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setIdentityImageFile(file);
+      setIdentityPreview(URL.createObjectURL(file));
+    }
+  };
 
   return (
     <Row>
@@ -83,14 +69,33 @@ const VendorUploadFiles: React.FC<VendorUploadFilesProps> = ({
             <h4 className="card-title mb-0">Upload License Image</h4>
           </CardHeader>
           <CardBody>
-            <FilePond
-              files={licenseImageFile}
-              onupdatefiles={setLicenseImage}
-              allowMultiple={false}
-              maxFiles={1}
-              name="licenseImage"
-              className="filepond filepond-input-multiple"
+            <Input
+              type="file"
+              accept="image/*"
+              onChange={handleLicenseChange}
+              className={`form-control ${
+                errors.licenseImageFile ? "is-invalid" : ""
+              }`}
             />
+            {errors.licenseImageFile && (
+              <div className="invalid-feedback d-block">
+                {String(errors.licenseImageFile)}
+              </div>
+            )}
+            {licensePreview && (
+              <div className="mt-3">
+                <img
+                  src={licensePreview}
+                  alt="License preview"
+                  style={{
+                    maxWidth: "100%",
+                    maxHeight: "200px",
+                    objectFit: "contain",
+                  }}
+                  className="img-thumbnail"
+                />
+              </div>
+            )}
           </CardBody>
         </Card>
       </Col>
@@ -101,14 +106,33 @@ const VendorUploadFiles: React.FC<VendorUploadFilesProps> = ({
             <h4 className="card-title mb-0">Upload UAE ID Image</h4>
           </CardHeader>
           <CardBody>
-            <FilePond
-              files={identityImageFile}
-              onupdatefiles={setIdentityImage}
-              allowMultiple={false}
-              maxFiles={1}
-              name="identityImage"
-              className="filepond filepond-input-multiple"
+            <Input
+              type="file"
+              accept="image/*"
+              onChange={handleIdentityChange}
+              className={`form-control ${
+                errors.identityImageFile ? "is-invalid" : ""
+              }`}
             />
+            {errors.identityImageFile && (
+              <div className="invalid-feedback d-block">
+                {String(errors.identityImageFile)}
+              </div>
+            )}
+            {identityPreview && (
+              <div className="mt-3">
+                <img
+                  src={identityPreview}
+                  alt="Identity preview"
+                  style={{
+                    maxWidth: "100%",
+                    maxHeight: "200px",
+                    objectFit: "contain",
+                  }}
+                  className="img-thumbnail"
+                />
+              </div>
+            )}
           </CardBody>
         </Card>
       </Col>

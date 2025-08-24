@@ -39,9 +39,22 @@ axios.interceptors.response.use(
         message = "Sorry! the data you are looking for could not be found";
         break;
       default:
-        message = error.message || error;
+        message = error;
     }
-    return Promise.reject(message);
+
+    // Create a comprehensive error object that includes all necessary information
+    const errorResponse = {
+      message: error.response?.data,
+      status: error.response?.status || error.status,
+      statusText: error.response?.statusText,
+      data: error.response?.data,
+      errors: error.response?.data?.errors,
+      error: error.response?.data?.error,
+      url: error.response?.config?.url,
+      method: error.response?.config?.method,
+    };
+
+    return Promise.reject(errorResponse);
   }
 );
 /**
