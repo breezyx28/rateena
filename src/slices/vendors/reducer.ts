@@ -79,6 +79,13 @@ const vendorsSlice = createSlice({
       state.vendorError = null;
       state.error = false;
     },
+    clearVendorSuccess(state) {
+      state.vendorUserAddedSuccess = false;
+      state.vendorCategoriesSuccess = false;
+      state.vendorProductSuccess = false;
+      state.vendorUpdatedSuccess = false;
+      state.success = false;
+    },
   },
 });
 
@@ -95,6 +102,7 @@ export const {
   vendorCategoryAdded,
   vendorProductAdded,
   clearVendorError,
+  clearVendorSuccess,
 } = vendorsSlice.actions;
 
 export default vendorsSlice.reducer;

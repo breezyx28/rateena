@@ -17,15 +17,21 @@ export const GET_HOME_DETAILS = "/details/admin/home";
 // Vendors
 export const GET_VENDORS_LIST = "/vendors?roleName=VENDOR";
 export const GET_VENDOR_CATEGORIES = "/vendors/{vendorId}/categories";
+export const GET_VENDOR_TOGGLE_CATEGORY =
+  "/categories/toggle/publish/{categoryId}";
 export const GET_VENDOR = "/vendors/{vendorId}";
 export const GET_VENDOR_PRODUCTS = "/vendors/{vendorId}/products";
 export const GET_VENDOR_USERS = "/vendors/{vendorId}/users";
 export const GET_VENDOR_TOGGLE_ACTIVATION =
   "/vendors/toggle/working/{vendorId}";
 export const POST_VENDOR_ADD_USER = "/vendors/add/user";
+export const PUT_VENDOR_UPDATE_USER = "/vendors/add/user";
+export const DELETE_VENDOR_USER = "/vendors/delete/user/{userId}";
 export const DELETE_VENDOR = "/vendors/delete/{vendorId}";
 export const POST_VENDOR_ADD = "/vendors/save";
 export const POST_VENDOR_ADD_CATEGORY = "/categories/save";
+export const PUT_VENDOR_UPDATE_CATEGORY = "/categories/save";
+export const DELETE_VENDOR_CATEGORY = "/categories/delete/{categoryId}";
 export const POST_VENDOR_ADD_PRODUCTS = "/products/save";
 
 // Customer

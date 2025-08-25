@@ -1,7 +1,18 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useMemo, useState, useEffect } from "react";
 import TableContainer from "../../Components/Common/TableContainerReactTable";
+import { Badge } from "reactstrap";
 
-const VendorCategoriesList = ({ data }: { data: any[] }) => {
+const VendorCategoriesList = ({
+  data,
+  onEditCategory,
+  onDeleteCategory,
+  onToggleCategory,
+}: {
+  data: any[];
+  onEditCategory?: (category: any) => void;
+  onDeleteCategory?: (categoryId: number) => void;
+  onToggleCategory?: (categoryId: number, currentStatus: boolean) => void;
+}) => {
   const [filter, setFilter] = useState<any[]>(data || []);
 
   useEffect(() => {
@@ -20,6 +31,18 @@ const VendorCategoriesList = ({ data }: { data: any[] }) => {
     }
   };
 
+  const handleDelete = (categoryId: number) => {
+    if (onDeleteCategory) {
+      onDeleteCategory(categoryId);
+    }
+  };
+
+  const handleToggle = (categoryId: number, currentStatus: boolean) => {
+    if (onToggleCategory) {
+      onToggleCategory(categoryId, currentStatus);
+    }
+  };
+
   const columns = useMemo(
     () => [
       {
@@ -30,7 +53,6 @@ const VendorCategoriesList = ({ data }: { data: any[] }) => {
         accessorKey: "category.categoryId",
         enableColumnFilter: false,
       },
-
       {
         header: "English Name",
         accessorKey: "category.name",
@@ -47,40 +69,67 @@ const VendorCategoriesList = ({ data }: { data: any[] }) => {
         enableColumnFilter: false,
       },
       {
-        header: "Action",
+        header: "Status",
+        cell: (cell: any) => {
+          const row = cell.row.original;
+          const isPublished = row.category?.published || false;
+          return (
+            <Badge
+              color={isPublished ? "success" : "secondary"}
+              className="badge-soft-success"
+            >
+              {isPublished ? "Published" : "Unpublished"}
+            </Badge>
+          );
+        },
+        enableColumnFilter: false,
+      },
+      {
+        header: "Actions",
         cell: (cell: any) => {
           const row = cell.row.original; // full row data
+          const isPublished = row.category?.published || false;
           return (
-            <div className="text-start">
-              <ul className="list-inline mb-0">
-                <li className="list-inline-item">
-                  <span className="lh-1 align-middle link-secondary">
-                    <i className="las la-share-square"></i>
-                  </span>
-                </li>
-
-                <li
-                  className="list-inline-item"
-                  onClick={() => handleFilter(row.category.categoryId)}
-                >
-                  <span className="lh-1 align-middle link-danger">
-                    <i className="las la-trash-alt"></i>
-                  </span>
-                </li>
-
-                <li className="list-inline-item">
-                  <span className="lh-1 align-middle link-danger">
-                    <i className="las la-users"></i>
-                  </span>
-                </li>
-              </ul>
+            <div className="d-flex gap-3">
+              <div
+                style={{ cursor: "pointer" }}
+                className="link-primary"
+                onClick={() => {
+                  if (onEditCategory) {
+                    onEditCategory(row);
+                  }
+                }}
+              >
+                <i className="ri-edit-2-line"></i>
+              </div>
+              <div
+                style={{ cursor: "pointer" }}
+                className="link-danger"
+                onClick={() => {
+                  handleDelete(row.category.categoryId);
+                }}
+              >
+                <i className="ri-delete-bin-5-line"></i>
+              </div>
+              <div className="form-check form-switch">
+                <input
+                  className="form-check-input"
+                  type="checkbox"
+                  role="switch"
+                  id={`toggle-${row.category.categoryId}`}
+                  checked={isPublished}
+                  onChange={() =>
+                    handleToggle(row.category.categoryId, isPublished)
+                  }
+                />
+              </div>
             </div>
           );
         },
         enableColumnFilter: false,
       },
     ],
-    []
+    [onEditCategory, onDeleteCategory, onToggleCategory]
   );
 
   return (

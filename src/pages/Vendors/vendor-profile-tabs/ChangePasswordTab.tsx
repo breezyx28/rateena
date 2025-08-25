@@ -93,7 +93,7 @@ const ChangePasswordTab: React.FC<any> = ({
           return false;
         }}
       >
-        {adminUserUpdated && !adminUserUpdated && (
+        {adminUserUpdated && !adminUserError && (
           <Col lg={12}>
             <Alert color="success">Password changed successfully!</Alert>
           </Col>

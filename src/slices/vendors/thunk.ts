@@ -3,13 +3,18 @@ import {
   getVendor as getVendorApi,
   getVendorUsers as getVendorUsersApi,
   postAddVendorUser,
+  putUpdateVendorUser,
+  deleteVendorUser,
   getVendorCategories,
   postAddVendorCategory,
+  putUpdateVendorCategory,
+  deleteVendorCategory,
   getVendorProducts,
   postAddVendorProduct,
   postAddVendor,
   getVendorToggleActivation,
   deleteVendor,
+  toggleVendorCategory,
 } from "services/vendors";
 import {
   vendorsListSuccess,
@@ -24,6 +29,7 @@ import {
   vendorProductAdded,
   vendorUpdatedSuccess,
   clearVendorError,
+  clearVendorSuccess,
 } from "./reducer";
 
 export const vendorsList = () => async (dispatch: any) => {
@@ -137,7 +143,53 @@ export const addVendorUserMutation =
 
       if (data) {
         dispatch(vendorUserAdded());
-        dispatch(vendorsList());
+        dispatch(getVendorUsers(vendorId));
+      }
+    } catch (error: any) {
+      console.log("errors: ", error);
+
+      dispatch(vendorsError(error));
+    }
+  };
+
+export const updateVendorUserMutation =
+  (body: any, vendorId: any) => async (dispatch: any) => {
+    try {
+      // Clear any previous errors before starting
+      dispatch(clearVendorError());
+
+      let response;
+
+      response = putUpdateVendorUser({ ...body, vendorId });
+
+      const data = await response;
+
+      if (data) {
+        dispatch(vendorUserAdded());
+        dispatch(getVendorUsers(vendorId));
+      }
+    } catch (error: any) {
+      console.log("errors: ", error);
+
+      dispatch(vendorsError(error));
+    }
+  };
+
+export const deleteVendorUserMutation =
+  (userId: any, vendorId: any) => async (dispatch: any) => {
+    try {
+      // Clear any previous errors before starting
+      dispatch(clearVendorError());
+
+      let response;
+
+      response = deleteVendorUser(userId);
+
+      const data = await response;
+
+      if (data) {
+        dispatch(vendorUserAdded());
+        dispatch(getVendorUsers(vendorId));
       }
     } catch (error: any) {
       console.log("errors: ", error);
@@ -165,6 +217,25 @@ export const getVendorCategoriesQuery =
     }
   };
 
+export const toggleVendorCategoryQuery =
+  (categoryId: any) => async (dispatch: any) => {
+    try {
+      let response;
+
+      response = toggleVendorCategory(categoryId);
+
+      const data = await response;
+
+      if (data) {
+        dispatch(vendorCategoriesSuccess(data));
+      }
+    } catch (error: any) {
+      console.log("errors: ", error);
+
+      dispatch(vendorsError(error));
+    }
+  };
+
 export const addVendorCategoryMutation =
   (body: any, vendorId: any) => async (dispatch: any) => {
     try {
@@ -173,20 +244,59 @@ export const addVendorCategoryMutation =
 
       let response;
 
-      response = postAddVendorCategory({ ...body, vendorId });
+      response = postAddVendorCategory({ ...body, vendor_id: vendorId });
 
       const data = await response;
 
       if (data) {
         dispatch(vendorCategoryAdded());
-        let vendorCategories;
-        try {
-          vendorCategories = getVendorCategories(vendorId);
-          const vendorCategoriesData = await response;
-          dispatch(vendorCategoriesSuccess(vendorCategoriesData));
-        } catch (vendorUSerError) {
-          throw vendorUSerError;
-        }
+        dispatch(getVendorCategoriesQuery(vendorId));
+      }
+    } catch (error: any) {
+      console.log("errors: ", error);
+
+      dispatch(vendorsError(error));
+    }
+  };
+
+export const updateVendorCategoryMutation =
+  (body: any, vendorId: any) => async (dispatch: any) => {
+    try {
+      // Clear any previous errors before starting
+      dispatch(clearVendorError());
+
+      let response;
+
+      response = putUpdateVendorCategory({ ...body, vendor_id: vendorId });
+
+      const data = await response;
+
+      if (data) {
+        dispatch(vendorCategoryAdded());
+        dispatch(getVendorCategoriesQuery(vendorId));
+      }
+    } catch (error: any) {
+      console.log("errors: ", error);
+
+      dispatch(vendorsError(error));
+    }
+  };
+
+export const deleteVendorCategoryMutation =
+  (categoryId: any, vendorId: any) => async (dispatch: any) => {
+    try {
+      // Clear any previous errors before starting
+      dispatch(clearVendorError());
+
+      let response;
+
+      response = deleteVendorCategory(categoryId);
+
+      const data = await response;
+
+      if (data) {
+        dispatch(vendorCategoryAdded());
+        dispatch(getVendorCategoriesQuery(vendorId));
       }
     } catch (error: any) {
       console.log("errors: ", error);

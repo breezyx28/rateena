@@ -1,7 +1,15 @@
 import React, { useMemo, useState, useEffect } from "react";
 import TableContainer from "../../Components/Common/TableContainerReactTable";
 
-const VendorUsersList = ({ data }: { data: any[] }) => {
+const VendorUsersList = ({
+  data,
+  onEditUser,
+  onDeleteUser,
+}: {
+  data: any[];
+  onEditUser?: (user: any) => void;
+  onDeleteUser?: (userId: number) => void;
+}) => {
   const [filter, setFilter] = useState<any[]>(data || []);
 
   useEffect(() => {
@@ -12,11 +20,17 @@ const VendorUsersList = ({ data }: { data: any[] }) => {
 
   const handleFilter = (value: any) => {
     let results = filter.filter((item: any) => item.userId != value);
-
     if (results) {
       setFilter(results);
     }
   };
+
+  const handleDelete = (userId: number) => {
+    if (onDeleteUser) {
+      onDeleteUser(userId);
+    }
+  };
+
   const columns = useMemo(
     () => [
       {
@@ -42,29 +56,27 @@ const VendorUsersList = ({ data }: { data: any[] }) => {
         cell: (cell: any) => {
           const row = cell.row.original; // full row data
           return (
-            <div className="text-start">
-              <ul className="list-inline mb-0">
-                <li className="list-inline-item">
-                  <span className="lh-1 align-middle link-secondary">
-                    <i className="las la-share-square"></i>
-                  </span>
-                </li>
-
-                <li
-                  className="list-inline-item"
-                  onClick={() => handleFilter(row.userId)}
-                >
-                  <span className="lh-1 align-middle link-danger">
-                    <i className="las la-trash-alt"></i>
-                  </span>
-                </li>
-
-                <li className="list-inline-item">
-                  <span className="lh-1 align-middle link-danger">
-                    <i className="las la-users"></i>
-                  </span>
-                </li>
-              </ul>
+            <div className="d-flex gap-3">
+              <div
+                style={{ cursor: "pointer" }}
+                className="link-primary"
+                onClick={() => {
+                  if (onEditUser) {
+                    onEditUser(row);
+                  }
+                }}
+              >
+                <i className="ri-settings-4-line"></i>
+              </div>
+              <div
+                style={{ cursor: "pointer" }}
+                className="link-danger"
+                onClick={() => {
+                  handleDelete(row.userId);
+                }}
+              >
+                <i className="ri-delete-bin-5-line"></i>
+              </div>
             </div>
           );
         },
