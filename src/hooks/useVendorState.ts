@@ -88,15 +88,18 @@ export const useVendorState = ({
   };
 
   // Handle profile image upload
-  const handleProfileImageUpload = (event: any) => {
-    const file = event.target.files[0];
+  const handleProfileImageUpload = (event: any, userId: any) => {
+    const file = event.target?.files[0];
     if (file) {
+      console.log("file: ", file);
+
       const formData = new FormData();
       formData.append("profileImage", file);
 
       // Create VendorPayload object with correct field mapping
       const vendorPayload: any = {
         vendorId: vendorId ?? null,
+        userId: userId ?? null,
       };
 
       // Add VendorPayload as JSON string
@@ -104,15 +107,15 @@ export const useVendorState = ({
 
       dispatch(addVendorMutation(formData));
 
-      toast.success("Profile image updated successfully!", {
-        position: "top-right",
-        autoClose: 2000,
-      });
+      // toast.success("Profile image updated successfully!", {
+      //   position: "top-right",
+      //   autoClose: 2000,
+      // });
     }
   };
 
   // Handle cover image upload
-  const handleCoverImageUpload = (event: any) => {
+  const handleCoverImageUpload = (event: any, userId: any) => {
     const file = event.target.files[0];
     if (file) {
       const formData = new FormData();
@@ -121,6 +124,7 @@ export const useVendorState = ({
       // Create VendorPayload object with correct field mapping
       const vendorPayload: any = {
         vendorId: vendorId ?? null,
+        userId: userId ?? null,
       };
 
       // Add VendorPayload as JSON string

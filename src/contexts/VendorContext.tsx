@@ -10,8 +10,8 @@ interface VendorContextType {
   setVendorInfo: (info: any) => void;
   setSelectedCoords: (coords: { lat: number; lng: number } | undefined) => void;
   toggleVendorStatus: (vendorId: string, currentStatus: boolean) => void;
-  handleProfileImageUpload: (event: any) => void;
-  handleCoverImageUpload: (event: any) => void;
+  handleProfileImageUpload: (event: any, userId: any) => void;
+  handleCoverImageUpload: (event: any, userId: any) => void;
   getCurrentVendorStatus: () => boolean | null;
   getCurrentVendorStatusText: () => string;
   dispatch: any;

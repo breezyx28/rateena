@@ -2,6 +2,7 @@ import { createSlice } from "@reduxjs/toolkit";
 
 export const initialState = {
   restPasswordError: null,
+  restPasswordSuccess: false,
   message: null,
   loading: false,
   user: null,
@@ -18,12 +19,14 @@ const resetPasswordSlice = createSlice({
       state.user = action.payload.user;
       state.loading = false;
       state.success = true;
+      state.restPasswordSuccess = true;
       state.restPasswordError = null;
     },
     resetPasswordUserFailed(state: any, action: any) {
       state.user = null;
       state.loading = false;
       state.restPasswordError = action.payload;
+      state.restPasswordSuccess = false;
       state.error = true;
     },
     resetResetPasswordFlagChange(state: any) {

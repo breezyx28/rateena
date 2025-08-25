@@ -94,7 +94,16 @@ class APIClient {
    * Posts the given data to the URL
    */
   create = (url: string, data: any): Promise<AxiosResponse> => {
-    return axios.post(url, data);
+    const config: AxiosRequestConfig = {};
+    
+    // If data is FormData, let browser set Content-Type with boundary
+    if (data instanceof FormData) {
+      config.headers = {
+        'Content-Type': 'multipart/form-data'
+      };
+    }
+    
+    return axios.post(url, data, config);
   };
 
   /**

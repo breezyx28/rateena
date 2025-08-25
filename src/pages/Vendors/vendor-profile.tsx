@@ -117,7 +117,9 @@ const VendorProfile = () => {
                       id="profile-foreground-img-file-input"
                       type="file"
                       className="profile-foreground-img-file-input"
-                      onChange={handleCoverImageUpload}
+                      onChange={(e) =>
+                        handleCoverImageUpload(e, vendorInfo?.userId)
+                      }
                       accept="image/*"
                     />
                     <Label
@@ -172,7 +174,10 @@ const VendorProfile = () => {
                           id="profile-img-file-input"
                           type="file"
                           className="profile-img-file-input"
-                          onChange={handleProfileImageUpload}
+                          onChange={(e) =>
+                            handleProfileImageUpload(e, vendorInfo?.userId)
+                          }
+                          name="profileImage"
                           accept="image/*"
                         />
                         <Label
@@ -330,7 +335,7 @@ const VendorProfile = () => {
                     </TabPane>
 
                     <TabPane tabId="2">
-                      <ChangePasswordTab />
+                      <ChangePasswordTab vendorInfo={vendorInfo} />
                     </TabPane>
 
                     <TabPane tabId="3">
