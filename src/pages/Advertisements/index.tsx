@@ -9,33 +9,46 @@ import {
   Label,
   Row,
 } from "reactstrap";
-import { Button, Modal, ModalBody, ModalHeader } from "reactstrap";
+import { Button, Modal, ModalBody, ModalHeader, Alert } from "reactstrap";
 import { AdvertisementsList } from "./AdvertisementsList";
 import { createSelector } from "reselect";
 import { useDispatch, useSelector } from "react-redux";
-import { getAdvertisementsListQuery } from "slices/advertisements/thunk";
+import {
+  addOrUpdateAdvertisementMutation,
+  getAdvertisementsListQuery,
+} from "slices/advertisements/thunk";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import { toast, ToastContainer } from "react-toastify";
-import { FilePond, registerPlugin } from "react-filepond";
-import FilePondPluginImageExifOrientation from "filepond-plugin-image-exif-orientation";
-import FilePondPluginImagePreview from "filepond-plugin-image-preview";
+// Removed FilePond in favor of simple input uploader like add-product-modal
 import { vendorsList } from "slices/thunks";
 import Select from "react-select";
 import { useTranslation } from "react-i18next";
-
-registerPlugin(FilePondPluginImageExifOrientation, FilePondPluginImagePreview);
 
 const Advertisements = () => {
   document.title = "Advertisements | Rateena - E-Shop Admin Panel";
 
   const { i18n } = useTranslation();
   const [modal_standard, setmodal_standard] = useState<boolean>(false);
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   function tog_standard() {
     setmodal_standard(!modal_standard);
   }
 
-  const [addAdImageFiles, setAddAdImageFiles] = useState<any[]>([]);
+  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files) {
+      const files = Array.from(e.target.files);
+      setSelectedFiles(files);
+      addForm.setFieldValue("adsImage1", files.length > 0 ? files[0] : "");
+    }
+  };
+
+  const removeSelectedFile = () => {
+    setSelectedFiles([]);
+    addForm.setFieldValue("adsImage1", "");
+  };
 
   const dispatch: any = useDispatch();
 
@@ -71,13 +84,16 @@ const Advertisements = () => {
   const selectLayoutProperties = createSelector(selectLayoutState, (state) => ({
     success: state.success,
     error: state.error,
+    advertisementUpdatedSuccess: state.advertisementUpdatedSuccess,
     advertisementsListSuccess: state.advertisementsListSuccess,
-    advertisementsError: state.advertisementsError,
+    advertisementError: state.advertisementError,
   }));
   // Inside your component
-  const { advertisementsListSuccess, advertisementsError } = useSelector(
-    selectLayoutProperties
-  );
+  const {
+    advertisementsListSuccess,
+    advertisementError,
+    advertisementUpdatedSuccess,
+  } = useSelector(selectLayoutProperties);
   // Vendor Reducer
   const selectVendorsLayoutState = (state: any) => state.Vendors;
   const selectVendorLayoutProperties = createSelector(
@@ -112,13 +128,74 @@ const Advertisements = () => {
     if (advertisementsListSuccess) {
       console.log("advertisementsListSuccess: ", advertisementsListSuccess);
     }
+    if (advertisementUpdatedSuccess) {
+      console.log("advertisementUpdatedSuccess: ", advertisementUpdatedSuccess);
+    }
     if (vendorsListSuccess) {
       console.log("vendorsListSuccess: ", vendorsListSuccess);
     }
-    if (advertisementsError) {
-      console.log("advertisementsError: ", advertisementsError);
+    if (advertisementError) {
+      console.log("advertisementError: ", advertisementError);
     }
-  }, [advertisementsError, advertisementsListSuccess, vendorsListSuccess]);
+  }, [
+    advertisementError,
+    advertisementsListSuccess,
+    vendorsListSuccess,
+    advertisementUpdatedSuccess,
+  ]);
+
+  // Show success toast when advertisement is updated successfully
+  React.useEffect(() => {
+    if (advertisementUpdatedSuccess && !advertisementError) {
+      toast.success("Advertisement added successfully");
+      setmodal_standard(false);
+      addForm.resetForm();
+      setSelectedFiles([]);
+      setIsSubmitting(false);
+    }
+  }, [advertisementUpdatedSuccess, advertisementError]);
+
+  // Handle loading state when error occurs
+  React.useEffect(() => {
+    if (advertisementError) {
+      setIsSubmitting(false);
+    }
+  }, [advertisementError]);
+
+  // Normalize time to HH:mm:ss
+  const normalizeTimeToHms = (timeString: string) => {
+    if (!timeString) return "";
+    if (/^\d{2}:\d{2}:\d{2}$/.test(timeString)) return timeString;
+    if (/^\d{2}:\d{2}$/.test(timeString)) return `${timeString}:00`;
+    try {
+      const date = new Date(`1970-01-01T${timeString}`);
+      const hh = String(date.getHours()).padStart(2, "0");
+      const mm = String(date.getMinutes()).padStart(2, "0");
+      const ss = String(date.getSeconds()).padStart(2, "0");
+      return `${hh}:${mm}:${ss}`;
+    } catch {
+      return timeString;
+    }
+  };
+
+  // Map server validation errors into Formik status/field errors
+  React.useEffect(() => {
+    if (!advertisementError) return;
+    const serverMessage = advertisementError?.message;
+    const serverErrors = advertisementError?.errors || {};
+    addForm.setStatus({ serverError: serverMessage });
+    if (serverErrors && typeof serverErrors === "object") {
+      Object.entries(serverErrors).forEach(([key, value]) => {
+        const firstMessage = Array.isArray(value)
+          ? String(value[0])
+          : String(value);
+        // Only map to known fields; otherwise keep it as server status
+        if (key in addForm.values) {
+          addForm.setFieldError(key as any, firstMessage);
+        }
+      });
+    }
+  }, [advertisementError]);
 
   const addForm = useFormik({
     enableReinitialize: false,
@@ -132,7 +209,6 @@ const Advertisements = () => {
       startTime: "",
       endTime: "",
       url: "",
-      adsImage1: "",
       banner: "",
       priority: "",
       vendorId: "",
@@ -150,19 +226,33 @@ const Advertisements = () => {
       url: Yup.string().url("Must be a valid URL").nullable(),
       vendorId: Yup.string().required("Vendor is required"),
     }),
-    onSubmit: (values, { resetForm }) => {
-      const payload = {
+    onSubmit: (values) => {
+      // clear any previous server error
+      addForm.setStatus(undefined);
+      setIsSubmitting(true);
+
+      const normalizedValues = {
         ...values,
+        startTime: normalizeTimeToHms(values.startTime as any),
+        endTime: normalizeTimeToHms(values.endTime as any),
+      } as typeof values;
+      const payload = {
+        AdvertisementPayload: normalizedValues,
         adsImage1:
-          addAdImageFiles && addAdImageFiles.length > 0
-            ? addAdImageFiles[0]?.file
-            : values.adsImage1,
+          selectedFiles && selectedFiles.length > 0 ? selectedFiles[0] : null,
       };
-      console.log("Add form values:", payload);
-      toast.success("Advertisement added successfully");
-      setmodal_standard(false);
-      resetForm();
-      setAddAdImageFiles([]);
+
+      const formData = new FormData();
+      formData.append(
+        "AdvertisementPayload",
+        JSON.stringify(payload.AdvertisementPayload)
+      );
+
+      if (payload.adsImage1) {
+        formData.append("adsImage1", payload.adsImage1);
+      }
+
+      dispatch(addOrUpdateAdvertisementMutation(formData));
     },
   });
 
@@ -242,6 +332,21 @@ const Advertisements = () => {
                 return false;
               }}
             >
+              {addForm.status?.serverError && !advertisementsListSuccess && (
+                <>
+                  {toast("Error adding advertisement", {
+                    position: "top-right",
+                    hideProgressBar: false,
+                    className: "bg-danger text-white",
+                    progress: undefined,
+                    toastId: "advertisement-error",
+                  })}
+                  <ToastContainer autoClose={2000} limit={1} />
+                  <Alert color="danger">
+                    {String(addForm.status.serverError)}
+                  </Alert>
+                </>
+              )}
               <Row className="gy-4">
                 <Col xxl={6} md={6}>
                   <div>
@@ -440,27 +545,49 @@ const Advertisements = () => {
                   </div>
                 </Col>
 
-                {/* Image Upload */}
+                {/* Image Upload (aligned with add-product-modal.tsx) */}
                 <Col xxl={12} md={12}>
                   <div>
                     <Label htmlFor="adsImage1" className="form-label">
                       Advertisement Image
                     </Label>
-                    <FilePond
-                      id={"adsImage1"}
-                      files={addAdImageFiles}
-                      onupdatefiles={(files: any) => {
-                        setAddAdImageFiles(files);
-                        addForm.setFieldValue(
-                          "adsImage1",
-                          files && files.length > 0 ? files[0]?.file : ""
-                        );
-                      }}
-                      allowMultiple={false}
-                      maxFiles={1}
+                    <Input
+                      type="file"
+                      id="adsImage1"
                       name="adsImage1"
-                      className="filepond filepond-input-multiple"
+                      accept="image/*"
+                      onChange={handleFileChange}
+                      className="form-control"
                     />
+                    {selectedFiles.length > 0 && (
+                      <div className="mt-3">
+                        <Label className="form-label text-muted">
+                          Selected Image:
+                        </Label>
+                        <div className="d-flex gap-2 flex-wrap">
+                          <div className="position-relative">
+                            <img
+                              src={URL.createObjectURL(selectedFiles[0])}
+                              alt="Selected"
+                              className="rounded"
+                              style={{
+                                width: "80px",
+                                height: "80px",
+                                objectFit: "cover",
+                              }}
+                            />
+                            <button
+                              type="button"
+                              className="btn btn-danger btn-sm position-absolute top-0 end-0"
+                              style={{ transform: "translate(50%, -50%)" }}
+                              onClick={removeSelectedFile}
+                            >
+                              ×
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </Col>
 
@@ -550,6 +677,11 @@ const Advertisements = () => {
                       <option value={4}>banner 4</option>
                       <option value={5}>banner 5</option>
                     </Input>
+                    {advertisementError?.errors?.priority?.[0] && (
+                      <div className="invalid-feedback d-block">
+                        {String(advertisementError?.errors?.priority?.[0])}
+                      </div>
+                    )}
                   </div>
                 </Col>
 
@@ -583,16 +715,31 @@ const Advertisements = () => {
                 <Col xxl={12} md={12}>
                   <div className="hstack gap-2 justify-content-end">
                     <Button
-                      type="button"
                       color="light"
                       onClick={() => {
                         setmodal_standard(false);
                       }}
+                      disabled={isSubmitting}
                     >
                       Cancel
                     </Button>
-                    <Button type="submit" color="success">
-                      Add Advertisement
+                    <Button
+                      type="submit"
+                      color="success"
+                      disabled={isSubmitting}
+                    >
+                      {isSubmitting ? (
+                        <>
+                          <span
+                            className="spinner-border spinner-border-sm me-2"
+                            role="status"
+                            aria-hidden="true"
+                          ></span>
+                          Adding...
+                        </>
+                      ) : (
+                        "Add Advertisement"
+                      )}
                     </Button>
                   </div>
                 </Col>

@@ -5,6 +5,7 @@ export const initialState = {
   error: false,
   loading: false,
   advertisementsListSuccess: null,
+  advertisementUpdatedSuccess: false,
   advertisementData: null,
   advertisementError: null,
 };
@@ -20,6 +21,7 @@ const advertisementsSlice = createSlice({
     },
 
     advertisementUpdated(state) {
+      state.advertisementUpdatedSuccess = true;
       state.success = true;
       state.error = false;
     },

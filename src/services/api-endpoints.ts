@@ -64,6 +64,16 @@ export const POST_ADVERTISEMENT_DELETE =
   "/advertisements/delete/{advertisementId}";
 export const POST_ADVERTISEMENT = "/advertisements/save";
 
+// Product API endpoints
+export const PRODUCTS_ROUTE_URL = "/products";
+export const PRODUCT_DELETE_URL = "/products/delete/{productId}";
+export const ADD_OPTION_INFO_URL = "/options/save";
+export const OPTION_DELETE_URL = "/options/delete/{optionId}";
+export const TOGGLE_PUBLISH_URL = "/products/toggle/publish/{productId}";
+export const ADD_IIMAGE_URL = "/products/{productId}/add-image";
+export const REMOVE_IIMAGE_URL =
+  "/products/{productId}/remove-image?imagePath=${imagePath}";
+
 //PROFILE
 export const POST_EDIT_JWT_PROFILE = "/post-jwt-profile";
 export const POST_EDIT_PROFILE = "/user";

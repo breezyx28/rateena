@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Form, FormGroup, Input, Label } from "reactstrap";
 import TableContainer from "../../Components/Common/TableContainerReactTable";
 import { imgURL } from "services/api-handles";
@@ -119,13 +119,14 @@ const VendorProductsList = ({ data }: { data: any[] }) => {
                 <i className="ri-edit-line"></i>
               </button>
 
-              <button
+              <Link
+                to={"product/" + row.productId}
                 className="btn btn-sm btn-outline-info"
-                onClick={() => handleView(row.productId)}
+                // onClick={() => handleView(row.productId)}
                 title="View Product"
               >
                 <i className="ri-eye-line"></i>
-              </button>
+              </Link>
 
               <button
                 className="btn btn-sm btn-outline-danger"

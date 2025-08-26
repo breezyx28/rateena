@@ -71,21 +71,17 @@ export const toggleAdvertisementQuery =
   };
 
 export const addOrUpdateAdvertisementMutation =
-  (body: any, advertisementId: any) => async (dispatch: any) => {
+  (body: any) => async (dispatch: any) => {
     try {
       let response;
 
-      response = postAddOrUpdateAdvertisement({ ...body, advertisementId });
+      response = postAddOrUpdateAdvertisement(body);
 
       const data = await response;
 
       if (data) {
         dispatch(advertisementUpdated());
-        try {
-          dispatch(getAdvertisementsListQuery);
-        } catch (advertisementError) {
-          throw advertisementError;
-        }
+        dispatch(getAdvertisementsListQuery());
       }
     } catch (error: any) {
       console.log("errors: ", error);

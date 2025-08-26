@@ -253,6 +253,7 @@ import Advertisements from "pages/Advertisements";
 import CustomerOrderInvoiceDetails from "pages/CustomersOrders/CustomerOrderInvoiceDetails";
 import Dashboard from "pages/Dashboard";
 import VendorAdd from "pages/Vendors/vendor-add";
+import VendorProductDetails from "pages/Vendors/vendor-product-details";
 
 const authProtectedRoutes = [
   // Admin Pages
@@ -261,6 +262,10 @@ const authProtectedRoutes = [
   { path: "/dashboard/vendors", component: <Vendors /> },
   { path: "/dashboard/vendors/add", component: <VendorAdd /> },
   { path: "/dashboard/vendors/:vendorId", component: <VendorProfile /> },
+  {
+    path: "/dashboard/vendors/:vendorId/product/:productId",
+    component: <VendorProductDetails />,
+  },
   { path: "/dashboard/customers", component: <Customers /> },
   { path: "/dashboard/customers/orders", component: <CustomersOrders /> },
   {

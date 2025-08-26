@@ -26,6 +26,9 @@ import AdminUsersReducer from "./users/reducer";
 // Orders
 import OrdersReducer from "./orders/reducer";
 
+// Products
+import ProductsReducer from "./products/reducer";
+
 // Advertisement
 import AdvertisementsReducer from "./advertisements/reducer";
 
@@ -100,6 +103,7 @@ const rootReducer = combineReducers({
   ForgetPassword: ForgetPasswordReducer,
   ResetPassword: ResetPasswordReducer,
   Profile: ProfileReducer,
+  Products: ProductsReducer,
   HomeDetails: HomeDetailsReducer,
   Vendors: VendorsReducer,
   Orders: OrdersReducer,

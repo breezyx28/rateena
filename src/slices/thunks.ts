@@ -25,6 +25,9 @@ export * from "./users/thunk";
 // Orders
 export * from "./orders/thunk";
 
+// Products
+export * from "./products/thunk";
+
 // Advertisements
 export * from "./advertisements/thunk";
 

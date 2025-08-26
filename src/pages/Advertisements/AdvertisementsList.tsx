@@ -15,6 +15,7 @@ import {
   CardBody,
   CardHeader,
   Table,
+  Alert,
 } from "reactstrap";
 import { useFormik } from "formik";
 import * as Yup from "yup";
@@ -26,6 +27,9 @@ import FilePondPluginImageExifOrientation from "filepond-plugin-image-exif-orien
 import FilePondPluginImagePreview from "filepond-plugin-image-preview";
 import Select from "react-select";
 import { useTranslation } from "react-i18next";
+import { useDispatch, useSelector } from "react-redux";
+import { addOrUpdateAdvertisementMutation } from "slices/thunks";
+import { createSelector } from "reselect";
 
 registerPlugin(FilePondPluginImageExifOrientation, FilePondPluginImagePreview);
 
@@ -45,6 +49,24 @@ const AdvertisementsList = ({
   const [adImageFiles, setAdImageFiles] = useState<any[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+
+  const dispatch: any = useDispatch();
+
+  const selectLayoutState = (state: any) => state.Advertisements;
+  const selectLayoutProperties = createSelector(selectLayoutState, (state) => ({
+    success: state.success,
+    error: state.error,
+    advertisementUpdatedSuccess: state.advertisementUpdatedSuccess,
+    advertisementsListSuccess: state.advertisementsListSuccess,
+    advertisementError: state.advertisementError,
+  }));
+  // Inside your component
+  const {
+    advertisementsListSuccess,
+    advertisementError,
+    advertisementUpdatedSuccess,
+  } = useSelector(selectLayoutProperties);
 
   // Create vendor options for react-select
   const vendorOptions = useMemo(() => {
@@ -176,7 +198,21 @@ const AdvertisementsList = ({
       `Advertisement ${ad.isShown ? "hidden" : "shown"} successfully`
     );
   };
-
+  // Normalize time to HH:mm:ss
+  const normalizeTimeToHms = (timeString: string) => {
+    if (!timeString) return "";
+    if (/^\d{2}:\d{2}:\d{2}$/.test(timeString)) return timeString;
+    if (/^\d{2}:\d{2}$/.test(timeString)) return `${timeString}:00`;
+    try {
+      const date = new Date(`1970-01-01T${timeString}`);
+      const hh = String(date.getHours()).padStart(2, "0");
+      const mm = String(date.getMinutes()).padStart(2, "0");
+      const ss = String(date.getSeconds()).padStart(2, "0");
+      return `${hh}:${mm}:${ss}`;
+    } catch {
+      return timeString;
+    }
+  };
   const editForm = useFormik({
     enableReinitialize: true,
     initialValues: {
@@ -189,39 +225,80 @@ const AdvertisementsList = ({
       startTime: convertTimeFormat(selectedAd?.startTime || ""),
       endTime: convertTimeFormat(selectedAd?.endTime || ""),
       url: selectedAd?.url || "",
-      adsImage1: selectedAd?.adsImage1 || "",
       banner: selectedAd?.banner || "",
       priority: selectedAd?.priority || "",
-      vendorId: selectedAd?.vendorId || selectedAd?.vendor?.vendorId || "",
+      vendorId: selectedAd?.vendorId || selectedAd?.vendor?.vendor_id || "",
       replacePriority: false,
     },
     validationSchema: Yup.object().shape({
-      title: Yup.string().required("English title is required"),
-      arTitle: Yup.string().required("Arabic title is required"),
-      subtitle: Yup.string().required("English subtitle is required"),
-      arSubtitle: Yup.string().required("Arabic subtitle is required"),
-      startDate: Yup.date().required("Start date is required"),
-      expireDate: Yup.date().required("End date is required"),
-      startTime: Yup.string().required("Start time is required"),
-      endTime: Yup.string().required("End time is required"),
+      title: Yup.string(),
+      arTitle: Yup.string(),
+      subtitle: Yup.string(),
+      arSubtitle: Yup.string(),
+      startDate: Yup.date(),
+      expireDate: Yup.date(),
+      startTime: Yup.string(),
+      endTime: Yup.string(),
       url: Yup.string().url("Must be a valid URL").nullable(),
-      vendorId: Yup.string().required("Vendor is required"),
+      vendorId: Yup.string(),
     }),
     onSubmit: (values) => {
-      // Ensure adsImage1 is updated from FilePond selection if present
-      const payload = {
+      // clear any previous server error
+      editForm.setStatus(undefined);
+      setIsSubmitting(true);
+
+      const normalizedValues = {
         ...values,
+        advertisementId: selectedAd.advertisementId,
+        startTime: normalizeTimeToHms(values.startTime as any),
+        endTime: normalizeTimeToHms(values.endTime as any),
+      } as typeof values;
+      const payload = {
+        AdvertisementPayload: normalizedValues,
         adsImage1:
-          adImageFiles && adImageFiles.length > 0
-            ? adImageFiles[0]?.file
-            : values.adsImage1,
+          selectedFiles && selectedFiles.length > 0 ? selectedFiles[0] : null,
       };
-      console.log("Edit form values:", payload);
-      toast.success("Advertisement updated successfully");
-      setEditModal(false);
-      setSelectedAd(null);
+
+      const formData = new FormData();
+      formData.append(
+        "AdvertisementPayload",
+        JSON.stringify(payload.AdvertisementPayload)
+      );
+
+      if (payload.adsImage1) {
+        formData.append("adsImage1", payload.adsImage1);
+      }
+
+      dispatch(addOrUpdateAdvertisementMutation(formData));
     },
   });
+
+  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
+
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(event.target.files || []);
+    setSelectedFiles(files);
+    editForm.setFieldValue(
+      "adsImage1",
+      files && files.length > 0 ? files[0] : null
+    );
+  };
+
+  const removeSelectedFile = () => {
+    setSelectedFiles([]);
+    editForm.setFieldValue("adsImage1", null);
+  };
+
+  // Show success toast when advertisement is updated successfully
+  React.useEffect(() => {
+    if (advertisementUpdatedSuccess && !advertisementError) {
+      toast.success("Advertisement updated successfully");
+      setEditModal(false);
+      editForm.resetForm();
+      setSelectedFiles([]);
+      setIsSubmitting(false);
+    }
+  }, [advertisementUpdatedSuccess, advertisementError]);
 
   return (
     <React.Fragment>
@@ -489,7 +566,7 @@ const AdvertisementsList = ({
           {selectedImage && (
             <div className="text-center">
               <img
-                src={imgURL + selectedImage}
+                src={imgURL + "/" + selectedImage}
                 alt="Advertisement"
                 className="img-fluid rounded"
                 style={{ maxHeight: "400px" }}
@@ -524,6 +601,21 @@ const AdvertisementsList = ({
               return false;
             }}
           >
+            {editForm.status?.serverError && (
+              <>
+                {toast("Error updating advertisement", {
+                  position: "top-right",
+                  hideProgressBar: false,
+                  className: "bg-danger text-white",
+                  progress: undefined,
+                  toastId: "advertisement-error",
+                })}
+                <ToastContainer autoClose={2000} limit={1} />
+                <Alert color="danger">
+                  {String(editForm.status.serverError)}
+                </Alert>
+              </>
+            )}
             <Row className="gy-4">
               <Col xxl={6} md={6}>
                 <div>
@@ -722,27 +814,74 @@ const AdvertisementsList = ({
                 </div>
               </Col>
 
-              {/* Image Upload */}
+              {/* Image Upload (aligned with add-product-modal.tsx) */}
               <Col xxl={12} md={12}>
                 <div>
                   <Label htmlFor="adsImage1" className="form-label">
                     Advertisement Image
                   </Label>
-                  <FilePond
-                    id={"adsImage1"}
-                    files={adImageFiles}
-                    onupdatefiles={(files: any) => {
-                      setAdImageFiles(files);
-                      editForm.setFieldValue(
-                        "adsImage1",
-                        files && files.length > 0 ? files[0]?.file : ""
-                      );
-                    }}
-                    allowMultiple={false}
-                    maxFiles={1}
+                  <Input
+                    type="file"
+                    id="adsImage1"
                     name="adsImage1"
-                    className="filepond filepond-input-multiple"
+                    accept="image/*"
+                    onChange={handleFileChange}
+                    className="form-control"
                   />
+
+                  {/* Show existing image if available */}
+                  {selectedAd?.adsImage1 && selectedFiles.length === 0 && (
+                    <div className="mt-3">
+                      <Label className="form-label text-muted">
+                        Current Image:
+                      </Label>
+                      <div className="d-flex gap-2 flex-wrap">
+                        <div className="position-relative">
+                          <img
+                            src={imgURL + "/" + selectedAd.adsImage1}
+                            alt="Current Advertisement"
+                            className="rounded"
+                            style={{
+                              width: "80px",
+                              height: "80px",
+                              objectFit: "cover",
+                            }}
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Show selected new image */}
+                  {selectedFiles.length > 0 && (
+                    <div className="mt-3">
+                      <Label className="form-label text-muted">
+                        Selected Image:
+                      </Label>
+                      <div className="d-flex gap-2 flex-wrap">
+                        <div className="position-relative">
+                          <img
+                            src={URL.createObjectURL(selectedFiles[0])}
+                            alt="Selected"
+                            className="rounded"
+                            style={{
+                              width: "80px",
+                              height: "80px",
+                              objectFit: "cover",
+                            }}
+                          />
+                          <button
+                            type="button"
+                            className="btn btn-danger btn-sm position-absolute top-0 end-0"
+                            style={{ transform: "translate(50%, -50%)" }}
+                            onClick={removeSelectedFile}
+                          >
+                            ×
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  )}
                 </div>
               </Col>
 
