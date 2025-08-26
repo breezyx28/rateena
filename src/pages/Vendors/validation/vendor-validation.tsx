@@ -41,7 +41,7 @@ export const validationSchema = () => {
       .required(),
     region: Yup.string()
       .oneOf(supportedRegions.map((region) => region.value))
-      .required(),
+      .required("Region is Required"),
     coverImage: Yup.mixed().notRequired(),
     profileImage: Yup.mixed().notRequired(),
     identityImage: Yup.mixed()

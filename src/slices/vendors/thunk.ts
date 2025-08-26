@@ -329,20 +329,13 @@ export const addVendorProductMutation =
     try {
       let response;
 
-      response = postAddVendorProduct({ ...body, vendorId });
+      response = postAddVendorProduct(body);
 
       const data = await response;
 
       if (data) {
         dispatch(vendorProductAdded());
-        let vendorProducts;
-        try {
-          vendorProducts = getVendorProducts(vendorId);
-          const vendorProductsData = await response;
-          dispatch(vendorProductsSuccess(vendorProductsData));
-        } catch (vendorProductError) {
-          throw vendorProductError;
-        }
+        dispatch(getVendorProductsQuery(vendorId));
       }
     } catch (error: any) {
       console.log("errors: ", error);

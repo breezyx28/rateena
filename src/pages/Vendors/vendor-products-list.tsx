@@ -1,9 +1,17 @@
 import React, { useEffect, useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { Form, FormGroup, Input, Label } from "reactstrap";
 import TableContainer from "../../Components/Common/TableContainerReactTable";
 import { imgURL } from "services/api-handles";
+import EditProductModal from "./modals/edit-product-modal";
+import DeleteConfirmationModal from "./modals/delete-confirmation-modal";
 
 const VendorProductsList = ({ data }: { data: any[] }) => {
   const [filter, setFilter] = useState<any[]>(data || []);
+  const [editModal, setEditModal] = useState(false);
+  const [deleteModal, setDeleteModal] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState<any>(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (data) {
@@ -19,6 +27,34 @@ const VendorProductsList = ({ data }: { data: any[] }) => {
     if (results) {
       setFilter(results);
     }
+  };
+
+  const toggleEditModal = () => setEditModal(!editModal);
+  const toggleDeleteModal = () => setDeleteModal(!deleteModal);
+
+  const handleEdit = (product: any) => {
+    setSelectedProduct(product);
+    toggleEditModal();
+  };
+
+  const handleView = (productId: string) => {
+    navigate(`/vendor-product/${productId}`);
+  };
+
+  const handleDelete = (product: any) => {
+    setSelectedProduct(product);
+    toggleDeleteModal();
+  };
+
+  const confirmDelete = () => {
+    console.log("Deleting product:", selectedProduct);
+    // dispatch(deleteVendorProductMutation(selectedProduct.productId));
+    toggleDeleteModal();
+  };
+
+  const handleTogglePublish = (product: any) => {
+    console.log("Toggling publish status:", product);
+    // dispatch(toggleProductPublishMutation(product.productId, !product.isPublished));
   };
 
   const columns = useMemo(
@@ -60,6 +96,11 @@ const VendorProductsList = ({ data }: { data: any[] }) => {
         enableColumnFilter: false,
       },
       {
+        header: "Quantity",
+        accessorKey: "quantity",
+        enableColumnFilter: false,
+      },
+      {
         header: "Price",
         accessorKey: "finalPrice",
         enableColumnFilter: false,
@@ -67,31 +108,42 @@ const VendorProductsList = ({ data }: { data: any[] }) => {
       {
         header: "Action",
         cell: (cell: any) => {
-          const row = cell.row.original; // full row data
+          const row = cell.row.original;
           return (
-            <div className="text-start">
-              <ul className="list-inline mb-0">
-                <li className="list-inline-item">
-                  <span className="lh-1 align-middle link-secondary">
-                    <i className="las la-share-square"></i>
-                  </span>
-                </li>
+            <div className="d-flex gap-2 align-items-center">
+              <button
+                className="btn btn-sm btn-outline-primary"
+                onClick={() => handleEdit(row)}
+                title="Edit Product"
+              >
+                <i className="ri-edit-line"></i>
+              </button>
 
-                <li
-                  className="list-inline-item"
-                  onClick={() => handleFilter(row.category.categoryId)}
-                >
-                  <span className="lh-1 align-middle link-danger">
-                    <i className="las la-trash-alt"></i>
-                  </span>
-                </li>
+              <button
+                className="btn btn-sm btn-outline-info"
+                onClick={() => handleView(row.productId)}
+                title="View Product"
+              >
+                <i className="ri-eye-line"></i>
+              </button>
 
-                <li className="list-inline-item">
-                  <span className="lh-1 align-middle link-danger">
-                    <i className="las la-users"></i>
-                  </span>
-                </li>
-              </ul>
+              <button
+                className="btn btn-sm btn-outline-danger"
+                onClick={() => handleDelete(row)}
+                title="Delete Product"
+              >
+                <i className="ri-delete-bin-line"></i>
+              </button>
+
+              <FormGroup switch className="mb-0">
+                <Input
+                  type="switch"
+                  checked={row.published || false}
+                  onChange={() => handleTogglePublish(row)}
+                  title={row.published ? "Unpublish" : "Publish"}
+                />
+                <Label check></Label>
+              </FormGroup>
             </div>
           );
         },
@@ -109,6 +161,19 @@ const VendorProductsList = ({ data }: { data: any[] }) => {
         isGlobalFilter={true}
         customPageSize={5}
         SearchPlaceholder="Search..."
+      />
+
+      <EditProductModal
+        modal_standard={editModal}
+        tog_standard={toggleEditModal}
+        productData={selectedProduct}
+      />
+
+      <DeleteConfirmationModal
+        modal_standard={deleteModal}
+        tog_standard={toggleDeleteModal}
+        onConfirm={confirmDelete}
+        productName={selectedProduct?.name || ""}
       />
     </React.Fragment>
   );

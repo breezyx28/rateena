@@ -280,8 +280,13 @@ const VendorsList = () => {
                       <img
                         src={imgURL + "/" + item.profileImage}
                         alt=""
-                        className="img-fluid rounded-circle"
+                        className="rounded-circle"
                         loading="lazy"
+                        style={{
+                          width: "80px",
+                          height: "80px",
+                          objectFit: "cover",
+                        }}
                       />
                     ) : (
                       <div

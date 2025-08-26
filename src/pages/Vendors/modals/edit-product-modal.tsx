@@ -1,5 +1,5 @@
 import { FieldArray, FormikProvider, useFormik } from "formik";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Alert,
   Button,
@@ -13,32 +13,45 @@ import {
   ModalHeader,
   Row,
 } from "reactstrap";
-import * as Yup from "yup";
 import { toast, ToastContainer } from "react-toastify";
-import { addVendorProductMutation } from "slices/thunks";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 import { createSelector } from "reselect";
 import {
-  vendorProductInitialValues,
+  UpdateVendorProductvalidationSchema,
   VendorProductvalidationSchema,
 } from "../validation/product-validation";
 import { useTranslation } from "react-i18next";
+import { imgURL } from "services/api-handles";
+import { addVendorProductMutation } from "slices/thunks";
 
-const AddProductModal = ({
+const EditProductModal = ({
   modal_standard,
   tog_standard,
+  productData,
 }: {
   modal_standard: boolean;
   tog_standard: () => any;
+  productData: any;
 }) => {
   const { i18n } = useTranslation();
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
+  const [existingImages, setExistingImages] = useState<string[]>([]);
+
+  useEffect(() => {
+    if (productData?.images && productData.images.length > 0) {
+      setExistingImages(productData.images);
+    }
+  }, [productData]);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
       setSelectedFiles(Array.from(e.target.files));
     }
+  };
+
+  const removeExistingImage = (index: number) => {
+    setExistingImages((prev) => prev.filter((_, i) => i !== index));
   };
 
   const removeSelectedFile = (index: number) => {
@@ -53,11 +66,11 @@ const AddProductModal = ({
     vendorProductSuccess: state.vendorProductSuccess,
     vendorCategories: state.vendorCategories,
     error: state.error,
-    vendorData: state.vendorData,
   }));
-  // Inside your component
-  const { vendorError, vendorProductSuccess, vendorCategories, vendorData } =
-    useSelector(selectLayoutProperties);
+
+  const { vendorError, vendorProductSuccess, vendorCategories } = useSelector(
+    selectLayoutProperties
+  );
 
   React.useEffect(() => {
     if (vendorProductSuccess) {
@@ -66,49 +79,49 @@ const AddProductModal = ({
     }
     if (vendorError) {
       console.log("vendorError: ", vendorError);
-    }
-    if (vendorCategories) {
-      console.log("vendorCategories: ", vendorCategories);
+      validation.setErrors(vendorError);
     }
   }, [vendorError, vendorProductSuccess, vendorCategories]);
 
   const validation: any = useFormik({
     enableReinitialize: true,
     initialValues: {
-      ...vendorProductInitialValues,
-      isFood: vendorData?.vendor?.vendorType === "RESTAURANT",
+      name: productData?.name || "",
+      arName: productData?.arName || "",
+      quantity: productData?.quantity || "",
+      isFood: productData?.isFood !== undefined ? productData.isFood : (productData?.vendor?.vendor?.vendorType === 'RESTURANT'),
+      price: productData?.price || "",
+      companyProfit: productData?.companyProfit || "",
+      duration: productData?.duration || "",
+      category_id: productData?.category?.category_id || "",
+      description: productData?.description || "",
+      ar_description: productData?.arDescription || "",
+      options: productData?.options || [],
     },
-    validationSchema: VendorProductvalidationSchema(),
+    validationSchema: UpdateVendorProductvalidationSchema(),
     onSubmit: (values) => {
       const formData = new FormData();
-      console.log("form-values: ", values);
 
       const productPayload = {
+        productId: productData.productId,
         vendor_id: Number(vendorId),
         ...values,
-        options:
-          !values.options?.[0]?.name &&
-          !values.options?.[0]?.group_flag &&
-          !values.options?.[0]?.fee
-            ? null
-            : values.options,
       };
-
-      console.log("productPayload:  ", productPayload);
 
       formData.append("productPayload", JSON.stringify(productPayload));
 
-      selectedFiles.forEach((file: File, index: number) => {
+      selectedFiles.forEach((file, index) => {
         formData.append(`productImages[${index}]`, file);
       });
 
       dispatch(addVendorProductMutation(formData, vendorId));
     },
   });
+
   return (
     <>
       <Modal
-        id="myModal"
+        id="editModal"
         isOpen={modal_standard}
         toggle={() => {
           tog_standard();
@@ -116,12 +129,12 @@ const AddProductModal = ({
       >
         <ModalHeader
           className="modal-title"
-          id="myModalLabel"
+          id="editModalLabel"
           toggle={() => {
             tog_standard();
           }}
         >
-          Add Product
+          Edit Product
         </ModalHeader>
         <ModalBody>
           <FormikProvider value={validation}>
@@ -131,11 +144,11 @@ const AddProductModal = ({
                 validation.handleSubmit();
                 return false;
               }}
-              id="add-vendor-product-form"
+              id="edit-vendor-product-form"
             >
               {vendorProductSuccess && !vendorError ? (
                 <>
-                  {toast("Your Redirect To Login Page...", {
+                  {toast("Product Updated Successfully...", {
                     position: "top-right",
                     hideProgressBar: false,
                     className: "bg-success text-white",
@@ -144,13 +157,13 @@ const AddProductModal = ({
                   })}
                   <ToastContainer autoClose={2000} limit={1} />
                   <Alert color="success">
-                    Product has been added successfully
+                    Product has been updated successfully
                   </Alert>
                 </>
               ) : null}
-              {vendorError?.message && !vendorProductSuccess ? (
+              {vendorError && !vendorProductSuccess ? (
                 <>
-                  {toast("Error Adding Product", {
+                  {toast("Error updating product", {
                     position: "top-right",
                     hideProgressBar: false,
                     className: "bg-danger text-white",
@@ -181,30 +194,35 @@ const AddProductModal = ({
                           : false
                       }
                     />
+                    {validation.touched.name && validation.errors.name ? (
+                      <FormFeedback>{validation.errors.name}</FormFeedback>
+                    ) : null}
                   </div>
                 </Col>
 
                 <Col xxl={12} md={12}>
                   <div>
-                    <Label htmlFor="ar_name" className="form-label">
+                    <Label htmlFor="arName" className="form-label">
                       Arabic Name
                     </Label>
                     <div className="form-icon">
                       <Input
                         type="text"
                         className="form-control"
-                        id="ar_name"
-                        name="ar_name"
+                        id="arName"
+                        name="arName"
                         onChange={validation.handleChange}
                         onBlur={validation.handleBlur}
-                        value={validation.values.ar_name || ""}
+                        value={validation.values.arName || ""}
                         invalid={
-                          validation.touched.ar_name &&
-                          validation.errors.ar_name
+                          validation.touched.arName && validation.errors.arName
                             ? true
                             : false
                         }
                       />
+                      {validation.touched.arName && validation.errors.arName ? (
+                        <FormFeedback>{validation.errors.arName}</FormFeedback>
+                      ) : null}
                     </div>
                   </div>
                 </Col>
@@ -212,7 +230,7 @@ const AddProductModal = ({
                 <Col xxl={12} md={12}>
                   <div>
                     <Label htmlFor="quantity" className="form-label">
-                      Qunatity
+                      Quantity
                     </Label>
                     <div className="form-icon">
                       <Input
@@ -231,6 +249,12 @@ const AddProductModal = ({
                             : false
                         }
                       />
+                      {validation.touched.quantity &&
+                      validation.errors.quantity ? (
+                        <FormFeedback>
+                          {validation.errors.quantity}
+                        </FormFeedback>
+                      ) : null}
                     </div>
                   </div>
                 </Col>
@@ -272,32 +296,41 @@ const AddProductModal = ({
                             : false
                         }
                       />
+                      {validation.touched.price && validation.errors.price ? (
+                        <FormFeedback>{validation.errors.price}</FormFeedback>
+                      ) : null}
                     </div>
                   </div>
                 </Col>
 
                 <Col xxl={12} md={12}>
                   <div>
-                    <Label htmlFor="company_profit" className="form-label">
+                    <Label htmlFor="companyProfit" className="form-label">
                       Company Profit %
                     </Label>
                     <div className="form-icon">
                       <Input
                         type="number"
                         className="form-control"
-                        id="company_profit"
-                        name="company_profit"
+                        id="companyProfit"
+                        name="companyProfit"
                         placeholder="Eg: 5"
                         onChange={validation.handleChange}
                         onBlur={validation.handleBlur}
-                        value={validation.values.company_profit || ""}
+                        value={validation.values.companyProfit || ""}
                         invalid={
-                          validation.touched.company_profit &&
-                          validation.errors.company_profit
+                          validation.touched.companyProfit &&
+                          validation.errors.companyProfit
                             ? true
                             : false
                         }
                       />
+                      {validation.touched.companyProfit &&
+                      validation.errors.companyProfit ? (
+                        <FormFeedback>
+                          {validation.errors.companyProfit}
+                        </FormFeedback>
+                      ) : null}
                     </div>
                   </div>
                 </Col>
@@ -324,6 +357,12 @@ const AddProductModal = ({
                             : false
                         }
                       />
+                      {validation.touched.duration &&
+                      validation.errors.duration ? (
+                        <FormFeedback>
+                          {validation.errors.duration}
+                        </FormFeedback>
+                      ) : null}
                     </div>
                   </div>
                 </Col>
@@ -348,7 +387,10 @@ const AddProductModal = ({
                       <option value="">Select Category</option>
                       {vendorCategories?.list &&
                         vendorCategories?.list.map((item: any) => (
-                          <option value={item.category.categoryId}>
+                          <option
+                            key={item.category.categoryId}
+                            value={item.category.categoryId}
+                          >
                             {i18n.dir() === "rtl"
                               ? item.category.arName
                               : item.category.name}
@@ -371,6 +413,39 @@ const AddProductModal = ({
                       Product Images
                     </Label>
 
+                    {/* Existing Images */}
+                    {existingImages.length > 0 && (
+                      <div className="mb-3">
+                        <Label className="form-label text-muted">
+                          Current Images:
+                        </Label>
+                        <div className="d-flex gap-2 flex-wrap">
+                          {existingImages.map((img, index) => (
+                            <div key={index} className="position-relative">
+                              <img
+                                src={`${imgURL}/${img}`}
+                                alt={`Product ${index + 1}`}
+                                className="rounded"
+                                style={{
+                                  width: "80px",
+                                  height: "80px",
+                                  objectFit: "cover",
+                                }}
+                              />
+                              <button
+                                type="button"
+                                className="btn btn-danger btn-sm position-absolute top-0 end-0"
+                                style={{ transform: "translate(50%, -50%)" }}
+                                onClick={() => removeExistingImage(index)}
+                              >
+                                ×
+                              </button>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
                     {/* File Upload */}
                     <Input
                       type="file"
@@ -386,14 +461,14 @@ const AddProductModal = ({
                     {selectedFiles.length > 0 && (
                       <div className="mt-3">
                         <Label className="form-label text-muted">
-                          Selected Images:
+                          New Images:
                         </Label>
                         <div className="d-flex gap-2 flex-wrap">
                           {selectedFiles.map((file, index) => (
                             <div key={index} className="position-relative">
                               <img
                                 src={URL.createObjectURL(file)}
-                                alt={`Selected ${index + 1}`}
+                                alt={`New ${index + 1}`}
                                 className="rounded"
                                 style={{
                                   width: "80px",
@@ -442,6 +517,12 @@ const AddProductModal = ({
                             : false
                         }
                       />
+                      {validation.touched.description &&
+                      validation.errors.description ? (
+                        <FormFeedback>
+                          {validation.errors.description}
+                        </FormFeedback>
+                      ) : null}
                     </div>
                   </div>
                 </Col>
@@ -467,6 +548,12 @@ const AddProductModal = ({
                             : false
                         }
                       />
+                      {validation.touched.ar_description &&
+                      validation.errors.ar_description ? (
+                        <FormFeedback>
+                          {validation.errors.ar_description}
+                        </FormFeedback>
+                      ) : null}
                     </div>
                   </div>
                 </Col>
@@ -486,21 +573,21 @@ const AddProductModal = ({
                                   className="align-items-end mb-3"
                                 >
                                   <Col md={4}>
-                                    <Label htmlFor={`options.${index}.op_name`}>
+                                    <Label htmlFor={`options.${index}.opName`}>
                                       Option Name
                                     </Label>
                                     <Input
                                       type="text"
-                                      id={`options.${index}.op_name`}
-                                      name={`options.${index}.op_name`}
-                                      value={option.op_name}
+                                      id={`options.${index}.opName`}
+                                      name={`options.${index}.opName`}
+                                      value={option.opName}
                                       onChange={validation.handleChange}
                                       onBlur={validation.handleBlur}
                                       invalid={
                                         validation.touched.options?.[index]
-                                          ?.op_name &&
+                                          ?.opName &&
                                         !!validation.errors.options?.[index]
-                                          ?.op_name
+                                          ?.opName
                                       }
                                     />
                                     <FormFeedback>
@@ -509,7 +596,7 @@ const AddProductModal = ({
                                           validation.errors.options?.[
                                             index
                                           ] as any
-                                        )?.op_name
+                                        )?.opName
                                       }
                                     </FormFeedback>
                                   </Col>
@@ -545,22 +632,22 @@ const AddProductModal = ({
 
                                   <Col md={4}>
                                     <Label
-                                      htmlFor={`options.${index}.group_flag`}
+                                      htmlFor={`options.${index}.groupFlag`}
                                     >
                                       Group Flag
                                     </Label>
                                     <Input
                                       type="text"
-                                      id={`options.${index}.group_flag`}
-                                      name={`options.${index}.group_flag`}
-                                      value={option.group_flag}
+                                      id={`options.${index}.groupFlag`}
+                                      name={`options.${index}.groupFlag`}
+                                      value={option.groupFlag}
                                       onChange={validation.handleChange}
                                       onBlur={validation.handleBlur}
                                       invalid={
                                         validation.touched.options?.[index]
-                                          ?.group_flag &&
+                                          ?.groupFlag &&
                                         !!validation.errors.options?.[index]
-                                          ?.group_flag
+                                          ?.groupFlag
                                       }
                                     />
                                     <FormFeedback>
@@ -569,7 +656,7 @@ const AddProductModal = ({
                                           validation.errors.options?.[
                                             index
                                           ] as any
-                                        )?.group_flag
+                                        )?.groupFlag
                                       }
                                     </FormFeedback>
                                   </Col>
@@ -591,9 +678,9 @@ const AddProductModal = ({
                             color="secondary"
                             onClick={() =>
                               arrayHelpers.push({
-                                op_name: "",
+                                opName: "",
                                 fee: "",
-                                group_flag: "",
+                                groupFlag: "",
                               })
                             }
                           >
@@ -607,7 +694,7 @@ const AddProductModal = ({
               </Row>
               <Button
                 type={"submit"}
-                id="add-vendor-product-btn"
+                id="edit-vendor-product-btn"
                 style={{
                   visibility: "hidden",
                 }}
@@ -629,7 +716,7 @@ const AddProductModal = ({
           <Button
             color="primary"
             onClick={() => {
-              document.getElementById("add-vendor-product-btn")?.click();
+              document.getElementById("edit-vendor-product-btn")?.click();
             }}
           >
             Save changes
@@ -640,4 +727,4 @@ const AddProductModal = ({
   );
 };
 
-export default AddProductModal;
+export default EditProductModal;

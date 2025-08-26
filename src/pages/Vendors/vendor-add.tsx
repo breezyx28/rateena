@@ -10,6 +10,7 @@ import {
   Button,
   Card,
   CardBody,
+  Alert,
 } from "reactstrap";
 import { Formik, ErrorMessage, useFormikContext } from "formik";
 import * as Yup from "yup";
@@ -43,25 +44,25 @@ const VendorAdd = () => {
 
   const selectLayoutState = (state: any) => state.Vendors;
   const selectLayoutProperties = createSelector(selectLayoutState, (state) => ({
-    addVendorSuccess: state.addVendorSuccess,
-    addVendorError: state.addVendorError,
+    vendorUpdatedSuccess: state.vendorUpdatedSuccess,
+    vendorError: state.vendorError,
     isLoading: state.isLoading,
   }));
 
-  const { addVendorSuccess, addVendorError, isLoading } = useSelector(
+  const { vendorUpdatedSuccess, vendorError, isLoading } = useSelector(
     selectLayoutProperties
   );
 
   React.useEffect(() => {
-    if (addVendorSuccess) {
+    if (vendorUpdatedSuccess) {
       toast.success("Vendor added successfully", { position: "top-right" });
       dispatch(clearVendorError());
       errorToastManager.clearLastError();
     }
-    if (addVendorError) {
-      errorToastManager.showError(addVendorError, toast.error);
+    if (vendorError) {
+      errorToastManager.showError(vendorError, toast.error);
     }
-  }, [addVendorSuccess, addVendorError, dispatch]);
+  }, [vendorUpdatedSuccess, vendorError, dispatch]);
 
   React.useEffect(() => {
     return () => {
@@ -75,6 +76,7 @@ const VendorAdd = () => {
     arFullName: "",
     userPhone: "",
     userEmail: "",
+    password: "",
     maxKilometerDelivery: "",
     minChargeLongDistance: "",
     openingTime: "",
@@ -103,6 +105,7 @@ const VendorAdd = () => {
     userEmail: Yup.string()
       .email("Invalid email format")
       .required("Email is required"),
+    password: Yup.string().min(8).required("Password is required"),
     maxKilometerDelivery: Yup.number()
       .min(1, "Max kilometer delivery must be at least 1")
       .max(1000, "Max kilometer delivery must be less than 1000")
@@ -123,27 +126,16 @@ const VendorAdd = () => {
     const { setErrors } = useFormikContext<any>();
 
     React.useEffect(() => {
-      if (addVendorError) {
+      if (vendorError) {
         const fieldMapping = {
           identityImage: "identityImageFile",
           licenseImage: "licenseImageFile",
+          phone: "userPhone",
+          email: "userEmail",
         } as const;
-        mapServerErrorsToFormik(addVendorError, setErrors, fieldMapping as any);
-        toast.error("Failed to add vendor. Please check the form.", {
-          position: "top-right",
-          autoClose: 3000,
-        });
+        mapServerErrorsToFormik(vendorError, setErrors, fieldMapping as any);
       }
-    }, [addVendorError, setErrors]);
-
-    React.useEffect(() => {
-      if (addVendorSuccess) {
-        toast.success("Vendor information submitted successfully!", {
-          position: "top-right",
-          autoClose: 2000,
-        });
-      }
-    }, [addVendorSuccess]);
+    }, [vendorError, setErrors]);
 
     return null;
   };
@@ -157,6 +149,7 @@ const VendorAdd = () => {
       arFullName: values.arFullName,
       phone: values.userPhone,
       email: values.userEmail,
+      password: values.password,
       maxKilometerDelivery: parseInt(values.maxKilometerDelivery),
       openingTime: values.openingTime,
       closingTime: values.closingTime,
@@ -216,6 +209,34 @@ const VendorAdd = () => {
                 }) => (
                   <Form id="vendor-info-form" onSubmit={handleSubmit}>
                     <ServerErrorHandler />
+                    {vendorUpdatedSuccess && !vendorError ? (
+                      <>
+                        {toast("Your Redirect To Login Page...", {
+                          position: "top-right",
+                          hideProgressBar: false,
+                          className: "bg-success text-white",
+                          progress: undefined,
+                          toastId: "",
+                        })}
+                        <ToastContainer autoClose={2000} limit={1} />
+                        <Alert color="success">
+                          Product has been added successfully
+                        </Alert>
+                      </>
+                    ) : null}
+                    {vendorError?.message && !vendorUpdatedSuccess ? (
+                      <>
+                        {toast("Error Adding Product", {
+                          position: "top-right",
+                          hideProgressBar: false,
+                          className: "bg-danger text-white",
+                          progress: undefined,
+                          toastId: "",
+                        })}
+                        <ToastContainer autoClose={2000} limit={1} />
+                        <Alert color="danger">{vendorError?.message}</Alert>
+                      </>
+                    ) : null}
                     <Row>
                       <Col lg={6}>
                         <div className="mb-3">
@@ -325,6 +346,32 @@ const VendorAdd = () => {
                           />
                           <ErrorMessage
                             name="userEmail"
+                            component="div"
+                            className="invalid-feedback"
+                          />
+                        </div>
+                      </Col>
+
+                      <Col lg={12}>
+                        <div className="mb-3">
+                          <Label htmlFor="passwordinput" className="form-label">
+                            Password
+                          </Label>
+                          <Input
+                            type="password"
+                            className={`form-control ${
+                              errors.password && touched.password
+                                ? "is-invalid"
+                                : ""
+                            }`}
+                            id="passwordinput"
+                            placeholder="Enter your password"
+                            name="password"
+                            onChange={handleChange}
+                            onBlur={handleBlur}
+                          />
+                          <ErrorMessage
+                            name="password"
                             component="div"
                             className="invalid-feedback"
                           />
