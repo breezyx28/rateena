@@ -31,10 +31,12 @@ import { loginUser, resetLoginFlag } from "../../slices/thunks";
 import logoLight from "../../assets/images/Logo.png";
 import { createSelector } from "reselect";
 import { setLoading } from "slices/auth/login/reducer";
+import { useTranslation } from "react-i18next";
 //import images
 
 const Login = (props: any) => {
   const dispatch: any = useDispatch();
+  const { t } = useTranslation();
 
   const selectLayoutState = (state: any) => state.Login;
   const loginpageData = createSelector(selectLayoutState, (state) => ({
@@ -110,7 +112,7 @@ const Login = (props: any) => {
                     </Link>
                   </div>
                   <p className="mt-3 fs-15 fw-medium">
-                    Premium Admin & Dashboard Template
+                    {t("Premium Admin & Dashboard Template")}
                   </p>
                 </div>
               </Col>
@@ -121,9 +123,9 @@ const Login = (props: any) => {
                 <Card className="mt-4 card-bg-fill">
                   <CardBody className="p-4">
                     <div className="text-center mt-2">
-                      <h5 className="text-primary">Welcome Back !</h5>
+                      <h5 className="text-primary">{t("Welcome Back !")}</h5>
                       <p className="text-muted">
-                        Sign in to continue to Rateena.
+                        {t("Sign in to continue to Rateena.")}
                       </p>
                     </div>
                     {error?.message && error ? (
@@ -140,12 +142,12 @@ const Login = (props: any) => {
                       >
                         <div className="mb-3">
                           <Label htmlFor="phone" className="form-label">
-                            Phone
+                            {t("Phone")}
                           </Label>
                           <Input
                             name="phone"
                             className="form-control"
-                            placeholder="Enter phone"
+                            placeholder={t("Enter phone")}
                             type="tel"
                             onChange={validation.handleChange}
                             onBlur={validation.handleBlur}
@@ -168,14 +170,14 @@ const Login = (props: any) => {
                         <div className="mb-3">
                           <div className="float-end">
                             <Link to="/forgot-password" className="text-muted">
-                              Forgot password?
+                              {t("Forgot password?")}
                             </Link>
                           </div>
                           <Label
                             className="form-label"
                             htmlFor="password-input"
                           >
-                            Password
+                            {t("Password")}
                           </Label>
                           <div className="position-relative auth-pass-inputgroup mb-3">
                             <Input
@@ -183,7 +185,7 @@ const Login = (props: any) => {
                               value={validation.values.password || ""}
                               type={passwordShow ? "text" : "password"}
                               className="form-control pe-5"
-                              placeholder="Enter Password"
+                              placeholder={t("Enter Password")}
                               onChange={validation.handleChange}
                               onBlur={validation.handleBlur}
                               invalid={
@@ -221,7 +223,7 @@ const Login = (props: any) => {
                             className="form-check-label"
                             htmlFor="auth-remember-check"
                           >
-                            Remember me
+                            {t("Remember me")}
                           </Label>
                         </div>
 
@@ -235,10 +237,10 @@ const Login = (props: any) => {
                             {loading && (
                               <Spinner size="sm" className="me-2">
                                 {" "}
-                                Loading...{" "}
+                                {t("Loading...")}{" "}
                               </Spinner>
                             )}
-                            Sign In
+                            {t("Sign In")}
                           </Button>
                         </div>
                         {/* 
@@ -254,13 +256,13 @@ const Login = (props: any) => {
 
                 <div className="mt-4 text-center">
                   <p className="mb-0">
-                    Don't have an account ?{" "}
+                    {t("Don't have an account ?")}{" "}
                     <Link
                       to="/register"
                       className="fw-semibold text-primary text-decoration-underline"
                     >
                       {" "}
-                      Signup{" "}
+                      {t("Signup")}{" "}
                     </Link>{" "}
                   </p>
                 </div>
