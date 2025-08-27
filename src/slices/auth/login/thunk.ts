@@ -3,6 +3,7 @@ import {
   logoutUserSuccess,
   apiError,
   reset_login_flag,
+  setLoading,
 } from "./reducer";
 import { postLogin } from "services/Auth";
 
@@ -15,13 +16,21 @@ export const loginUser = (user: any, history: any) => async (dispatch: any) => {
       password: user.password,
     });
 
-    var data = await response;
+    dispatch(setLoading(true));
 
+    var data = await response;
     if (data) {
       sessionStorage.setItem("authUser", JSON.stringify(data));
 
+      // @ts-ignore
+      if (data?.role !== "SUPERADMIN") {
+        throw new Error("You are not authorized to access this application");
+      }
+
       dispatch(loginSuccess(data));
-      history("/dashboard");
+      setTimeout(() => {
+        history("/dashboard");
+      }, 1000);
     }
   } catch (error) {
     dispatch(apiError(error));

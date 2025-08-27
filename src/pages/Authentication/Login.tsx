@@ -30,19 +30,21 @@ import { loginUser, resetLoginFlag } from "../../slices/thunks";
 // import logoLight from "../../assets/images/logo-light.png";
 import logoLight from "../../assets/images/Logo.png";
 import { createSelector } from "reselect";
+import { setLoading } from "slices/auth/login/reducer";
 //import images
 
 const Login = (props: any) => {
   const dispatch: any = useDispatch();
 
-  const selectLayoutState = (state: any) => state;
+  const selectLayoutState = (state: any) => state.Login;
   const loginpageData = createSelector(selectLayoutState, (state) => ({
-    user: state.Account.user,
-    error: state.Login.error,
-    errorMsg: state.Login.errorMsg,
+    user: state.user,
+    error: state.error,
+    loading: state.loading,
+    errorMsg: state.errorMsg,
   }));
   // Inside your component
-  const { user, error, errorMsg } = useSelector(loginpageData);
+  const { user, error, errorMsg, loading } = useSelector(loginpageData);
 
   const [userLogin, setUserLogin] = useState<any>([]);
   const [passwordShow, setPasswordShow] = useState<boolean>(false);
@@ -59,6 +61,12 @@ const Login = (props: any) => {
       });
     }
   }, [user]);
+
+  useEffect(() => {
+    if (error) {
+      console.log("login-error:", error);
+    }
+  }, [error]);
 
   const validation: any = useFormik({
     // enableReinitialize : use this flag when initial values needs to be changed
@@ -118,8 +126,8 @@ const Login = (props: any) => {
                         Sign in to continue to Rateena.
                       </p>
                     </div>
-                    {error && error ? (
-                      <Alert color="danger"> {error} </Alert>
+                    {error?.message && error ? (
+                      <Alert color="danger"> {error?.message} </Alert>
                     ) : null}
                     <div className="p-2 mt-4">
                       <Form
@@ -220,11 +228,11 @@ const Login = (props: any) => {
                         <div className="mt-4">
                           <Button
                             color="success"
-                            disabled={loader && true}
+                            disabled={loading}
                             className="btn btn-success w-100"
                             type="submit"
                           >
-                            {loader && (
+                            {loading && (
                               <Spinner size="sm" className="me-2">
                                 {" "}
                                 Loading...{" "}

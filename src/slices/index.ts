@@ -11,6 +11,8 @@ import ResetPasswordReducer from "./auth/reset-password/reducer";
 import VerifyOtpReducer from "./auth/verifyOtp/reducer";
 import ProfileReducer from "./auth/profile/reducer";
 
+import LoadingReducer from "./loadingSlice";
+
 // Home
 import HomeDetailsReducer from "./Home/reducer";
 
@@ -96,6 +98,7 @@ import JobReducer from "./jobs/reducer";
 import APIKeyReducer from "./apiKey/reducer";
 
 const rootReducer = combineReducers({
+  Loading: LoadingReducer,
   Layout: LayoutReducer,
   Login: LoginReducer,
   Account: AccountReducer,
