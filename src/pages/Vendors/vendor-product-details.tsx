@@ -74,31 +74,13 @@ const VendorProductDetails = () => {
     }
   }, [productData]);
 
-  // Mock product data - replace with actual data fetching
-  // const selectedProduct = {
-  //   productId: 1,
-  //   name: "Sample Product",
-  //   arName: "منتج عينة",
-  //   description: "This is a sample product description",
-  //   arDescription: "هذا وصف منتج عينة",
-  //   finalPrice: 25.5,
-  //   quantity: 10,
-  //   published: true,
-  //   companyProfit: 15,
-  //   category: { name: "Electronics" },
-  //   images: ["sample1.jpg", "sample2.jpg"],
-  //   options: [
-  //     { optionId: 1, name: "Size", groupFlag: "size", fee: 0 },
-  //     { optionId: 2, name: "Large", groupFlag: "size", fee: 5 },
-  //     { optionId: 3, name: "Extra Cheese", groupFlag: null, fee: 3 },
-  //   ],
-  // };
-
   const optionGroups: string[] = Array.from(
     new Set(
       selectedProduct?.options
-        ?.filter((op: any) => op.groupFlag != null)
-        ?.map((op: any) => op.groupFlag) || []
+        ?.filter(
+          (op: any) => op.group_flag != null && (op.fee == null || op.fee == 0)
+        )
+        ?.map((op: any) => op.group_flag) || []
     )
   ) as string[];
 
@@ -119,9 +101,10 @@ const VendorProductDetails = () => {
 
   const handleAddOptionGroup = (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Add option Grup:", {
+    console.log("Add option Group:", {
       name: newOptionName,
-      groupFlag: newOptionGroup,
+      groupFlag: newOptionGroup || activeOptionGroup,
+      fee: null,
       productId,
     });
     // Reset form
@@ -133,7 +116,8 @@ const VendorProductDetails = () => {
     dispatch(
       addOptionMutation({
         name: newOptionName,
-        groupFlag: newOptionGroup,
+        groupFlag: newOptionGroup || activeOptionGroup,
+        fee: 0,
         productId,
       })
     );
@@ -144,6 +128,7 @@ const VendorProductDetails = () => {
     console.log("Add option Addon:", {
       name: newOptionName,
       fee: newOptionFee,
+      groupFlag: null,
       productId,
     });
     // Reset form
@@ -156,6 +141,7 @@ const VendorProductDetails = () => {
       addOptionMutation({
         name: newOptionName,
         fee: newOptionFee,
+        groupFlag: null,
         productId,
       })
     );
@@ -286,10 +272,14 @@ const VendorProductDetails = () => {
                                 {group}
                               </p>
                               {selectedProduct?.options
-                                ?.filter((op: any) => op.groupFlag === group)
+                                ?.filter(
+                                  (op: any) =>
+                                    op.group_flag === group &&
+                                    (op.fee == null || op.fee == 0)
+                                )
                                 ?.map((option: any) => (
                                   <div
-                                    key={option.optionId}
+                                    key={option.option_id}
                                     className="d-flex align-items-center"
                                   >
                                     <Badge
@@ -300,7 +290,7 @@ const VendorProductDetails = () => {
                                       <i
                                         className="ri-close-circle-line cursor-pointer"
                                         onClick={() =>
-                                          handleDeleteOption(option.optionId)
+                                          handleDeleteOption(option.option_id)
                                         }
                                       ></i>
                                     </Badge>
@@ -395,11 +385,12 @@ const VendorProductDetails = () => {
                           <div className="d-flex flex-wrap align-items-start gap-2 mb-3">
                             {selectedProduct?.options
                               ?.filter(
-                                (option: any) => option.groupFlag == null
+                                (option: any) =>
+                                  option.group_flag == null && option.fee > 0
                               )
                               ?.map((option: any) => (
                                 <div
-                                  key={option.optionId}
+                                  key={option.option_id}
                                   className="d-flex align-items-center"
                                 >
                                   <Badge
@@ -413,7 +404,7 @@ const VendorProductDetails = () => {
                                     <i
                                       className="ri-close-circle-line cursor-pointer"
                                       onClick={() =>
-                                        handleDeleteOption(option.optionId)
+                                        handleDeleteOption(option.option_id)
                                       }
                                     ></i>
                                   </Badge>

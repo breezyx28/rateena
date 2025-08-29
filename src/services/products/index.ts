@@ -19,7 +19,7 @@ export const addOption = (data: any) =>
   api.create(url.ADD_OPTION_INFO_URL, data);
 
 export const deleteOption = (optionId: any) =>
-  api.delete(url.OPTION_DELETE_URL.replace("{optionId}", optionId.toString()));
+  api.delete(url.OPTION_DELETE_URL.replace("{optionId}", optionId));
 
 export const toggleProductPublish = (productId: any) =>
   api.get(url.TOGGLE_PUBLISH_URL.replace("{productId}", productId.toString()));

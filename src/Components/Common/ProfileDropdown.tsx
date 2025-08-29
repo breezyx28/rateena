@@ -7,16 +7,20 @@ import {
   DropdownToggle,
 } from "reactstrap";
 import { createSelector } from "reselect";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 
 //import images
 import avatar1 from "../../assets/images/users/avatar-1.jpg";
+import { logoutUser } from "slices/thunks";
 
 const ProfileDropdown = () => {
   const profiledropdownData = createSelector(
     (state: any) => state.Profile,
     (user) => user.user
   );
+
+  const dispatch: any = useDispatch();
+
   // Inside your component
   const user = useSelector(profiledropdownData);
 
@@ -113,7 +117,11 @@ const ProfileDropdown = () => {
             </Link>
           </DropdownItem>
           <DropdownItem className="p-0">
-            <Link to="/logout" className="dropdown-item">
+            <Link
+              to="/logout"
+              className="dropdown-item"
+              onClick={() => dispatch(logoutUser())}
+            >
               <i className="mdi mdi-logout text-muted fs-16 align-middle me-1"></i>{" "}
               <span className="align-middle" data-key="t-logout">
                 Logout

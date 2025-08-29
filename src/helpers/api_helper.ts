@@ -99,8 +99,11 @@ class APIClient {
   };
 }
 
+const userSession = () => sessionStorage.getItem("authUser");
+export const clearUserSession = () => sessionStorage.removeItem("authUser");
+
 const getLoggedinUser = () => {
-  const user = sessionStorage.getItem("authUser");
+  const user = userSession();
   if (!user) {
     return null;
   } else {

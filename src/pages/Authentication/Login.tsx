@@ -46,23 +46,11 @@ const Login = (props: any) => {
     errorMsg: state.errorMsg,
   }));
   // Inside your component
-  const { user, error, errorMsg, loading } = useSelector(loginpageData);
+  const { error, errorMsg, loading } = useSelector(loginpageData);
 
-  const [userLogin, setUserLogin] = useState<any>([]);
   const [passwordShow, setPasswordShow] = useState<boolean>(false);
 
   const [loader, setLoader] = useState<boolean>(false);
-
-  useEffect(() => {
-    if (user && user) {
-      const updatedUserData = user.phone;
-      const updatedUserPassword = user.confirm_password;
-      setUserLogin({
-        phone: updatedUserData,
-        password: updatedUserPassword,
-      });
-    }
-  }, [user]);
 
   useEffect(() => {
     if (error) {
@@ -75,8 +63,8 @@ const Login = (props: any) => {
     enableReinitialize: true,
 
     initialValues: {
-      phone: userLogin.phone,
-      password: userLogin.password,
+      phone: "",
+      password: "",
     },
     validationSchema: Yup.object({
       phone: Yup.string().required("Please Enter Your Phone Number"),

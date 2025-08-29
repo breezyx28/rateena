@@ -60,11 +60,7 @@ export const toggleProductPublishQuery =
       const data = await response;
       if (data) {
         dispatch(productSuccess(data));
-        try {
-          dispatch(getProductsQuery());
-        } catch (productError) {
-          throw productError;
-        }
+        dispatch(getProductQuery(productId));
       }
     } catch (error: any) {
       console.log("errors: ", error);
@@ -103,11 +99,7 @@ export const deleteProductMutation =
 
       if (data) {
         dispatch(productUpdated());
-        try {
-          dispatch(getProductsQuery());
-        } catch (productError) {
-          throw productError;
-        }
+        dispatch(getProductQuery(productId));
       }
     } catch (error: any) {
       console.log("errors: ", error);
@@ -127,11 +119,7 @@ export const deleteProductImageMutation =
 
       if (data) {
         dispatch(productUpdated());
-        try {
-          dispatch(getProductQuery(productId));
-        } catch (productError) {
-          throw productError;
-        }
+        dispatch(getProductQuery(productId));
       }
     } catch (error: any) {
       console.log("errors: ", error);
@@ -152,7 +140,7 @@ export const addOptionMutation = (body: any) => async (dispatch: any) => {
 
     if (data) {
       dispatch(productUpdated());
-      dispatch(getProductsQuery());
+      dispatch(getProductQuery(body.productId));
     }
   } catch (error: any) {
     console.log("errors: ", error);
@@ -172,7 +160,6 @@ export const deleteOptionMutation =
 
       if (data) {
         dispatch(productUpdated());
-        dispatch(getProductsQuery());
       }
     } catch (error: any) {
       console.log("errors: ", error);

@@ -1,3 +1,4 @@
+import { clearUserSession } from "helpers/api_helper";
 import {
   loginSuccess,
   logoutUserSuccess,
@@ -39,9 +40,9 @@ export const loginUser = (user: any, history: any) => async (dispatch: any) => {
 
 export const logoutUser = () => async (dispatch: any) => {
   try {
-    sessionStorage.removeItem("authUser");
+    clearUserSession();
 
-    dispatch(logoutUserSuccess(true));
+    dispatch(logoutUserSuccess());
   } catch (error) {
     dispatch(apiError(error));
   }
