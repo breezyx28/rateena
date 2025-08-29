@@ -71,7 +71,7 @@ export const UpdateVendorProductvalidationSchema =
         Yup.object().shape({
           name: Yup.string(),
           fee: Yup.number(),
-          group_flag: Yup.string(),
+          group_flag: Yup.string().nullable(),
         })
       ),
     }) as Yup.ObjectSchema<any>;

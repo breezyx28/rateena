@@ -150,7 +150,7 @@ export const addOptionMutation = (body: any) => async (dispatch: any) => {
 };
 
 export const deleteOptionMutation =
-  (optionId: any) => async (dispatch: any) => {
+  (optionId: any, productId: any) => async (dispatch: any) => {
     try {
       let response;
 
@@ -160,6 +160,7 @@ export const deleteOptionMutation =
 
       if (data) {
         dispatch(productUpdated());
+        dispatch(getProductQuery(productId));
       }
     } catch (error: any) {
       console.log("errors: ", error);

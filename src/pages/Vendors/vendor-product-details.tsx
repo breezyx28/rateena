@@ -149,7 +149,7 @@ const VendorProductDetails = () => {
 
   const handleDeleteOption = (optionId: number) => {
     console.log("Delete option:", optionId);
-    dispatch(deleteOptionMutation(optionId));
+    dispatch(deleteOptionMutation(optionId, productId));
   };
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {

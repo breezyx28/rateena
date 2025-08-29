@@ -23,7 +23,7 @@ import {
 } from "../validation/product-validation";
 import { useTranslation } from "react-i18next";
 import { imgURL } from "services/api-handles";
-import { addVendorProductMutation } from "slices/thunks";
+import { addVendorProductMutation, getProductQuery } from "slices/thunks";
 
 const EditProductModal = ({
   modal_standard,
@@ -75,6 +75,7 @@ const EditProductModal = ({
   React.useEffect(() => {
     if (vendorProductSuccess) {
       console.log("vendorProductSuccess: ", vendorProductSuccess);
+      dispatch(getProductQuery(productData.productId));
       tog_standard();
     }
     if (vendorError) {
@@ -89,7 +90,10 @@ const EditProductModal = ({
       name: productData?.name || "",
       arName: productData?.arName || "",
       quantity: productData?.quantity || "",
-      isFood: productData?.isFood !== undefined ? productData.isFood : (productData?.vendor?.vendor?.vendorType === 'RESTURANT'),
+      isFood:
+        productData?.isFood !== undefined
+          ? productData.isFood
+          : productData?.vendor?.vendorType === "RESTURANT",
       price: productData?.price || "",
       companyProfit: productData?.companyProfit || "",
       duration: productData?.duration || "",
@@ -99,7 +103,11 @@ const EditProductModal = ({
       options: productData?.options || [],
     },
     validationSchema: UpdateVendorProductvalidationSchema(),
+    validate: (values) => {
+      console.log("Validation errors:", validation.errors);
+    },
     onSubmit: (values) => {
+      console.log("Form validation errors:", validation.errors);
       const formData = new FormData();
 
       const productPayload = {
@@ -573,21 +581,21 @@ const EditProductModal = ({
                                   className="align-items-end mb-3"
                                 >
                                   <Col md={4}>
-                                    <Label htmlFor={`options.${index}.opName`}>
+                                    <Label htmlFor={`options.${index}.name`}>
                                       Option Name
                                     </Label>
                                     <Input
                                       type="text"
-                                      id={`options.${index}.opName`}
-                                      name={`options.${index}.opName`}
-                                      value={option.opName}
+                                      id={`options.${index}.name`}
+                                      name={`options.${index}.name`}
+                                      value={option.name}
                                       onChange={validation.handleChange}
                                       onBlur={validation.handleBlur}
                                       invalid={
                                         validation.touched.options?.[index]
-                                          ?.opName &&
+                                          ?.name &&
                                         !!validation.errors.options?.[index]
-                                          ?.opName
+                                          ?.name
                                       }
                                     />
                                     <FormFeedback>
@@ -596,7 +604,7 @@ const EditProductModal = ({
                                           validation.errors.options?.[
                                             index
                                           ] as any
-                                        )?.opName
+                                        )?.name
                                       }
                                     </FormFeedback>
                                   </Col>
@@ -632,22 +640,22 @@ const EditProductModal = ({
 
                                   <Col md={4}>
                                     <Label
-                                      htmlFor={`options.${index}.groupFlag`}
+                                      htmlFor={`options.${index}.group_flag`}
                                     >
                                       Group Flag
                                     </Label>
                                     <Input
                                       type="text"
-                                      id={`options.${index}.groupFlag`}
-                                      name={`options.${index}.groupFlag`}
-                                      value={option.groupFlag}
+                                      id={`options.${index}.group_flag`}
+                                      name={`options.${index}.group_flag`}
+                                      value={option.group_flag}
                                       onChange={validation.handleChange}
                                       onBlur={validation.handleBlur}
                                       invalid={
                                         validation.touched.options?.[index]
-                                          ?.groupFlag &&
+                                          ?.group_flag &&
                                         !!validation.errors.options?.[index]
-                                          ?.groupFlag
+                                          ?.group_flag
                                       }
                                     />
                                     <FormFeedback>
@@ -656,7 +664,7 @@ const EditProductModal = ({
                                           validation.errors.options?.[
                                             index
                                           ] as any
-                                        )?.groupFlag
+                                        )?.group_flag
                                       }
                                     </FormFeedback>
                                   </Col>
@@ -678,7 +686,7 @@ const EditProductModal = ({
                             color="secondary"
                             onClick={() =>
                               arrayHelpers.push({
-                                opName: "",
+                                name: "",
                                 fee: "",
                                 groupFlag: "",
                               })
