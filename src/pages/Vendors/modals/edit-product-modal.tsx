@@ -17,10 +17,7 @@ import { toast, ToastContainer } from "react-toastify";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 import { createSelector } from "reselect";
-import {
-  UpdateVendorProductvalidationSchema,
-  VendorProductvalidationSchema,
-} from "../validation/product-validation";
+import { UpdateVendorProductvalidationSchema } from "../validation/product-validation";
 import { useTranslation } from "react-i18next";
 import { imgURL } from "services/api-handles";
 import { addVendorProductMutation, getProductQuery } from "slices/thunks";
@@ -75,11 +72,21 @@ const EditProductModal = ({
   React.useEffect(() => {
     if (vendorProductSuccess) {
       console.log("vendorProductSuccess: ", vendorProductSuccess);
+      toast("Product Updated Successfully...", {
+        position: "top-right",
+        hideProgressBar: false,
+        className: "bg-success text-white",
+      });
       dispatch(getProductQuery(productData.productId));
       tog_standard();
     }
-    if (vendorError) {
+    if (vendorError?.message) {
       console.log("vendorError: ", vendorError);
+      toast("Error updating product", {
+        position: "top-right",
+        hideProgressBar: false,
+        className: "bg-danger text-white",
+      });
       validation.setErrors(vendorError);
     }
   }, [vendorError, vendorProductSuccess, vendorCategories]);
@@ -128,6 +135,7 @@ const EditProductModal = ({
 
   return (
     <>
+      <ToastContainer autoClose={2000} limit={1} />
       <Modal
         id="editModal"
         isOpen={modal_standard}
@@ -154,34 +162,14 @@ const EditProductModal = ({
               }}
               id="edit-vendor-product-form"
             >
-              {vendorProductSuccess && !vendorError ? (
-                <>
-                  {toast("Product Updated Successfully...", {
-                    position: "top-right",
-                    hideProgressBar: false,
-                    className: "bg-success text-white",
-                    progress: undefined,
-                    toastId: "",
-                  })}
-                  <ToastContainer autoClose={2000} limit={1} />
-                  <Alert color="success">
-                    Product has been updated successfully
-                  </Alert>
-                </>
-              ) : null}
-              {vendorError && !vendorProductSuccess ? (
-                <>
-                  {toast("Error updating product", {
-                    position: "top-right",
-                    hideProgressBar: false,
-                    className: "bg-danger text-white",
-                    progress: undefined,
-                    toastId: "",
-                  })}
-                  <ToastContainer autoClose={2000} limit={1} />
-                  <Alert color="danger">{vendorError?.message}</Alert>
-                </>
-              ) : null}
+              {vendorProductSuccess && !vendorError && (
+                <Alert color="success">
+                  Product has been updated successfully
+                </Alert>
+              )}
+              {vendorError && !vendorProductSuccess && (
+                <Alert color="danger">{vendorError?.message}</Alert>
+              )}
               <Row className="gy-4">
                 <Col xxl={12} md={12}>
                   <div>

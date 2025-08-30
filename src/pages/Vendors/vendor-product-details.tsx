@@ -92,12 +92,12 @@ const VendorProductDetails = () => {
     dispatch(toggleProductPublishQuery(productId));
   };
 
-  const handleDeleteProduct = () => {
-    console.log("Delete product");
-    dispatch(deleteProductMutation(productId));
-    toggleDeleteModal();
-    navigate(-1);
-  };
+  // const handleDeleteProduct = () => {
+  //   console.log("Delete product");
+  //   dispatch(deleteProductMutation(productId));
+  //   toggleDeleteModal();
+  //   navigate(-1);
+  // };
 
   const handleAddOptionGroup = (e: React.FormEvent) => {
     e.preventDefault();
@@ -226,9 +226,9 @@ const VendorProductDetails = () => {
                   <Badge color="info" className="fs-6">
                     Company Profit: {selectedProduct?.companyProfit}%
                   </Badge>
-                  <Button color="danger" size="sm" onClick={toggleDeleteModal}>
+                  {/* <Button color="danger" size="sm" onClick={toggleDeleteModal}>
                     <i className="ri-delete-bin-line"></i>
-                  </Button>
+                  </Button> */}
                   <Button color="primary" size="sm" onClick={toggleEditModal}>
                     <i className="ri-edit-line"></i>
                   </Button>
@@ -531,13 +531,13 @@ const VendorProductDetails = () => {
         tog_standard={toggleEditModal}
         productData={selectedProduct}
       />
-
+      {/* 
       <DeleteConfirmationModal
         modal_standard={showDeleteModal}
         tog_standard={toggleDeleteModal}
         onConfirm={handleDeleteProduct}
         productName={selectedProduct?.name || ""}
-      />
+      /> */}
     </React.Fragment>
   );
 };

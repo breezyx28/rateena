@@ -1,4 +1,3 @@
-import React from "react";
 import { Button, Modal, ModalBody, ModalHeader } from "reactstrap";
 
 const DeleteConfirmationModal = ({
@@ -22,7 +21,8 @@ const DeleteConfirmationModal = ({
           </div>
           <h5 className="mb-3">Are you sure?</h5>
           <p className="text-muted">
-            Do you want to delete the product "{productName}"? This action cannot be undone.
+            Do you want to delete the product "{productName}"? This action
+            cannot be undone.
           </p>
         </div>
         <div className="d-flex gap-2 justify-content-center mt-4">

@@ -13,7 +13,6 @@ import {
   ModalHeader,
   Row,
 } from "reactstrap";
-import * as Yup from "yup";
 import { toast, ToastContainer } from "react-toastify";
 import { addVendorProductMutation } from "slices/thunks";
 import { useDispatch, useSelector } from "react-redux";
@@ -64,7 +63,7 @@ const AddProductModal = ({
       console.log("vendorProductSuccess: ", vendorProductSuccess);
       tog_standard();
     }
-    if (vendorError) {
+    if (vendorError?.message) {
       console.log("vendorError: ", vendorError);
     }
     if (vendorCategories) {
@@ -133,7 +132,7 @@ const AddProductModal = ({
               }}
               id="add-vendor-product-form"
             >
-              {vendorProductSuccess && !vendorError ? (
+              {vendorProductSuccess && !vendorError?.message ? (
                 <>
                   {toast("Your Redirect To Login Page...", {
                     position: "top-right",
