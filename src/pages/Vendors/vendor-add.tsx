@@ -18,7 +18,7 @@ import Flatpickr from "react-flatpickr";
 import { useDispatch, useSelector } from "react-redux";
 import { addVendorMutation } from "slices/thunks";
 import { clearVendorError } from "slices/vendors/reducer";
-import { toast, ToastContainer } from "react-toastify";
+import { toast } from "react-toastify";
 import { createSelector } from "reselect";
 import VendorMap from "./vendor-map";
 import VendorUploadFiles from "./vendor-upload-files";
@@ -209,7 +209,7 @@ const VendorAdd = () => {
                 }) => (
                   <Form id="vendor-info-form" onSubmit={handleSubmit}>
                     <ServerErrorHandler />
-                    {vendorUpdatedSuccess && !vendorError ? (
+                    {vendorUpdatedSuccess && !vendorError?.message ? (
                       <>
                         {toast("Your Redirect To Login Page...", {
                           position: "top-right",
@@ -218,7 +218,6 @@ const VendorAdd = () => {
                           progress: undefined,
                           toastId: "",
                         })}
-                        <ToastContainer autoClose={2000} limit={1} />
                         <Alert color="success">
                           Product has been added successfully
                         </Alert>
@@ -233,7 +232,6 @@ const VendorAdd = () => {
                           progress: undefined,
                           toastId: "",
                         })}
-                        <ToastContainer autoClose={2000} limit={1} />
                         <Alert color="danger">{vendorError?.message}</Alert>
                       </>
                     ) : null}
@@ -628,7 +626,6 @@ const VendorAdd = () => {
           </Card>
         </Container>
       </div>
-      <ToastContainer autoClose={2000} limit={1} />
     </React.Fragment>
   );
 };

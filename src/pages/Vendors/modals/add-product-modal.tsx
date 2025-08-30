@@ -13,7 +13,7 @@ import {
   ModalHeader,
   Row,
 } from "reactstrap";
-import { toast, ToastContainer } from "react-toastify";
+import { toast } from "react-toastify";
 import { addVendorProductMutation } from "slices/thunks";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
@@ -141,7 +141,6 @@ const AddProductModal = ({
                     progress: undefined,
                     toastId: "",
                   })}
-                  <ToastContainer autoClose={2000} limit={1} />
                   <Alert color="success">
                     Product has been added successfully
                   </Alert>
@@ -156,7 +155,6 @@ const AddProductModal = ({
                     progress: undefined,
                     toastId: "",
                   })}
-                  <ToastContainer autoClose={2000} limit={1} />
                   <Alert color="danger">{vendorError?.message}</Alert>
                 </>
               ) : null}

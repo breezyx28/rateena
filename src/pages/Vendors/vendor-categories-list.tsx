@@ -13,10 +13,10 @@ const VendorCategoriesList = ({
   onDeleteCategory?: (categoryId: number) => void;
   onToggleCategory?: (categoryId: number, currentStatus: boolean) => void;
 }) => {
-  const [filter, setFilter] = useState<any[]>(data || []);
+  const [filter, setFilter] = useState<any[]>([]);
 
   useEffect(() => {
-    if (data) {
+    if (data?.length > 0) {
       setFilter(data);
     }
   }, [data]);

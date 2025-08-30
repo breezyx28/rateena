@@ -42,7 +42,7 @@ const PersonalDetailsTab: React.FC<PersonalDetailsTabProps> = ({
   // Helper to format time to H:i:s
   const formatTimeToHis = (time: string) => {
     if (!time) return "";
-    if (time.includes('T')) {
+    if (time.includes("T")) {
       return new Date(time).toTimeString().slice(0, 8);
     }
     if (time.match(/^\d{2}:\d{2}:\d{2}$/)) return time;
@@ -152,7 +152,7 @@ const PersonalDetailsTab: React.FC<PersonalDetailsTabProps> = ({
     const { setErrors } = useFormikContext<any>();
 
     React.useEffect(() => {
-      if (vendorError) {
+      if (vendorError?.message || vendorError?.errors) {
         const fieldMapping = {
           identityImage: "identityImageFile",
           licenseImage: "licenseImageFile",

@@ -24,16 +24,19 @@ axios.interceptors.response.use(
   function (error) {
     console.log("api-handler-error: ", error);
     // Any status codes that falls outside the range of 2xx cause this function to trigger
+    const status = error.response?.status || error.status;
     let message;
-    switch (error.status) {
+
+    switch (status) {
       case 500:
         message = "Internal Server Error";
         break;
       case 401:
         message = "Invalid credentials";
-        setTimeout(() => {
-          window.location.href = "/login";
-        }, 2000);
+        // Clear session storage
+        sessionStorage.removeItem("authUser");
+        // Redirect to login immediately
+        window.location.replace("/login");
         break;
       case 404:
         message = "Sorry! the data you are looking for could not be found";
@@ -95,14 +98,14 @@ class APIClient {
    */
   create = (url: string, data: any): Promise<AxiosResponse> => {
     const config: AxiosRequestConfig = {};
-    
+
     // If data is FormData, let browser set Content-Type with boundary
     if (data instanceof FormData) {
       config.headers = {
-        'Content-Type': 'multipart/form-data'
+        "Content-Type": "multipart/form-data",
       };
     }
-    
+
     return axios.post(url, data, config);
   };
 

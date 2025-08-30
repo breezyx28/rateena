@@ -206,7 +206,6 @@ const ChangePasswordTab: React.FC<any> = ({
           </Col>
         </Row>
       </Form>
-      <ToastContainer autoClose={2000} limit={1} />
     </FormikErrorProvider>
   );
 };

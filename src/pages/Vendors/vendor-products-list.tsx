@@ -7,27 +7,27 @@ import EditProductModal from "./modals/edit-product-modal";
 import DeleteConfirmationModal from "./modals/delete-confirmation-modal";
 
 const VendorProductsList = ({ data }: { data: any[] }) => {
-  const [filter, setFilter] = useState<any[]>(data || []);
+  const [filter, setFilter] = useState<any[]>([]);
   const [editModal, setEditModal] = useState(false);
   const [deleteModal, setDeleteModal] = useState(false);
-  const [selectedProduct, setSelectedProduct] = useState<any>(null);
+  const [selectedProduct, setSelectedProduct] = useState<any>({});
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (data) {
+    if (data?.length > 0) {
       setFilter(data);
     }
   }, [data]);
 
-  const handleFilter = (value: any) => {
-    let results = filter.filter(
-      (item: any) => item.category.categoryId != value
-    );
+  // const handleFilter = (value: any) => {
+  //   let results = filter.filter(
+  //     (item: any) => item.category.categoryId != value
+  //   );
 
-    if (results) {
-      setFilter(results);
-    }
-  };
+  //   if (results) {
+  //     setFilter(results);
+  //   }
+  // };
 
   const toggleEditModal = () => setEditModal(!editModal);
   const toggleDeleteModal = () => setDeleteModal(!deleteModal);
@@ -164,18 +164,22 @@ const VendorProductsList = ({ data }: { data: any[] }) => {
         SearchPlaceholder="Search..."
       />
 
-      <EditProductModal
-        modal_standard={editModal}
-        tog_standard={toggleEditModal}
-        productData={selectedProduct}
-      />
+      {data?.length > 0 ? (
+        <EditProductModal
+          modal_standard={editModal}
+          tog_standard={toggleEditModal}
+          productData={selectedProduct}
+        />
+      ) : null}
 
-      <DeleteConfirmationModal
-        modal_standard={deleteModal}
-        tog_standard={toggleDeleteModal}
-        onConfirm={confirmDelete}
-        productName={selectedProduct?.name || ""}
-      />
+      {data?.length > 0 ? (
+        <DeleteConfirmationModal
+          modal_standard={deleteModal}
+          tog_standard={toggleDeleteModal}
+          onConfirm={confirmDelete}
+          productName={selectedProduct?.name || ""}
+        />
+      ) : null}
     </React.Fragment>
   );
 };

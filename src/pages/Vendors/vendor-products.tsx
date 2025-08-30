@@ -46,7 +46,7 @@ const VendorProducts = () => {
       console.log("vendorProductsSuccess: ", vendorProductsSuccess);
       tog_standard();
     }
-    if (vendorError) {
+    if (vendorError?.message || vendorError?.errors) {
       console.log("vendorError: ", vendorError);
     }
   }, [vendorProducts, vendorError, vendorProductsSuccess]);
@@ -60,7 +60,7 @@ const VendorProducts = () => {
               Add Product
             </Button>
           </div>
-          <VendorProductsList data={vendorProductsData} />
+          <VendorProductsList data={vendorProductsData ?? []} />
         </Col>
       </Row>
       {/* Default Modal */}

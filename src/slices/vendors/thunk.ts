@@ -318,7 +318,7 @@ export const getVendorProductsQuery =
         dispatch(vendorProductsSuccess(data));
       }
     } catch (error: any) {
-      console.log("errors: ", error);
+      console.log("getVendorProductsQuery-errors: ", error);
 
       dispatch(vendorsError(error));
     }

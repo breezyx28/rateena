@@ -31,7 +31,7 @@ import {
 import { clearVendorSuccess } from "slices/vendors/reducer";
 import * as Yup from "yup";
 import { useFormik } from "formik";
-import { toast, ToastContainer } from "react-toastify";
+import { toast } from "react-toastify";
 import { errorToastManager } from "helpers/error-helper";
 
 const VendorCategories = () => {
@@ -89,7 +89,7 @@ const VendorCategories = () => {
   }, [vendorCategories]);
 
   React.useEffect(() => {
-    if (vendorError) {
+    if (vendorError?.message || vendorError?.errors) {
       console.log("vendorError: ", vendorError);
       // Use error toast manager to prevent duplicate toasts
       errorToastManager.showError(vendorError, toast.error);
@@ -312,18 +312,15 @@ const VendorCategories = () => {
             }}
             id="add-vendor-category-form"
           >
-            {vendorCategoryAddedSuccess && !vendorError ? (
+            {vendorCategoryAddedSuccess && !vendorError?.message ? (
               <>
-                <ToastContainer autoClose={2000} limit={1} />
                 <Alert color="success">
                   Vendor Category Successfully Added
                 </Alert>
               </>
             ) : null}
-            {vendorError && !vendorCategoryAddedSuccess ? (
-              <Alert color="danger">
-                {String(vendorError?.message || vendorError)}
-              </Alert>
+            {vendorError?.message && !vendorCategoryAddedSuccess ? (
+              <Alert color="danger">{String(vendorError?.message)}</Alert>
             ) : null}
             <Row className="gy-4">
               <Col xxl={12} md={12}>
@@ -461,18 +458,15 @@ const VendorCategories = () => {
             }}
             id="update-vendor-category-form"
           >
-            {vendorCategoryAddedSuccess && !vendorError ? (
+            {vendorCategoryAddedSuccess && !vendorError?.message ? (
               <>
-                <ToastContainer autoClose={2000} limit={1} />
                 <Alert color="success">
                   Vendor Category Successfully Updated
                 </Alert>
               </>
             ) : null}
-            {vendorError && !vendorCategoryAddedSuccess ? (
-              <Alert color="danger">
-                {String(vendorError?.message || vendorError)}
-              </Alert>
+            {vendorError?.message && !vendorCategoryAddedSuccess ? (
+              <Alert color="danger">{String(vendorError?.message)}</Alert>
             ) : null}
             <Row className="gy-4">
               <Col xxl={12} md={12}>

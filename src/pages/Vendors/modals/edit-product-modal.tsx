@@ -13,7 +13,7 @@ import {
   ModalHeader,
   Row,
 } from "reactstrap";
-import { toast, ToastContainer } from "react-toastify";
+import { toast } from "react-toastify";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 import { createSelector } from "reselect";
@@ -80,7 +80,7 @@ const EditProductModal = ({
       dispatch(getProductQuery(productData.productId));
       tog_standard();
     }
-    if (vendorError?.message) {
+    if (vendorError?.errors) {
       console.log("vendorError: ", vendorError);
       toast("Error updating product", {
         position: "top-right",
@@ -135,7 +135,6 @@ const EditProductModal = ({
 
   return (
     <>
-      <ToastContainer autoClose={2000} limit={1} />
       <Modal
         id="editModal"
         isOpen={modal_standard}
@@ -162,12 +161,12 @@ const EditProductModal = ({
               }}
               id="edit-vendor-product-form"
             >
-              {vendorProductSuccess && !vendorError && (
+              {vendorProductSuccess && !vendorError?.message && (
                 <Alert color="success">
                   Product has been updated successfully
                 </Alert>
               )}
-              {vendorError && !vendorProductSuccess && (
+              {vendorError?.message && !vendorProductSuccess && (
                 <Alert color="danger">{vendorError?.message}</Alert>
               )}
               <Row className="gy-4">

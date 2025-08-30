@@ -10,10 +10,10 @@ const VendorUsersList = ({
   onEditUser?: (user: any) => void;
   onDeleteUser?: (userId: number) => void;
 }) => {
-  const [filter, setFilter] = useState<any[]>(data || []);
+  const [filter, setFilter] = useState<any[]>([]);
 
   useEffect(() => {
-    if (data) {
+    if (data?.length > 0) {
       setFilter(data);
     }
   }, [data]);

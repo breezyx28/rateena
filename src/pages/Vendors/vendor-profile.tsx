@@ -21,7 +21,6 @@ import classnames from "classnames";
 import progileBg from "../../assets/images/profile-bg.jpg";
 import { imgURL } from "services/api-handles";
 import { useTranslation } from "react-i18next";
-import { ToastContainer } from "react-toastify";
 import { useVendorState } from "../../hooks";
 import {
   PersonalDetailsTab,
@@ -96,7 +95,6 @@ const VendorProfile = () => {
 
   return (
     <React.Fragment>
-      <ToastContainer />
       <div className="page-content">
         <Container fluid>
           <div className="position-relative mx-n4 mt-n4">
@@ -208,7 +206,7 @@ const VendorProfile = () => {
                             className="form-check-input"
                             type="switch"
                             id={`vendor-status-${vendorId}`}
-                            checked={getCurrentVendorStatus()}
+                            checked={getCurrentVendorStatus() || false}
                             onChange={() =>
                               toggleVendorStatus(
                                 vendorId || "",

@@ -6,7 +6,7 @@ import { createSelector } from "reselect";
 import { addVendorUserMutation } from "slices/thunks";
 import * as Yup from "yup";
 import { useFormik } from "formik";
-import { toast, ToastContainer } from "react-toastify";
+import { toast } from "react-toastify";
 import {
   formatErrorMessage,
   logError,
@@ -103,7 +103,6 @@ const AddModal: React.FC<AddModalProps> = ({
                   progress: undefined,
                   toastId: "",
                 })}
-                <ToastContainer autoClose={2000} limit={1} />
                 <Alert color="success">{vendorUsers?.list}</Alert>
               </>
             ) : null}

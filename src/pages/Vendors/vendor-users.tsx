@@ -29,7 +29,7 @@ import {
 import { clearVendorSuccess } from "slices/vendors/reducer";
 import * as Yup from "yup";
 import { useFormik } from "formik";
-import { toast, ToastContainer } from "react-toastify";
+import { toast } from "react-toastify";
 import { errorToastManager } from "helpers/error-helper";
 
 const VendorUsers = () => {
@@ -84,7 +84,7 @@ const VendorUsers = () => {
   }, [vendorUsers]);
 
   React.useEffect(() => {
-    if (vendorError) {
+    if (vendorError?.message || vendorError?.error) {
       console.log("vendorError: ", vendorError);
       // Use error toast manager to prevent duplicate toasts
       errorToastManager.showError(vendorError, toast.error);
@@ -250,9 +250,8 @@ const VendorUsers = () => {
             }}
             id="add-vendor-user-form"
           >
-            {vendorUserAddedSuccess && !vendorError ? (
+            {vendorUserAddedSuccess && !vendorError?.message ? (
               <>
-                <ToastContainer autoClose={2000} limit={1} />
                 <Alert color="success">Vendor User Successfully Added</Alert>
               </>
             ) : null}
@@ -400,9 +399,8 @@ const VendorUsers = () => {
             }}
             id="update-vendor-user-form"
           >
-            {vendorUserAddedSuccess && !vendorError ? (
+            {vendorUserAddedSuccess && !vendorError?.message ? (
               <>
-                <ToastContainer autoClose={2000} limit={1} />
                 <Alert color="success">Vendor User Successfully Updated</Alert>
               </>
             ) : null}
