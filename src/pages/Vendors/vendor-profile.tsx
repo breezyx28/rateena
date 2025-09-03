@@ -133,7 +133,7 @@ const VendorProfile = () => {
             </div>
           </div>
           <Row>
-            <Col xxl={3}>
+            <Col lg={3}>
               <Card className="mt-n5 card-bg-fill">
                 <CardBody className="p-4">
                   <div className="text-center">
@@ -249,7 +249,7 @@ const VendorProfile = () => {
               </Card>
             </Col>
 
-            <Col xxl={9}>
+            <Col lg={9}>
               <Card className="mt-xxl-n5 card-bg-fill">
                 <CardHeader>
                   <Nav
