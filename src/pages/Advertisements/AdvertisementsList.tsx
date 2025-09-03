@@ -226,9 +226,10 @@ const AdvertisementsList = ({
       endTime: convertTimeFormat(selectedAd?.endTime || ""),
       url: selectedAd?.url || "",
       banner: selectedAd?.banner || "",
-      priority: selectedAd?.priority || "",
+      priority: null,
+      // priority: selectedAd?.priority || "",
       vendorId: selectedAd?.vendorId || selectedAd?.vendor?.vendor_id || "",
-      replacePriority: false,
+      replacePriority: null,
     },
     validationSchema: Yup.object().shape({
       title: Yup.string(),
@@ -239,8 +240,41 @@ const AdvertisementsList = ({
       expireDate: Yup.date(),
       startTime: Yup.string(),
       endTime: Yup.string(),
-      url: Yup.string().url("Must be a valid URL").nullable(),
-      vendorId: Yup.string(),
+      url: Yup.string()
+        .transform((value, originalValue) =>
+          originalValue === "" ? undefined : value
+        )
+        .url("Must be a valid URL")
+        .notRequired()
+        .nullable()
+        .test(
+          "exclusive-url-vendor",
+          "URL and Vendor ID cannot both be provided",
+          function (value) {
+            const { vendorId } = this.parent as any;
+            const hasUrl = !!value;
+            const hasVendor =
+              vendorId !== "" && vendorId !== null && vendorId !== undefined;
+            return !(hasUrl && hasVendor);
+          }
+        ),
+      vendorId: Yup.string()
+        .when("banner", {
+          is: (val: string) => val !== "External Advertisements",
+          then: (schema) => schema.required("Vendor is required"),
+          otherwise: (schema) => schema.notRequired(),
+        })
+        .test(
+          "exclusive-vendor-url",
+          "URL and Vendor ID cannot both be provided",
+          function (value) {
+            const { url } = this.parent as any;
+            const hasVendor =
+              value !== "" && value !== null && value !== undefined;
+            const hasUrl = !!url;
+            return !(hasVendor && hasUrl);
+          }
+        ),
     }),
     onSubmit: (values) => {
       // clear any previous server error
@@ -249,6 +283,7 @@ const AdvertisementsList = ({
 
       const normalizedValues = {
         ...values,
+        vendorId: values.vendorId || null,
         advertisementId: selectedAd.advertisementId,
         startTime: normalizeTimeToHms(values.startTime as any),
         endTime: normalizeTimeToHms(values.endTime as any),
@@ -393,11 +428,11 @@ const AdvertisementsList = ({
                     <th>Arabic Subtitle</th>
                     <th>Start Date</th>
                     <th>End Date</th>
-                    <th>Start Time</th>
-                    <th>End Time</th>
-                    <th>Redirect Link</th>
+                    {/* <th>Start Time</th> */}
+                    {/* <th>End Time</th> */}
+                    {/* <th>Redirect Link</th> */}
                     <th>Vendor Name</th>
-                    <th>Ad Type</th>
+                    {/* <th>Ad Type</th> */}
                     <th>Image</th>
                     <th>Visibility</th>
                     <th>Actions</th>
@@ -411,7 +446,7 @@ const AdvertisementsList = ({
                         <tr className="table-primary">
                           <td colSpan={14} className="fw-bold text-center">
                             <i className="ri-star-fill me-2"></i>
-                            Banner: {priority}
+                            Advertisement: {priority}
                             <span className="badge bg-light text-dark ms-2">
                               {ads.length}{" "}
                               {ads.length === 1
@@ -436,9 +471,9 @@ const AdvertisementsList = ({
                             </td>
                             <td>{ad.startDate}</td>
                             <td>{ad.expireDate}</td>
-                            <td>{ad.startTime}</td>
-                            <td>{ad.endTime}</td>
-                            <td>
+                            {/* <td>{ad.startTime}</td> */}
+                            {/* <td>{ad.endTime}</td> */}
+                            {/* <td>
                               {ad.url ? (
                                 <a
                                   href={ad.url}
@@ -461,9 +496,9 @@ const AdvertisementsList = ({
                               ) : (
                                 <span className="text-muted">No link</span>
                               )}
-                            </td>
+                            </td> */}
                             <td>{ad.vendor?.full_name}</td>
-                            <td>
+                            {/* <td>
                               {(() => {
                                 const type = getAdvertisementType(ad.banner);
                                 const badgeClass =
@@ -478,7 +513,7 @@ const AdvertisementsList = ({
                                   </span>
                                 );
                               })()}
-                            </td>
+                            </td> */}
                             <td>
                               {ad.adsImage1 ? (
                                 <Button
@@ -807,10 +842,13 @@ const AdvertisementsList = ({
                     onChange={editForm.handleChange}
                     onBlur={editForm.handleBlur}
                     value={editForm.values.url}
-                    invalid={
-                      editForm.touched.url && editForm.errors.url ? true : false
-                    }
+                    invalid={editForm.touched.url && !!editForm.errors.url}
                   />
+                  {editForm.touched.url && editForm.errors.url && (
+                    <div className="invalid-feedback d-block">
+                      {String(editForm.errors.url)}
+                    </div>
+                  )}
                 </div>
               </Col>
 
@@ -927,7 +965,7 @@ const AdvertisementsList = ({
                     onChange={(selectedOption: any) => {
                       editForm.setFieldValue(
                         "vendorId",
-                        selectedOption?.value || ""
+                        selectedOption?.value || null
                       );
                     }}
                     onBlur={() => editForm.setFieldTouched("vendorId", true)}
@@ -935,7 +973,7 @@ const AdvertisementsList = ({
                     isClearable
                     isSearchable
                     className={
-                      editForm.touched.vendorId && editForm.errors.vendorId
+                      editForm.touched.vendorId && !!editForm.errors.vendorId
                         ? "is-invalid"
                         : ""
                     }
@@ -959,16 +997,16 @@ const AdvertisementsList = ({
                     id="priority"
                     name="priority"
                     className="form-select"
-                    value={editForm.values.priority}
+                    // value={editForm?.values?.priority ?? null}
                     onChange={editForm.handleChange}
                     onBlur={editForm.handleBlur}
                   >
                     <option value="">Select priority</option>
-                    <option value={1}>banner 1</option>
-                    <option value={2}>banner 2</option>
-                    <option value={3}>banner 3</option>
-                    <option value={4}>banner 4</option>
-                    <option value={5}>banner 5</option>
+                    <option value={1}>advertisement 1</option>
+                    <option value={2}>advertisement 2</option>
+                    <option value={3}>advertisement 3</option>
+                    <option value={4}>advertisement 4</option>
+                    <option value={5}>advertisement 5</option>
                   </Input>
                 </div>
               </Col>
@@ -992,6 +1030,12 @@ const AdvertisementsList = ({
                   <Label className="form-check-label" htmlFor="replacePriority">
                     replace existed priority?
                   </Label>
+                  {editForm.touched.replacePriority &&
+                    editForm.errors.replacePriority && (
+                      <div className="invalid-feedback d-block">
+                        {String(editForm.errors.replacePriority)}
+                      </div>
+                    )}
                 </div>
               </Col>
 
@@ -1032,7 +1076,7 @@ const AdvertisementsList = ({
         recordId={selectedAd?.advertisementId}
       />
 
-      <ToastContainer autoClose={2000} limit={1} />
+      {/* <ToastContainer autoClose={2000} limit={1} /> */}
     </React.Fragment>
   );
 };

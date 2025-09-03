@@ -223,8 +223,19 @@ const Advertisements = () => {
       expireDate: Yup.date().required("End date is required"),
       startTime: Yup.string().required("Start time is required"),
       endTime: Yup.string().required("End time is required"),
-      url: Yup.string().url("Must be a valid URL").nullable(),
-      vendorId: Yup.string().required("Vendor is required"),
+      // URL optional always; allow empty string by transforming to undefined
+      url: Yup.string()
+        .transform((value, originalValue) =>
+          originalValue === "" ? undefined : value
+        )
+        .url("Must be a valid URL")
+        .notRequired()
+        .nullable(),
+      vendorId: Yup.string().when("banner", {
+        is: (val: string) => val !== "External Advertisements",
+        then: (schema) => schema.required("Vendor is required"),
+        otherwise: (schema) => schema.notRequired(),
+      }),
     }),
     onSubmit: (values) => {
       // clear any previous server error
@@ -233,6 +244,9 @@ const Advertisements = () => {
 
       const normalizedValues = {
         ...values,
+        // Null vendorId when external advertisement type is selected
+        vendorId:
+          values.banner === "External Advertisements" ? null : values.vendorId,
         startTime: normalizeTimeToHms(values.startTime as any),
         endTime: normalizeTimeToHms(values.endTime as any),
       } as typeof values;
@@ -314,6 +328,8 @@ const Advertisements = () => {
           toggle={() => {
             tog_standard();
           }}
+          size="lg"
+          fullscreen={true}
         >
           <ModalHeader
             className="modal-title"
@@ -348,7 +364,7 @@ const Advertisements = () => {
                 </>
               )}
               <Row className="gy-4">
-                <Col xxl={6} md={6}>
+                <Col xxl={4} md={4}>
                   <div>
                     <Label htmlFor="title" className="form-label">
                       English Title
@@ -370,7 +386,7 @@ const Advertisements = () => {
                   </div>
                 </Col>
 
-                <Col xxl={6} md={6}>
+                <Col xxl={4} md={4}>
                   <div>
                     <Label htmlFor="arTitle" className="form-label">
                       Arabic Title
@@ -392,7 +408,7 @@ const Advertisements = () => {
                   </div>
                 </Col>
 
-                <Col xxl={6} md={6}>
+                <Col xxl={4} md={4}>
                   <div>
                     <Label htmlFor="subtitle" className="form-label">
                       English Subtitle
@@ -414,7 +430,7 @@ const Advertisements = () => {
                   </div>
                 </Col>
 
-                <Col xxl={6} md={6}>
+                <Col xxl={4} md={4}>
                   <div>
                     <Label htmlFor="arSubtitle" className="form-label">
                       Arabic Subtitle
@@ -436,7 +452,7 @@ const Advertisements = () => {
                   </div>
                 </Col>
 
-                <Col xxl={6} md={6}>
+                <Col xxl={4} md={4}>
                   <div>
                     <Label htmlFor="startDate" className="form-label">
                       Start Date
@@ -458,7 +474,7 @@ const Advertisements = () => {
                   </div>
                 </Col>
 
-                <Col xxl={6} md={6}>
+                <Col xxl={4} md={4}>
                   <div>
                     <Label htmlFor="expireDate" className="form-label">
                       End Date
@@ -480,7 +496,7 @@ const Advertisements = () => {
                   </div>
                 </Col>
 
-                <Col xxl={6} md={6}>
+                <Col xxl={4} md={4}>
                   <div>
                     <Label htmlFor="startTime" className="form-label">
                       Start Time
@@ -502,7 +518,7 @@ const Advertisements = () => {
                   </div>
                 </Col>
 
-                <Col xxl={6} md={6}>
+                <Col xxl={4} md={4}>
                   <div>
                     <Label htmlFor="endTime" className="form-label">
                       End Time
@@ -591,11 +607,11 @@ const Advertisements = () => {
                   </div>
                 </Col>
 
-                {/* Banner Type Select */}
-                <Col xxl={6} md={6}>
+                {/* Advertisement Type Select */}
+                <Col xxl={4} md={4}>
                   <div>
                     <Label htmlFor="banner" className="form-label">
-                      Banner Type
+                      Advertisement Type
                     </Label>
                     <Input
                       type="select"
@@ -603,10 +619,17 @@ const Advertisements = () => {
                       name="banner"
                       className="form-select"
                       value={addForm.values.banner}
-                      onChange={addForm.handleChange}
+                      onChange={(e) => {
+                        addForm.handleChange(e);
+                        const newVal = e.target.value;
+                        if (newVal === "External Advertisements") {
+                          // clear and null vendorId on external type
+                          addForm.setFieldValue("vendorId", "");
+                        }
+                      }}
                       onBlur={addForm.handleBlur}
                     >
-                      <option value="">Select banner type</option>
+                      <option value="">Select advertisement type</option>
                       <option value="External Advertisements">
                         External Advertisements
                       </option>
@@ -618,45 +641,47 @@ const Advertisements = () => {
                 </Col>
 
                 {/* Vendor Selection */}
-                <Col xxl={6} md={6}>
-                  <div>
-                    <Label htmlFor="vendorId" className="form-label">
-                      Vendor
-                    </Label>
-                    <Select
-                      id="vendorId"
-                      name="vendorId"
-                      options={vendorOptions}
-                      value={vendorOptions.find(
-                        (option: any) =>
-                          option.value === addForm.values.vendorId
+                {addForm.values.banner !== "External Advertisements" && (
+                  <Col xxl={4} md={4}>
+                    <div>
+                      <Label htmlFor="vendorId" className="form-label">
+                        Vendor
+                      </Label>
+                      <Select
+                        id="vendorId"
+                        name="vendorId"
+                        options={vendorOptions}
+                        value={vendorOptions.find(
+                          (option: any) =>
+                            option.value === addForm.values.vendorId
+                        )}
+                        onChange={(selectedOption: any) => {
+                          addForm.setFieldValue(
+                            "vendorId",
+                            selectedOption?.value || ""
+                          );
+                        }}
+                        onBlur={() => addForm.setFieldTouched("vendorId", true)}
+                        placeholder="Select vendor"
+                        isClearable
+                        isSearchable
+                        className={
+                          addForm.touched.vendorId && addForm.errors.vendorId
+                            ? "is-invalid"
+                            : ""
+                        }
+                      />
+                      {addForm.touched.vendorId && addForm.errors.vendorId && (
+                        <div className="invalid-feedback d-block">
+                          {String(addForm.errors.vendorId)}
+                        </div>
                       )}
-                      onChange={(selectedOption: any) => {
-                        addForm.setFieldValue(
-                          "vendorId",
-                          selectedOption?.value || ""
-                        );
-                      }}
-                      onBlur={() => addForm.setFieldTouched("vendorId", true)}
-                      placeholder="Select vendor"
-                      isClearable
-                      isSearchable
-                      className={
-                        addForm.touched.vendorId && addForm.errors.vendorId
-                          ? "is-invalid"
-                          : ""
-                      }
-                    />
-                    {addForm.touched.vendorId && addForm.errors.vendorId && (
-                      <div className="invalid-feedback d-block">
-                        {String(addForm.errors.vendorId)}
-                      </div>
-                    )}
-                  </div>
-                </Col>
+                    </div>
+                  </Col>
+                )}
 
                 {/* Priority Select */}
-                <Col xxl={6} md={6} sm={6}>
+                <Col xxl={4} md={4} sm={6}>
                   <div>
                     <Label htmlFor="priority" className="form-label">
                       Priority
@@ -671,11 +696,11 @@ const Advertisements = () => {
                       onBlur={addForm.handleBlur}
                     >
                       <option value="">Select priority</option>
-                      <option value={1}>banner 1</option>
-                      <option value={2}>banner 2</option>
-                      <option value={3}>banner 3</option>
-                      <option value={4}>banner 4</option>
-                      <option value={5}>banner 5</option>
+                      <option value={1}>advertisement 1</option>
+                      <option value={2}>advertisement 2</option>
+                      <option value={3}>advertisement 3</option>
+                      <option value={4}>advertisement 4</option>
+                      <option value={5}>advertisement 5</option>
                     </Input>
                     {advertisementError?.errors?.priority?.[0] && (
                       <div className="invalid-feedback d-block">
@@ -686,7 +711,7 @@ const Advertisements = () => {
                 </Col>
 
                 {/* Replace Priority Checkbox */}
-                <Col xxl={6} md={6} sm={6}>
+                <Col xxl={4} md={4} sm={6}>
                   <div className="form-check mt-4">
                     <Input
                       className="form-check-input"
@@ -747,7 +772,7 @@ const Advertisements = () => {
             </form>
           </ModalBody>
         </Modal>
-        <ToastContainer autoClose={2000} limit={1} />
+        {/* <ToastContainer autoClose={2000} limit={1} /> */}
       </div>
     </React.Fragment>
   );
