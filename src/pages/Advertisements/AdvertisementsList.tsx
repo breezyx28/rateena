@@ -422,10 +422,10 @@ const AdvertisementsList = ({
               <Table className="table-centered align-middle table-nowrap mb-0">
                 <thead className="text-muted table-light">
                   <tr>
-                    <th>English Title</th>
-                    <th>Arabic Title</th>
-                    <th>English Subtitle</th>
-                    <th>Arabic Subtitle</th>
+                    <th>Title</th>
+                    {/* <th>Arabic Title</th> */}
+                    <th>Subtitle</th>
+                    {/* <th>Arabic Subtitle</th> */}
                     <th>Start Date</th>
                     <th>End Date</th>
                     {/* <th>Start Time</th> */}
@@ -458,17 +458,23 @@ const AdvertisementsList = ({
                         {ads.map((ad: any, index: number) => (
                           <tr key={`${priority}-${index}`}>
                             <td>
-                              <span className="fw-medium">{ad.title}</span>
+                              <span className="fw-medium">
+                                {i18n.dir() === "rtl" ? ad.arTitle : ad.title}
+                              </span>
                             </td>
-                            <td>
+                            {/* <td>
                               <span className="fw-medium" dir="rtl">
                                 {ad.arTitle}
                               </span>
-                            </td>
-                            <td>{ad.subtitle}</td>
+                            </td> */}
                             <td>
-                              <span dir="rtl">{ad.arSubtitle}</span>
+                              {i18n.dir() === "rtl"
+                                ? ad.arSubtitle
+                                : ad.subtitle}
                             </td>
+                            {/* <td>
+                              <span dir="rtl">{ad.arSubtitle}</span>
+                            </td> */}
                             <td>{ad.startDate}</td>
                             <td>{ad.expireDate}</td>
                             {/* <td>{ad.startTime}</td> */}
