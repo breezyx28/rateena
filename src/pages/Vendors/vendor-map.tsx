@@ -1,4 +1,9 @@
-import { GoogleMap, LoadScript, Marker } from "@react-google-maps/api";
+import {
+  Autocomplete,
+  GoogleMap,
+  LoadScript,
+  Marker,
+} from "@react-google-maps/api";
 import React, { useState } from "react";
 import { Card, CardBody, CardHeader } from "reactstrap";
 
@@ -19,6 +24,9 @@ const VendorMap = ({
   const [selected, setSelected] = useState<{ lat: number; lng: number } | null>(
     null
   );
+  const [autocomplete, setAutocomplete] =
+    useState<google.maps.places.Autocomplete | null>(null);
+  const mapRef = React.useRef<google.maps.Map | null>(null);
 
   const handleMapClick = (event: google.maps.MapMouseEvent) => {
     if (event.latLng) {
@@ -32,13 +40,13 @@ const VendorMap = ({
   };
 
   React.useEffect(() => {
-    if (currentCoords) {
+    if (currentCoords && !selected) {
       setSelected(currentCoords);
     }
-  }, [currentCoords]);
+  }, [currentCoords, selected]);
 
   return (
-    <Card>
+    <Card className="pb-4">
       <CardHeader>
         <h4 className="card-title mb-0">Select Vendor Location</h4>
         {selected && (
@@ -60,12 +68,51 @@ const VendorMap = ({
         >
           <LoadScript
             googleMapsApiKey={process.env.REACT_APP_GOOGLE_MAPS_API_KEY ?? ""}
+            libraries={["places"]}
           >
+            <div style={{ marginBottom: 10 }}>
+              <div style={{ maxWidth: 420 }}>
+                <Autocomplete
+                  onLoad={(ref) => setAutocomplete(ref)}
+                  onPlaceChanged={() => {
+                    const place = autocomplete?.getPlace();
+                    const loc = place?.geometry?.location;
+                    if (!loc) return;
+                    const coords = { lat: loc.lat(), lng: loc.lng() };
+                    setSelected(coords);
+                    selectedCoords(coords);
+                    if (mapRef.current) {
+                      mapRef.current.panTo(coords);
+                      mapRef.current.setZoom(15);
+                    }
+                  }}
+                  options={{
+                    fields: [
+                      "geometry",
+                      "formatted_address",
+                      "name",
+                      "place_id",
+                    ],
+                    types: ["geocode"],
+                  }}
+                >
+                  <input
+                    type="text"
+                    placeholder="Search location"
+                    className="form-control"
+                    style={{ background: "#fff" }}
+                  />
+                </Autocomplete>
+              </div>
+            </div>
             <GoogleMap
               mapContainerStyle={containerStyle}
-              center={dubai}
-              zoom={10}
-              onClick={handleMapClick} // capture clicks
+              center={selected || currentCoords || dubai}
+              zoom={selected ? 14 : 10}
+              onClick={handleMapClick}
+              onLoad={(map) => {
+                mapRef.current = map;
+              }}
             >
               {/* Show marker at clicked location */}
               {selected && <Marker position={selected} />}
