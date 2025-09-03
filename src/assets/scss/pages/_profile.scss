@@ -1,3 +1,9 @@
+// Compact modal form helpers
+.modal-body {
+  .form-control.form-control-sm {
+    min-height: 32px;
+  }
+}
 //
 // _profile.scss
 //

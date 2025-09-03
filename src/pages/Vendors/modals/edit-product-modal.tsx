@@ -141,6 +141,8 @@ const EditProductModal = ({
         toggle={() => {
           tog_standard();
         }}
+        size="lg"
+        fullscreen
       >
         <ModalHeader
           className="modal-title"
@@ -151,7 +153,7 @@ const EditProductModal = ({
         >
           Edit Product
         </ModalHeader>
-        <ModalBody>
+        <ModalBody className="py-3">
           <FormikProvider value={validation}>
             <Form
               onSubmit={(e) => {
@@ -169,15 +171,16 @@ const EditProductModal = ({
               {vendorError?.message && !vendorProductSuccess && (
                 <Alert color="danger">{vendorError?.message}</Alert>
               )}
-              <Row className="gy-4">
-                <Col xxl={12} md={12}>
+              <Row className="gy-3">
+                <Col xxl={4} md={4}>
                   <div>
                     <Label htmlFor="name" className="form-label">
                       English Name
                     </Label>
                     <Input
                       type="text"
-                      className="form-control"
+                      className="form-control form-control-sm"
+                      bsSize="sm"
                       id="name"
                       name="name"
                       onChange={validation.handleChange}
@@ -195,7 +198,7 @@ const EditProductModal = ({
                   </div>
                 </Col>
 
-                <Col xxl={12} md={12}>
+                <Col xxl={4} md={4}>
                   <div>
                     <Label htmlFor="arName" className="form-label">
                       Arabic Name
@@ -203,7 +206,8 @@ const EditProductModal = ({
                     <div className="form-icon">
                       <Input
                         type="text"
-                        className="form-control"
+                        className="form-control form-control-sm"
+                        bsSize="sm"
                         id="arName"
                         name="arName"
                         onChange={validation.handleChange}
@@ -222,7 +226,7 @@ const EditProductModal = ({
                   </div>
                 </Col>
 
-                <Col xxl={12} md={12}>
+                <Col xxl={4} md={4}>
                   <div>
                     <Label htmlFor="quantity" className="form-label">
                       Quantity
@@ -230,7 +234,8 @@ const EditProductModal = ({
                     <div className="form-icon">
                       <Input
                         type="number"
-                        className="form-control"
+                        className="form-control form-control-sm"
+                        bsSize="sm"
                         id="quantity"
                         name="quantity"
                         placeholder="Eg: 5"
@@ -254,7 +259,7 @@ const EditProductModal = ({
                   </div>
                 </Col>
 
-                <Col xxl={12} md={12}>
+                <Col xxl={4} md={4}>
                   <div className="form-check form-switch">
                     <Input
                       type="switch"
@@ -270,7 +275,7 @@ const EditProductModal = ({
                   </div>
                 </Col>
 
-                <Col xxl={12} md={12}>
+                <Col xxl={4} md={4}>
                   <div>
                     <Label htmlFor="price" className="form-label">
                       Price
@@ -278,7 +283,8 @@ const EditProductModal = ({
                     <div className="form-icon">
                       <Input
                         type="number"
-                        className="form-control"
+                        className="form-control form-control-sm"
+                        bsSize="sm"
                         id="price"
                         name="price"
                         placeholder="Eg: 5"
@@ -298,7 +304,7 @@ const EditProductModal = ({
                   </div>
                 </Col>
 
-                <Col xxl={12} md={12}>
+                <Col xxl={4} md={4}>
                   <div>
                     <Label htmlFor="companyProfit" className="form-label">
                       Company Profit %
@@ -306,7 +312,8 @@ const EditProductModal = ({
                     <div className="form-icon">
                       <Input
                         type="number"
-                        className="form-control"
+                        className="form-control form-control-sm"
+                        bsSize="sm"
                         id="companyProfit"
                         name="companyProfit"
                         placeholder="Eg: 5"
@@ -330,7 +337,7 @@ const EditProductModal = ({
                   </div>
                 </Col>
 
-                <Col xxl={12} md={12}>
+                <Col xxl={4} md={4}>
                   <div>
                     <Label htmlFor="duration" className="form-label">
                       Ready within
@@ -371,6 +378,7 @@ const EditProductModal = ({
                       type="select"
                       name="category_id"
                       id="category_id"
+                      bsSize="sm"
                       onChange={validation.handleChange}
                       onBlur={validation.handleBlur}
                       value={validation.values.category_id || ""}
@@ -402,7 +410,7 @@ const EditProductModal = ({
                   </div>
                 </Col>
 
-                <Col xxl={12} md={12}>
+                <Col xxl={4} md={4}>
                   <div>
                     <Label htmlFor="images" className="form-label">
                       Product Images
@@ -449,7 +457,8 @@ const EditProductModal = ({
                       multiple
                       accept="image/*"
                       onChange={handleFileChange}
-                      className="form-control"
+                      className="form-control form-control-sm"
+                      bsSize="sm"
                     />
 
                     {/* Selected Files Preview */}
@@ -491,7 +500,7 @@ const EditProductModal = ({
                   </div>
                 </Col>
 
-                <Col xxl={12} md={12}>
+                <Col xxl={4} md={4}>
                   <div>
                     <Label htmlFor="description" className="form-label">
                       English Description
@@ -499,7 +508,8 @@ const EditProductModal = ({
                     <div className="form-icon">
                       <Input
                         type="text"
-                        className="form-control"
+                        className="form-control form-control-sm"
+                        bsSize="sm"
                         id="description"
                         name="description"
                         onChange={validation.handleChange}
@@ -522,7 +532,7 @@ const EditProductModal = ({
                   </div>
                 </Col>
 
-                <Col xxl={12} md={12}>
+                <Col xxl={4} md={4}>
                   <div>
                     <Label htmlFor="ar_description" className="form-label">
                       Arabic Description
@@ -530,7 +540,8 @@ const EditProductModal = ({
                     <div className="form-icon">
                       <Input
                         type="text"
-                        className="form-control"
+                        className="form-control form-control-sm"
+                        bsSize="sm"
                         id="ar_description"
                         name="ar_description"
                         onChange={validation.handleChange}
@@ -567,7 +578,7 @@ const EditProductModal = ({
                                   key={index}
                                   className="align-items-end mb-3"
                                 >
-                                  <Col md={4}>
+                                  <Col md={6}>
                                     <Label htmlFor={`options.${index}.name`}>
                                       Option Name
                                     </Label>
@@ -584,6 +595,7 @@ const EditProductModal = ({
                                         !!validation.errors.options?.[index]
                                           ?.name
                                       }
+                                      bsSize="sm"
                                     />
                                     <FormFeedback>
                                       {
@@ -596,7 +608,7 @@ const EditProductModal = ({
                                     </FormFeedback>
                                   </Col>
 
-                                  <Col md={4}>
+                                  <Col md={6}>
                                     <Label htmlFor={`options.${index}.fee`}>
                                       Fee
                                     </Label>
@@ -613,6 +625,7 @@ const EditProductModal = ({
                                         !!validation.errors.options?.[index]
                                           ?.fee
                                       }
+                                      bsSize="sm"
                                     />
                                     <FormFeedback>
                                       {
@@ -625,7 +638,7 @@ const EditProductModal = ({
                                     </FormFeedback>
                                   </Col>
 
-                                  <Col md={4}>
+                                  <Col md={6}>
                                     <Label
                                       htmlFor={`options.${index}.group_flag`}
                                     >
@@ -644,6 +657,7 @@ const EditProductModal = ({
                                         !!validation.errors.options?.[index]
                                           ?.group_flag
                                       }
+                                      bsSize="sm"
                                     />
                                     <FormFeedback>
                                       {
@@ -656,13 +670,14 @@ const EditProductModal = ({
                                     </FormFeedback>
                                   </Col>
 
-                                  <Col md={1}>
+                                  <Col md={12} className="text-end mt-2">
                                     <Button
                                       color="danger"
                                       type="button"
+                                      size="sm"
                                       onClick={() => arrayHelpers.remove(index)}
                                     >
-                                      -
+                                      Remove
                                     </Button>
                                   </Col>
                                 </Row>
