@@ -30,7 +30,8 @@ export const loginUser = (user: any, history: any) => async (dispatch: any) => {
 
       dispatch(loginSuccess(data));
       setTimeout(() => {
-        history("/dashboard");
+        // history("/dashboard");
+        window.location.href = "/dashboard";
       }, 1000);
     }
   } catch (error) {

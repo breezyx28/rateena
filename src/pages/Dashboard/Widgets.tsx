@@ -12,35 +12,60 @@ const Widgets = ({ details }: { details: any }) => {
       (item: any) => item.status === "WAITING" || item.status === "PROCESSING"
     )?.length ?? 0;
 
+  const getBadgeProps = (value: number | any) => {
+    let cleanedValue = String(value)
+      .replace(/,/g, "")
+      .replace(/\+/g, "")
+      .replace(/%/g, "");
+    const numericValue = parseFloat(cleanedValue);
+
+    if (numericValue > 0) {
+      return {
+        badge: "ri-arrow-right-up-line",
+        badgeClass: "success",
+      };
+    } else if (numericValue < 0) {
+      return {
+        badge: "ri-arrow-right-down-line",
+        badgeClass: "danger",
+      };
+    } else {
+      return {
+        badge: "ri-arrow-right-line", // Neutral arrow for zero change
+        badgeClass: "muted", // Neutral color for zero change
+      };
+    }
+  };
+
   const ecomWidgets = [
     {
       id: 1,
       cardColor: "primary",
       label: "Company Profit",
-      badge: "ri-arrow-right-up-line",
-      badgeClass: "success",
+      badge: getBadgeProps(details?.companyProfit?.change ?? 0).badge,
+      badgeClass: getBadgeProps(details?.companyProfit?.change ?? 0).badgeClass,
       percentage: details?.companyProfit?.change ?? "+0.00 %",
       counter: details?.companyProfit?.value ?? 0,
       link: "View net earnings",
       bgcolor: "success",
-      icon: "bx bx-dollar-circle",
+      icon: "bx bx-money", // Changed from bx bx-dollar-circle to bx bx-money for a generic currency icon
       decimals: 2,
-      prefix: "$",
+      prefix: "AED ",
       suffix: suffixTag(details?.companyProfit?.value ?? 0),
     },
     {
       id: 2,
       cardColor: "secondary",
       label: "Total Revenue",
-      badge: "ri-arrow-right-down-line",
-      badgeClass: "danger",
+      badge: getBadgeProps(details?.totalRevenue?.change ?? 0).badge,
+      badgeClass: getBadgeProps(details?.totalRevenue?.change ?? 0).badgeClass,
       percentage: details?.totalRevenue?.change ?? "+0.00%",
       counter: details?.totalRevenue?.value ?? 0,
       link: "View all orders",
       bgcolor: "info",
       icon: "bx bx-shopping-bag",
-      decimals: 0,
-      prefix: "$",
+      decimals: 2,
+      prefix: "AED ",
       separator: ",",
       suffix: "",
     },
@@ -48,14 +73,14 @@ const Widgets = ({ details }: { details: any }) => {
       id: 3,
       cardColor: "success",
       label: "New Customers",
-      badge: "ri-arrow-right-up-line",
-      badgeClass: "success",
+      badge: getBadgeProps(details?.newCustomers?.change ?? 0).badge,
+      badgeClass: getBadgeProps(details?.newCustomers?.change ?? 0).badgeClass,
       percentage: details?.newCustomers?.change ?? "+0.00%",
       counter: details?.newCustomers?.value ?? 0,
       link: "See details",
       bgcolor: "warning",
       icon: "bx bx-user-circle",
-      decimals: 2,
+      decimals: 0,
       prefix: "",
       suffix: suffixTag(details?.newCustomers?.value ?? 0),
     },
@@ -63,12 +88,13 @@ const Widgets = ({ details }: { details: any }) => {
       id: 4,
       cardColor: "info",
       label: "In Process Orders",
-      badgeClass: "muted",
-      percentage: details?.inProcessOrders?.change ?? "+0.00%",
+      badge: null,
+      badgeClass: null,
+      percentage: null,
       counter: details?.inProcessOrders?.value ?? 0,
       link: "Withdraw money",
       bgcolor: "primary",
-      icon: "bx bx-wallet",
+      icon: "bx bx-receipt", // Changed to represent orders
       decimals: 0,
       prefix: "",
       suffix: suffixTag(details?.inProcessOrders?.value),
@@ -87,11 +113,11 @@ const Widgets = ({ details }: { details: any }) => {
                   </p>
                 </div>
                 <div className="flex-shrink-0">
-                  <h5 className={"fs-14 mb-0 text-" + item.badgeClass}>
+                  <h5 className={"fs-14 mb-0 text-" + (item.badgeClass ?? "")}>
                     {item.badge ? (
                       <i className={"fs-13 align-middle " + item.badge}></i>
                     ) : null}{" "}
-                    {item.percentage}
+                    {item.percentage ?? ""}
                   </h5>
                 </div>
               </div>
@@ -110,9 +136,9 @@ const Widgets = ({ details }: { details: any }) => {
                       />
                     </span>
                   </h4>
-                  <Link to="#" className="text-decoration-underline">
+                  {/* <Link to="#" className="text-decoration-underline">
                     {item.link}
-                  </Link>
+                  </Link> */}
                 </div>
                 <div className="avatar-sm flex-shrink-0">
                   <span
