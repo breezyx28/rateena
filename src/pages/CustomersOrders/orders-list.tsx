@@ -10,6 +10,7 @@ const OrdersList = ({ data }: { data: any[] }) => {
   const [vendorTypeFilter, setVendorTypeFilter] = useState("");
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
+  const [searchTerm, setSearchTerm] = useState("");
 
   const filteredData = data.filter((row) => {
     const statusMatch = statusFilter ? row.status === statusFilter : true;
@@ -23,7 +24,19 @@ const OrdersList = ({ data }: { data: any[] }) => {
           new Date(row.orderDate || "2025-01-01") <= new Date(endDate)
         : true;
 
-    return statusMatch && vendorMatch && dateMatch;
+    const searchMatch = searchTerm
+      ? row.orderNumber?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        row.customer?.customer?.firstName
+          ?.toLowerCase()
+          .includes(searchTerm.toLowerCase()) ||
+        row.customer?.customer?.lastName
+          ?.toLowerCase()
+          .includes(searchTerm.toLowerCase()) ||
+        row.customer?.customer?.phone?.includes(searchTerm) ||
+        row.status?.toLowerCase().includes(searchTerm.toLowerCase())
+      : true;
+
+    return statusMatch && vendorMatch && dateMatch && searchMatch;
   });
 
   const exportToExcel = () => {
@@ -161,6 +174,20 @@ const OrdersList = ({ data }: { data: any[] }) => {
       {/* Filters Row */}
       <Row className="mb-3">
         <Col md={2}>
+          <Label>Search</Label>
+          <Input
+            type="text"
+            placeholder="Search orders, names, phone..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                e.preventDefault();
+              }
+            }}
+          />
+        </Col>
+        <Col md={2}>
           <Label>Status</Label>
           <Input
             type="select"
@@ -214,9 +241,8 @@ const OrdersList = ({ data }: { data: any[] }) => {
       <TableContainer
         columns={columns || []}
         data={filteredData || []}
-        isGlobalFilter={true}
+        isGlobalFilter={false}
         customPageSize={5}
-        SearchPlaceholder="Search..."
       />
     </React.Fragment>
   );
