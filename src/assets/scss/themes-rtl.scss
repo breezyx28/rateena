@@ -1,0 +1,7 @@
+// themes-rtl.scss
+body[dir="rtl"] {
+  @import "../scss/rtl/components-rtl";
+  @import "../scss/rtl/layouts-rtl";
+  @import "../scss/rtl/plugins-rtl";
+  @import "../scss/rtl/pages-rtl";
+}

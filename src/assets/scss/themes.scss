@@ -1,19 +1,19 @@
 @import "../scss/icons.scss";
-// @import "../scss/config/default/bootstrap.scss";
 @import "../scss/bootstrap.scss";
-// @import "../scss/config/default/app.scss";
+// @import "../scss/bootstrap.scss";
 @import "../scss/app.scss";
+// @import "../scss/app.scss";
 // @import "../scss/config/default/custom.scss";
 @import "../scss/custom.scss";
-@import"./shepherd.css";
+@import "./shepherd.css";
 @import "./mermaid.min.css";
+@import "./themes-rtl.scss";
 
-//RTL 
+// //RTL
 // @import "../scss/rtl/components-rtl";
 // @import "../scss/rtl/layouts-rtl";
 // @import "../scss/rtl/plugins-rtl";
 // @import "../scss/rtl/pages-rtl";
-
 
 //Rigthsidebar offcanvas
 .offcanvas-header-dark {
@@ -91,8 +91,8 @@ body {
 
   .fc {
     .fc-toolbar {
-      >* {
-        >* {
+      > * {
+        > * {
           float: none;
         }
       }
@@ -125,8 +125,7 @@ body {
 //   max-height: 43px !important;
 // }
 
-@each $color,
-$value in $theme-colors {
+@each $color, $value in $theme-colors {
   .simplebar-track-#{$color} {
     .simplebar-scrollbar:before {
       background: $value !important;
@@ -180,7 +179,6 @@ aside.EmojiPickerReact.epr-main {
   left: unset !important;
 }
 
-
 .Toastify {
   .Toastify__toast {
     min-height: 43px;
@@ -211,7 +209,6 @@ aside.EmojiPickerReact.epr-main {
 }
 
 .react-dual-listbox {
-
   input:disabled,
   select:disabled {
     background-color: $input-disabled-bg !important;

@@ -32,6 +32,8 @@ const PersonalDetailsTab: React.FC<PersonalDetailsTabProps> = ({
   const [files, setFiles] = useState({
     licenseImageFile: null,
     identityImageFile: null,
+    profileImageFile: null,
+    coverImageFile: null,
   });
 
   const { vendorUpdatedSuccess, vendorError } = useVendorState({
@@ -142,6 +144,12 @@ const PersonalDetailsTab: React.FC<PersonalDetailsTabProps> = ({
     if (files.identityImageFile) {
       formData.append("identityImage", files.identityImageFile);
     }
+    if (files.profileImageFile) {
+      formData.append("profileImage", files.profileImageFile);
+    }
+    if (files.coverImageFile) {
+      formData.append("coverImage", files.coverImageFile);
+    }
 
     dispatch(addVendorMutation(formData));
     setSubmitting(false);
@@ -156,6 +164,8 @@ const PersonalDetailsTab: React.FC<PersonalDetailsTabProps> = ({
         const fieldMapping = {
           identityImage: "identityImageFile",
           licenseImage: "licenseImageFile",
+          profileImage: "profileImageFile",
+          coverImage: "coverImageFile",
         };
         mapServerErrorsToFormik(vendorError, setErrors, fieldMapping);
         toast.error("Failed to update vendor information. Please try again.", {
@@ -490,6 +500,8 @@ const PersonalDetailsTab: React.FC<PersonalDetailsTabProps> = ({
               defaultValues={{
                 license: vendorInfo?.licenseImage ?? null,
                 identity: vendorInfo?.identityImage ?? null,
+                profile: vendorInfo?.profileImage ?? null,
+                cover: vendorInfo?.coverImage ?? null,
               }}
             />
 

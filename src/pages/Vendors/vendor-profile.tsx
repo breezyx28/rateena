@@ -101,7 +101,7 @@ const VendorProfile = () => {
             <div className="profile-wid-bg profile-setting-img">
               <img
                 src={
-                  vendorInfo?.profileImage
+                  vendorInfo?.coverImage
                     ? imgURL + "/" + vendorInfo?.coverImage
                     : progileBg
                 }

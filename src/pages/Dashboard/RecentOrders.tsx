@@ -141,7 +141,7 @@ const RecentOrders = ({ details }: { details: any }) => {
                           </div>
                         </td>
                         <td>
-                          <span className="text-success">${item.total}</span>
+                          <span className="text-success">AED {item.total}</span>
                         </td>
                         <td>{item.vendor?.full_name}</td>
                         <td>

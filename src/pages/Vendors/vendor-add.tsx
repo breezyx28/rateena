@@ -39,6 +39,8 @@ const VendorAdd = () => {
   const [files, setFiles] = React.useState<any>({
     licenseImageFile: null,
     identityImageFile: null,
+    profileImageFile: null,
+    coverImageFile: null,
   });
   const [selectedCoords, setSelectedCoords] = React.useState<any>(undefined);
 
@@ -130,6 +132,8 @@ const VendorAdd = () => {
         const fieldMapping = {
           identityImage: "identityImageFile",
           licenseImage: "licenseImageFile",
+          profileImage: "profileImageFile",
+          coverImage: "coverImageFile",
           phone: "userPhone",
           email: "userEmail",
         } as const;
@@ -177,11 +181,22 @@ const VendorAdd = () => {
     if (files.identityImageFile) {
       formData.append("identityImage", files.identityImageFile);
     }
+    if (files.profileImageFile) {
+      formData.append("profileImage", files.profileImageFile);
+    }
+    if (files.coverImageFile) {
+      formData.append("coverImage", files.coverImageFile);
+    }
 
     dispatch(addVendorMutation(formData));
     setSubmitting(false);
     resetForm();
-    setFiles({ licenseImageFile: null, identityImageFile: null });
+    setFiles({
+      licenseImageFile: null,
+      identityImageFile: null,
+      profileImageFile: null,
+      coverImageFile: null,
+    });
     setSelectedCoords(undefined);
   };
 
@@ -590,7 +605,12 @@ const VendorAdd = () => {
                       <VendorUploadFiles
                         files={files}
                         uploadedFiles={setFiles}
-                        defaultValues={{ license: null, identity: null }}
+                        defaultValues={{
+                          license: null,
+                          identity: null,
+                          profile: null,
+                          cover: null,
+                        }}
                       />
 
                       <VendorMap
