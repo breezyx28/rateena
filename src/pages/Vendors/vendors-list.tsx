@@ -99,6 +99,7 @@ const vendorCardStyles = `
 const VendorsList = () => {
   const { i18n } = useTranslation();
   const dispatch: any = useDispatch();
+  const [searchTerm, setSearchTerm] = useState<string>("");
   const [vendorState, setVendorState] = useState<{
     currentState: null | boolean;
     vendorId: null | string | number;
@@ -253,13 +254,41 @@ const VendorsList = () => {
     }
   }, [error, vendorsListError, vendorsListSuccess]);
 
+  const filteredVendors = React.useMemo(() => {
+    const list = vendorsListSuccess?.list || [];
+    if (!searchTerm.trim()) return list;
+    const term = searchTerm.toLowerCase();
+    return list.filter((item: any) => {
+      const name =
+        (i18n.dir() === "ltr" ? item.fullName : item.arFullName) || "";
+      return name.toLowerCase().includes(term);
+    });
+  }, [vendorsListSuccess, searchTerm, i18n]);
+
   return (
     <React.Fragment>
       <style>{vendorCardStyles}</style>
       <ToastContainer />
+      <Row className="mb-3">
+        <Col xl={12}>
+          <div className="d-flex align-items-center gap-2">
+            <Label htmlFor="vendor-search" className="form-label mb-0">
+              Search:
+            </Label>
+            <Input
+              id="vendor-search"
+              type="text"
+              placeholder="Search by name"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              style={{ maxWidth: 320 }}
+            />
+          </div>
+        </Col>
+      </Row>
       <Row>
-        {vendorsListSuccess?.list?.map((item: any) => (
-          <Col xl={4} key={item.vendorId}>
+        {filteredVendors?.map((item: any) => (
+          <Col md={6} lg={4} key={item.vendorId}>
             <Card className="vendor-card">
               <CardHeader className="d-flex justify-content-between align-items-center">
                 <h6 className="card-title mb-0">Vendor Card</h6>
@@ -377,6 +406,11 @@ const VendorsList = () => {
             </Card>
           </Col>
         ))}
+        {filteredVendors?.length === 0 && (
+          <Col xl={12}>
+            <div className="text-center text-muted py-5">No vendors found.</div>
+          </Col>
+        )}
       </Row>
 
       {/* Delete Confirmation Modal */}
