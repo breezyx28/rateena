@@ -1,6 +1,7 @@
 import React, { useMemo, useState, useEffect } from "react";
 import TableContainer from "../../Components/Common/TableContainerReactTable";
 import { Badge } from "reactstrap";
+import { useTranslation } from "react-i18next";
 
 const VendorCategoriesList = ({
   data,
@@ -13,6 +14,7 @@ const VendorCategoriesList = ({
   onDeleteCategory?: (categoryId: number) => void;
   onToggleCategory?: (categoryId: number, currentStatus: boolean) => void;
 }) => {
+  const { t } = useTranslation();
   const [filter, setFilter] = useState<any[]>([]);
 
   useEffect(() => {
@@ -46,7 +48,7 @@ const VendorCategoriesList = ({
   const columns = useMemo(
     () => [
       {
-        header: "ID",
+        header: t("ID"),
         cell: (cell: any) => {
           return <span className="fw-semibold">{cell.getValue()}</span>;
         },
@@ -54,22 +56,22 @@ const VendorCategoriesList = ({
         enableColumnFilter: false,
       },
       {
-        header: "English Name",
+        header: t("English Name"),
         accessorKey: "category.name",
         enableColumnFilter: false,
       },
       {
-        header: "Arabic Name",
+        header: t("Arabic Name"),
         accessorKey: "category.arName",
         enableColumnFilter: false,
       },
       {
-        header: "Products",
+        header: t("Products"),
         accessorKey: "numberOfProducts",
         enableColumnFilter: false,
       },
       {
-        header: "Status",
+        header: t("Status"),
         cell: (cell: any) => {
           const row = cell.row.original;
           const isPublished = row.category?.published || false;
@@ -78,14 +80,14 @@ const VendorCategoriesList = ({
               color={isPublished ? "success" : "secondary"}
               className="badge-soft-success"
             >
-              {isPublished ? "Published" : "Unpublished"}
+              {isPublished ? t("Published") : t("Unpublished")}
             </Badge>
           );
         },
         enableColumnFilter: false,
       },
       {
-        header: "Actions",
+        header: t("Action"),
         cell: (cell: any) => {
           const row = cell.row.original; // full row data
           const isPublished = row.category?.published || false;
@@ -139,7 +141,7 @@ const VendorCategoriesList = ({
         data={filter || []}
         isGlobalFilter={true}
         customPageSize={5}
-        SearchPlaceholder="Search..."
+        SearchPlaceholder={t("Search...")}
       />
     </React.Fragment>
   );

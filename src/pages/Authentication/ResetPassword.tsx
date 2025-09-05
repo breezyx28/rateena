@@ -13,6 +13,7 @@ import {
   Button,
   Spinner,
 } from "reactstrap";
+import { useTranslation } from "react-i18next";
 
 // Formik Validation
 import * as Yup from "yup";
@@ -40,6 +41,7 @@ const forgotPassData = sessionStorage.getItem("forgot-password-data")
   : {};
 
 const ResetPassword = () => {
+  const { t } = useTranslation();
   const history = useNavigate();
   const dispatch: any = useDispatch();
   const [loader, setLoader] = useState<boolean>(false);
@@ -53,10 +55,10 @@ const ResetPassword = () => {
       new_password_confirmation: "",
     },
     validationSchema: Yup.object({
-      new_password: Yup.string().required("Please Enter Your New Password"),
+      new_password: Yup.string().required(t("Please Enter Your New Password")),
       new_password_confirmation: Yup.string()
         .oneOf([Yup.ref("password"), ""])
-        .required("Confirm Password is required"),
+        .required(t("Confirm Password is required")),
     }),
     onSubmit: (values) => {
       dispatch(
@@ -94,7 +96,7 @@ const ResetPassword = () => {
     }, 3000);
   }, [dispatch, success, error, restPasswordError, history]);
 
-  document.title = "Reset Password | Rateena - E-Shop Admin Panel";
+  document.title = `${t("Reset Password")} | Rateena - E-Shop Admin Panel`;
 
   return (
     <React.Fragment>
@@ -110,7 +112,7 @@ const ResetPassword = () => {
                     </Link>
                   </div>
                   <p className="mt-3 fs-15 fw-medium">
-                    Premium Admin & Dashboard Template
+                    {t("Premium Admin & Dashboard Template")}
                   </p>
                 </div>
               </Col>
@@ -121,9 +123,9 @@ const ResetPassword = () => {
                 <Card className="mt-4">
                   <CardBody className="p-4">
                     <div className="text-center mt-2">
-                      <h5 className="text-primary">Reset Password</h5>
+                      <h5 className="text-primary">{t("Reset Password")}</h5>
                       <p className="text-muted">
-                        Type and Re-type your new password
+                        {t("Type and Re-type your new password")}
                       </p>
                     </div>
                     <div className="p-2 mt-4">
@@ -138,7 +140,7 @@ const ResetPassword = () => {
                       >
                         {success && success ? (
                           <>
-                            {toast("Your Redirect To Login Page...", {
+                            {toast(t("Your Redirect To Login Page..."), {
                               position: "top-right",
                               hideProgressBar: false,
                               className: "bg-success text-white",
@@ -147,20 +149,19 @@ const ResetPassword = () => {
                             })}
                             <ToastContainer autoClose={2000} limit={1} />
                             <Alert color="success">
-                              Register User Successfully and Your Redirect To
-                              Login Page...
+                              {t("Register User Successfully and Your Redirect To Login Page...")}
                             </Alert>
                           </>
                         ) : null}
 
                         <div className="mb-3">
                           <Label htmlFor="userpassword" className="form-label">
-                            Password <span className="text-danger">*</span>
+                            {t("Password")} <span className="text-danger">*</span>
                           </Label>
                           <Input
                             name="new_password"
                             type="password"
-                            placeholder="Enter Password"
+                            placeholder={t("Enter Password")}
                             onChange={validation.handleChange}
                             onBlur={validation.handleBlur}
                             value={validation.values.new_password || ""}
@@ -184,13 +185,13 @@ const ResetPassword = () => {
                             htmlFor="confirmPassword"
                             className="form-label"
                           >
-                            Confirm Password{" "}
+                            {t("Confirm Password")}{" "}
                             <span className="text-danger">*</span>
                           </Label>
                           <Input
                             name="new_password_confirmation"
                             type="password"
-                            placeholder="Confirm Password"
+                            placeholder={t("Confirm Password")}
                             onChange={validation.handleChange}
                             onBlur={validation.handleBlur}
                             value={
@@ -223,10 +224,10 @@ const ResetPassword = () => {
                             {loader && (
                               <Spinner size="sm" className="me-2">
                                 {" "}
-                                Loading...{" "}
+                                {t("Loading...")}{" "}
                               </Spinner>
                             )}
-                            Sign Up
+                            {t("Sign Up")}
                           </Button>
                         </div>
                       </Form>
@@ -235,13 +236,13 @@ const ResetPassword = () => {
                 </Card>
                 <div className="mt-4 text-center">
                   <p className="mb-0">
-                    I remember my password now let's{" "}
+                    {t("I remember my password now let's")}{" "}
                     <Link
                       to="/login"
                       className="fw-semibold text-primary text-decoration-underline"
                     >
                       {" "}
-                      Login{" "}
+                      {t("Login")}{" "}
                     </Link>{" "}
                   </p>
                 </div>

@@ -30,8 +30,10 @@ import {
   supportedRegions,
   supportedVendorType,
 } from "./validation/vendor-validation";
+import { useTranslation } from "react-i18next";
 
 const VendorAdd = () => {
+  const { t } = useTranslation();
   document.title = "Vendor Add | Rateena - E-Shop Admin Panel";
 
   const dispatch: any = useDispatch();
@@ -57,7 +59,7 @@ const VendorAdd = () => {
 
   React.useEffect(() => {
     if (vendorUpdatedSuccess) {
-      toast.success("Vendor added successfully", { position: "top-right" });
+      toast.success(t("Vendor added successfully"), { position: "top-right" });
       dispatch(clearVendorError());
       errorToastManager.clearLastError();
     }
@@ -257,7 +259,7 @@ const VendorAdd = () => {
                             htmlFor="englishfullnameInput"
                             className="form-label"
                           >
-                            English Name
+                            {t("English Name")}
                           </Label>
                           <Input
                             type="text"
@@ -267,7 +269,7 @@ const VendorAdd = () => {
                                 : ""
                             }`}
                             id="englishfullnameInput"
-                            placeholder="Enter English Full Name"
+                            placeholder={t("Enter English Full Name")}
                             name="fullName"
                             value={values.fullName}
                             onChange={handleChange}
@@ -286,7 +288,7 @@ const VendorAdd = () => {
                             htmlFor="arabicfullnameInput"
                             className="form-label"
                           >
-                            Arabic Name
+                            {t("Arabic Name")}
                           </Label>
                           <Input
                             type="text"
@@ -296,7 +298,7 @@ const VendorAdd = () => {
                                 : ""
                             }`}
                             id="arabicfullnameInput"
-                            placeholder="Enter Arabic Full Name"
+                            placeholder={t("Enter Arabic Full Name")}
                             name="arFullName"
                             value={values.arFullName}
                             onChange={handleChange}
@@ -315,7 +317,7 @@ const VendorAdd = () => {
                             htmlFor="phonenumberInput"
                             className="form-label"
                           >
-                            Phone Number
+                            {t("Phone Number")}
                           </Label>
                           <Input
                             type="text"
@@ -325,7 +327,7 @@ const VendorAdd = () => {
                                 : ""
                             }`}
                             id="phonenumberInput"
-                            placeholder="Enter your phone number"
+                            placeholder={t("Enter your phone number")}
                             name="userPhone"
                             value={values.userPhone}
                             onChange={handleChange}
@@ -341,7 +343,7 @@ const VendorAdd = () => {
                       <Col lg={6}>
                         <div className="mb-3">
                           <Label htmlFor="emailInput" className="form-label">
-                            Email Address
+                            {t("Email Address")}
                           </Label>
                           <Input
                             type="email"
@@ -351,7 +353,7 @@ const VendorAdd = () => {
                                 : ""
                             }`}
                             id="emailInput"
-                            placeholder="Enter your email"
+                            placeholder={t("Enter your email")}
                             name="userEmail"
                             value={values.userEmail}
                             onChange={handleChange}
@@ -368,7 +370,7 @@ const VendorAdd = () => {
                       <Col lg={12}>
                         <div className="mb-3">
                           <Label htmlFor="passwordinput" className="form-label">
-                            Password
+                            {t("Password")}
                           </Label>
                           <Input
                             type="password"
@@ -378,7 +380,7 @@ const VendorAdd = () => {
                                 : ""
                             }`}
                             id="passwordinput"
-                            placeholder="Enter your password"
+                            placeholder={t("Enter your password")}
                             name="password"
                             onChange={handleChange}
                             onBlur={handleBlur}
@@ -397,7 +399,7 @@ const VendorAdd = () => {
                             htmlFor="maxkilometerdelivery"
                             className="form-label"
                           >
-                            Max Kilometer Delivery
+                            {t("Max Kilometer Delivery")}
                           </Label>
                           <Input
                             type="number"
@@ -409,7 +411,7 @@ const VendorAdd = () => {
                             }`}
                             id="maxkilometerdelivery"
                             name="maxKilometerDelivery"
-                            placeholder="Enter max Kilometer Delivery"
+                            placeholder={t("Enter max Kilometer Delivery")}
                             value={values.maxKilometerDelivery}
                             onChange={handleChange}
                             onBlur={handleBlur}
@@ -427,7 +429,7 @@ const VendorAdd = () => {
                             htmlFor="minchargeforlongdistance"
                             className="form-label"
                           >
-                            Min Charge For Long Distances
+                            {t("Min Charge For Long Distances")}
                           </Label>
                           <Input
                             type="number"
@@ -439,7 +441,7 @@ const VendorAdd = () => {
                             }`}
                             id="minchargeforlongdistance"
                             name="minChargeLongDistance"
-                            placeholder="Enter min Charge for Long Distance"
+                            placeholder={t("Enter min Charge for Long Distance")}
                             value={values.minChargeLongDistance}
                             onChange={handleChange}
                             onBlur={handleBlur}
@@ -458,7 +460,7 @@ const VendorAdd = () => {
                             htmlFor="openingtimeinput"
                             className="form-label"
                           >
-                            Opening Time
+                            {t("Opening Time")}
                           </Label>
                           <Flatpickr
                             className={`form-control ${
@@ -501,7 +503,7 @@ const VendorAdd = () => {
                             htmlFor="closingtimeinput"
                             className="form-label"
                           >
-                            Closing Time
+                            {t("Closing Time")}
                           </Label>
                           <Flatpickr
                             className={`form-control ${
@@ -541,7 +543,7 @@ const VendorAdd = () => {
                       <Col lg={12}>
                         <div className="mb-3">
                           <Label htmlFor="regionInput" className="form-label">
-                            Region
+                            {t("Region")}
                           </Label>
                           <select
                             className={`form-select ${
@@ -554,7 +556,7 @@ const VendorAdd = () => {
                             onChange={handleChange}
                             onBlur={handleBlur}
                           >
-                            <option value="">Select Region</option>
+                            <option value="">{t("Select Region")}</option>
                             {supportedRegions.map((region) => (
                               <option key={region.id} value={region.value}>
                                 {region.name}
@@ -574,7 +576,7 @@ const VendorAdd = () => {
                             htmlFor="vendorTypeInput"
                             className="form-label"
                           >
-                            Vendor Type
+                            {t("Vendor Type")}
                           </Label>
                           <select
                             className={`form-select ${
@@ -587,7 +589,7 @@ const VendorAdd = () => {
                             onChange={handleChange}
                             onBlur={handleBlur}
                           >
-                            <option value="">Select Vendor Type</option>
+                            <option value="">{t("Select Vendor Type")}</option>
                             {supportedVendorType.map((type) => (
                               <option key={type.id} value={type.value}>
                                 {type.name}
@@ -626,15 +628,15 @@ const VendorAdd = () => {
                             disabled={isSubmitting || isLoading}
                           >
                             {isSubmitting || isLoading
-                              ? "Submitting..."
-                              : "Add Vendor"}
+                              ? t("Submitting...")
+                              : t("Add Vendor")}
                           </Button>
                           <Button
                             type="button"
                             color="light"
                             onClick={() => window.history.back()}
                           >
-                            Cancel
+                            {t("Cancel")}
                           </Button>
                         </div>
                       </Col>

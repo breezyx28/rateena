@@ -31,7 +31,7 @@ const EditProductModal = ({
   tog_standard: () => any;
   productData: any;
 }) => {
-  const { i18n } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [existingImages, setExistingImages] = useState<string[]>([]);
 
@@ -151,7 +151,7 @@ const EditProductModal = ({
             tog_standard();
           }}
         >
-          Edit Product
+          {t("Edit Product")}
         </ModalHeader>
         <ModalBody className="py-3">
           <FormikProvider value={validation}>
@@ -165,7 +165,7 @@ const EditProductModal = ({
             >
               {vendorProductSuccess && !vendorError?.message && (
                 <Alert color="success">
-                  Product has been updated successfully
+                  {t("Product has been updated successfully")}
                 </Alert>
               )}
               {vendorError?.message && !vendorProductSuccess && (
@@ -175,7 +175,7 @@ const EditProductModal = ({
                 <Col xxl={4} md={4}>
                   <div>
                     <Label htmlFor="name" className="form-label">
-                      English Name
+                      {t("English Name")}
                     </Label>
                     <Input
                       type="text"
@@ -201,7 +201,7 @@ const EditProductModal = ({
                 <Col xxl={4} md={4}>
                   <div>
                     <Label htmlFor="arName" className="form-label">
-                      Arabic Name
+                      {t("Arabic Name")}
                     </Label>
                     <div className="form-icon">
                       <Input
@@ -229,7 +229,7 @@ const EditProductModal = ({
                 <Col xxl={4} md={4}>
                   <div>
                     <Label htmlFor="quantity" className="form-label">
-                      Quantity
+                      {t("Quantity")}
                     </Label>
                     <div className="form-icon">
                       <Input
@@ -270,7 +270,7 @@ const EditProductModal = ({
                       onBlur={validation.handleBlur}
                     />
                     <Label htmlFor="isFood" className="form-check-label">
-                      Is Food Item
+                      {t("Is Food Item")}
                     </Label>
                   </div>
                 </Col>
@@ -278,7 +278,7 @@ const EditProductModal = ({
                 <Col xxl={4} md={4}>
                   <div>
                     <Label htmlFor="price" className="form-label">
-                      Price
+                      {t("Price")}
                     </Label>
                     <div className="form-icon">
                       <Input
@@ -307,7 +307,7 @@ const EditProductModal = ({
                 <Col xxl={4} md={4}>
                   <div>
                     <Label htmlFor="companyProfit" className="form-label">
-                      Company Profit %
+                      {t("Company Profit %")}
                     </Label>
                     <div className="form-icon">
                       <Input
@@ -340,7 +340,7 @@ const EditProductModal = ({
                 <Col xxl={4} md={4}>
                   <div>
                     <Label htmlFor="duration" className="form-label">
-                      Ready within
+                      {t("Ready within")}
                     </Label>
                     <div className="form-icon">
                       <Input
@@ -348,7 +348,7 @@ const EditProductModal = ({
                         className="form-control"
                         id="duration"
                         name="duration"
-                        placeholder="Eg: From 1 To 5 days or mins."
+                        placeholder={t("Eg: From 1 To 5 days or mins.")}
                         onChange={validation.handleChange}
                         onBlur={validation.handleBlur}
                         value={validation.values.duration || ""}
@@ -372,7 +372,7 @@ const EditProductModal = ({
                 <Col xxl={12} md={12}>
                   <div>
                     <Label htmlFor="category_id" className="form-label">
-                      Select Category
+                      {t("Select Category")}
                     </Label>
                     <Input
                       type="select"
@@ -387,7 +387,7 @@ const EditProductModal = ({
                         !!validation.errors.category_id
                       }
                     >
-                      <option value="">Select Category</option>
+                      <option value="">{t("Select Category")}</option>
                       {vendorCategories?.list &&
                         vendorCategories?.list.map((item: any) => (
                           <option
@@ -413,14 +413,14 @@ const EditProductModal = ({
                 <Col xxl={4} md={4}>
                   <div>
                     <Label htmlFor="images" className="form-label">
-                      Product Images
+                      {t("Product Images")}
                     </Label>
 
                     {/* Existing Images */}
                     {existingImages.length > 0 && (
                       <div className="mb-3">
                         <Label className="form-label text-muted">
-                          Current Images:
+                          {t("Current Images:")}
                         </Label>
                         <div className="d-flex gap-2 flex-wrap">
                           {existingImages.map((img, index) => (
@@ -465,7 +465,7 @@ const EditProductModal = ({
                     {selectedFiles.length > 0 && (
                       <div className="mt-3">
                         <Label className="form-label text-muted">
-                          New Images:
+                          {t("New Images:")}
                         </Label>
                         <div className="d-flex gap-2 flex-wrap">
                           {selectedFiles.map((file, index) => (
@@ -503,7 +503,7 @@ const EditProductModal = ({
                 <Col xxl={4} md={4}>
                   <div>
                     <Label htmlFor="description" className="form-label">
-                      English Description
+                      {t("English Description")}
                     </Label>
                     <div className="form-icon">
                       <Input
@@ -535,7 +535,7 @@ const EditProductModal = ({
                 <Col xxl={4} md={4}>
                   <div>
                     <Label htmlFor="ar_description" className="form-label">
-                      Arabic Description
+                      {t("Arabic Description")}
                     </Label>
                     <div className="form-icon">
                       <Input
@@ -566,7 +566,7 @@ const EditProductModal = ({
 
                 <Col xxl={12} md={12}>
                   <div>
-                    <Label className="form-label">Product Options</Label>
+                    <Label className="form-label">{t("Product Options")}</Label>
                     <FieldArray
                       name="options"
                       render={(arrayHelpers) => (
@@ -580,7 +580,7 @@ const EditProductModal = ({
                                 >
                                   <Col md={6}>
                                     <Label htmlFor={`options.${index}.name`}>
-                                      Option Name
+                                      {t("Option Name")}
                                     </Label>
                                     <Input
                                       type="text"
@@ -610,7 +610,7 @@ const EditProductModal = ({
 
                                   <Col md={6}>
                                     <Label htmlFor={`options.${index}.fee`}>
-                                      Fee
+                                      {t("Fee")}
                                     </Label>
                                     <Input
                                       type="number"
@@ -642,7 +642,7 @@ const EditProductModal = ({
                                     <Label
                                       htmlFor={`options.${index}.group_flag`}
                                     >
-                                      Group Flag
+                                      {t("Group Flag")}
                                     </Label>
                                     <Input
                                       type="text"
@@ -677,7 +677,7 @@ const EditProductModal = ({
                                       size="sm"
                                       onClick={() => arrayHelpers.remove(index)}
                                     >
-                                      Remove
+                                      {t("Remove")}
                                     </Button>
                                   </Col>
                                 </Row>
@@ -694,7 +694,7 @@ const EditProductModal = ({
                               })
                             }
                           >
-                            + Add Option
+                            {t("+ Add Option")}
                           </Button>
                         </div>
                       )}
@@ -721,7 +721,7 @@ const EditProductModal = ({
               tog_standard();
             }}
           >
-            Close
+            {t("Close")}
           </Button>
           <Button
             color="primary"
@@ -729,7 +729,7 @@ const EditProductModal = ({
               document.getElementById("edit-vendor-product-btn")?.click();
             }}
           >
-            Save changes
+            {t("Save changes")}
           </Button>
         </div>
       </Modal>

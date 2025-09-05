@@ -31,7 +31,7 @@ const AddProductModal = ({
   modal_standard: boolean;
   tog_standard: () => any;
 }) => {
-  const { i18n } = useTranslation();
+  const { i18n, t } = useTranslation();
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -122,7 +122,7 @@ const AddProductModal = ({
             tog_standard();
           }}
         >
-          Add Product
+          {t("Add Product")}
         </ModalHeader>
         <ModalBody>
           <FormikProvider value={validation}>
@@ -144,13 +144,13 @@ const AddProductModal = ({
                     toastId: "",
                   })}
                   <Alert color="success">
-                    Product has been added successfully
+                    {t("Product has been added successfully")}
                   </Alert>
                 </>
               ) : null}
               {vendorError?.message && !vendorProductSuccess ? (
                 <>
-                  {toast("Error Adding Product", {
+                  {toast(t("Error Adding Product"), {
                     position: "top-right",
                     hideProgressBar: false,
                     className: "bg-danger text-white",
@@ -164,7 +164,7 @@ const AddProductModal = ({
                 <Col xxl={4} md={6}>
                   <div>
                     <Label htmlFor="name" className="form-label">
-                      English Name
+                      {t("English Name")}
                     </Label>
                     <Input
                       type="text"
@@ -186,7 +186,7 @@ const AddProductModal = ({
                 <Col xxl={4} md={6}>
                   <div>
                     <Label htmlFor="ar_name" className="form-label">
-                      Arabic Name
+                      {t("Arabic Name")}
                     </Label>
                     <div className="form-icon">
                       <Input
@@ -211,7 +211,7 @@ const AddProductModal = ({
                 <Col xxl={4} md={6}>
                   <div>
                     <Label htmlFor="quantity" className="form-label">
-                      Qunatity
+                      {t("Quantity")}
                     </Label>
                     <div className="form-icon">
                       <Input
@@ -219,7 +219,7 @@ const AddProductModal = ({
                         className="form-control"
                         id="quantity"
                         name="quantity"
-                        placeholder="Eg: 5"
+                        placeholder={t("Eg: 5")}
                         onChange={validation.handleChange}
                         onBlur={validation.handleBlur}
                         value={validation.values.quantity || ""}
@@ -245,7 +245,7 @@ const AddProductModal = ({
                       onBlur={validation.handleBlur}
                     />
                     <Label htmlFor="isFood" className="form-check-label">
-                      Is Food Item
+                      {t("Is Food Item")}
                     </Label>
                   </div>
                 </Col>
@@ -253,7 +253,7 @@ const AddProductModal = ({
                 <Col xxl={4} md={6}>
                   <div>
                     <Label htmlFor="price" className="form-label">
-                      Price
+                      {t("Price")}
                     </Label>
                     <div className="form-icon">
                       <Input
@@ -261,7 +261,7 @@ const AddProductModal = ({
                         className="form-control"
                         id="price"
                         name="price"
-                        placeholder="Eg: 5"
+                        placeholder={t("Eg: 5")}
                         onChange={validation.handleChange}
                         onBlur={validation.handleBlur}
                         value={validation.values.price || ""}
@@ -278,7 +278,7 @@ const AddProductModal = ({
                 <Col xxl={4} md={6}>
                   <div>
                     <Label htmlFor="company_profit" className="form-label">
-                      Company Profit %
+                      {t("Company Profit %")}
                     </Label>
                     <div className="form-icon">
                       <Input
@@ -286,7 +286,7 @@ const AddProductModal = ({
                         className="form-control"
                         id="company_profit"
                         name="company_profit"
-                        placeholder="Eg: 5"
+                        placeholder={t("Eg: 5")}
                         onChange={validation.handleChange}
                         onBlur={validation.handleBlur}
                         value={validation.values.company_profit || ""}
@@ -304,7 +304,7 @@ const AddProductModal = ({
                 <Col xxl={4} md={6}>
                   <div>
                     <Label htmlFor="duration" className="form-label">
-                      Ready within
+                      {t("Ready within")}
                     </Label>
                     <div className="form-icon">
                       <Input
@@ -312,7 +312,7 @@ const AddProductModal = ({
                         className="form-control"
                         id="duration"
                         name="duration"
-                        placeholder="Eg: From 1 To 5 days or mins."
+                        placeholder={t("Eg: From 1 To 5 days or mins.")}
                         onChange={validation.handleChange}
                         onBlur={validation.handleBlur}
                         value={validation.values.duration || ""}
@@ -330,7 +330,7 @@ const AddProductModal = ({
                 <Col xxl={4} md={6}>
                   <div>
                     <Label htmlFor="category_id" className="form-label">
-                      Select Category
+                      {t("Select Category")}
                     </Label>
                     <Input
                       type="select"
@@ -344,7 +344,7 @@ const AddProductModal = ({
                         !!validation.errors.category_id
                       }
                     >
-                      <option value="">Select Category</option>
+                      <option value="">{t("Select Category")}</option>
                       {vendorCategories?.list &&
                         vendorCategories?.list.map((item: any) => (
                           <option value={item.category.categoryId}>
@@ -367,7 +367,7 @@ const AddProductModal = ({
                 <Col xxl={4} md={6}>
                   <div>
                     <Label htmlFor="images" className="form-label">
-                      Product Images
+                      {t("Product Images")}
                     </Label>
 
                     {/* File Upload */}
@@ -385,7 +385,7 @@ const AddProductModal = ({
                     {selectedFiles.length > 0 && (
                       <div className="mt-3">
                         <Label className="form-label text-muted">
-                          Selected Images:
+                          {t("Selected Images:")}
                         </Label>
                         <div className="d-flex gap-2 flex-wrap">
                           {selectedFiles.map((file, index) => (
@@ -423,7 +423,7 @@ const AddProductModal = ({
                 <Col xxl={6} md={6}>
                   <div>
                     <Label htmlFor="description" className="form-label">
-                      English Description
+                      {t("English Description")}
                     </Label>
                     <div className="form-icon">
                       <Input
@@ -448,7 +448,7 @@ const AddProductModal = ({
                 <Col xxl={6} md={6}>
                   <div>
                     <Label htmlFor="ar_description" className="form-label">
-                      Arabic Description
+                      {t("Arabic Description")}
                     </Label>
                     <div className="form-icon">
                       <Input
@@ -472,7 +472,7 @@ const AddProductModal = ({
 
                 <Col xxl={12} md={12}>
                   <div>
-                    <Label className="form-label">Product Options</Label>
+                    <Label className="form-label">{t("Product Options")}</Label>
                     <FieldArray
                       name="options"
                       render={(arrayHelpers) => (
@@ -486,7 +486,7 @@ const AddProductModal = ({
                                 >
                                   <Col md={4}>
                                     <Label htmlFor={`options.${index}.op_name`}>
-                                      Option Name
+                                      {t("Option Name")}
                                     </Label>
                                     <Input
                                       type="text"
@@ -515,7 +515,7 @@ const AddProductModal = ({
 
                                   <Col md={4}>
                                     <Label htmlFor={`options.${index}.fee`}>
-                                      Fee
+                                      {t("Fee")}
                                     </Label>
                                     <Input
                                       type="number"
@@ -546,7 +546,7 @@ const AddProductModal = ({
                                     <Label
                                       htmlFor={`options.${index}.group_flag`}
                                     >
-                                      Group Flag
+                                      {t("Group Flag")}
                                     </Label>
                                     <Input
                                       type="text"
@@ -596,7 +596,7 @@ const AddProductModal = ({
                               })
                             }
                           >
-                            + Add Option
+                            {t("+ Add Option")}
                           </Button>
                         </div>
                       )}
@@ -623,7 +623,7 @@ const AddProductModal = ({
               tog_standard();
             }}
           >
-            Close
+            {t("Close")}
           </Button>
           <Button
             color="primary"
@@ -631,7 +631,7 @@ const AddProductModal = ({
               document.getElementById("add-vendor-product-btn")?.click();
             }}
           >
-            Save changes
+            {t("Save changes")}
           </Button>
         </div>
       </Modal>

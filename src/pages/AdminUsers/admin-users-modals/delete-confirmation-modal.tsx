@@ -1,5 +1,6 @@
 import React from "react";
 import { Button, Modal, ModalBody, ModalHeader } from "reactstrap";
+import { useTranslation } from "react-i18next";
 
 interface DeleteConfirmationModalProps {
   modal_standard: boolean;
@@ -16,6 +17,7 @@ const DeleteConfirmationModal: React.FC<DeleteConfirmationModalProps> = ({
   userId,
   userName,
 }) => {
+  const { t } = useTranslation();
   const handleConfirm = () => {
     onConfirm();
     tog_standard();
@@ -38,7 +40,7 @@ const DeleteConfirmationModal: React.FC<DeleteConfirmationModalProps> = ({
             tog_standard();
           }}
         >
-          Confirm Delete
+          {t("Confirm Delete")}
         </ModalHeader>
         <ModalBody>
           <div className="text-center">
@@ -48,15 +50,14 @@ const DeleteConfirmationModal: React.FC<DeleteConfirmationModalProps> = ({
                 style={{ fontSize: "3rem" }}
               ></i>
             </div>
-            <h5 className="mb-3">Are you sure you want to delete this user?</h5>
+            <h5 className="mb-3">{t("Are you sure you want to delete this user?")}</h5>
             {userName && (
               <p className="text-muted mb-4">
-                User: <strong>{userName}</strong> (ID: {userId})
+                {t("User:")}{" "}<strong>{userName}</strong> ({t("ID:")}{" "}{userId})
               </p>
             )}
             <p className="text-muted">
-              This action cannot be undone. The user will be permanently removed
-              from the system.
+              {t("This action cannot be undone. The user will be permanently removed from the system.")}
             </p>
           </div>
         </ModalBody>
@@ -67,10 +68,10 @@ const DeleteConfirmationModal: React.FC<DeleteConfirmationModalProps> = ({
               tog_standard();
             }}
           >
-            Cancel
+            {t("Cancel")}
           </Button>
           <Button color="danger" onClick={handleConfirm}>
-            Delete User
+            {t("Delete User")}
           </Button>
         </div>
       </Modal>

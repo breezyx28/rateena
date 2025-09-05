@@ -7,6 +7,7 @@ import { addOrUpdateUserMutation } from "slices/thunks";
 import * as Yup from "yup";
 import { useFormik } from "formik";
 import { toast, ToastContainer } from "react-toastify";
+import { useTranslation } from "react-i18next";
 
 interface AddModalProps {
   modal_standard: boolean;
@@ -19,6 +20,7 @@ const UpdateModal: React.FC<AddModalProps> = ({
   tog_standard,
   userId,
 }) => {
+  const { t } = useTranslation();
   const dispatch: any = useDispatch();
 
   const selectLayoutState = (state: any) => state.AdminUsers;
@@ -49,8 +51,8 @@ const UpdateModal: React.FC<AddModalProps> = ({
       // password: "",
     },
     validationSchema: Yup.object({
-      email: Yup.string().required("Please Enter Your Email"),
-      phone: Yup.string().required("Please Enter Your Phone Number"),
+      email: Yup.string().required(t("Please Enter Your Email")),
+      phone: Yup.string().required(t("Please Enter Your Phone Number")),
       // password: Yup.string().required("Please Enter Your Password"),
     }),
     onSubmit: (values) => {
@@ -75,7 +77,7 @@ const UpdateModal: React.FC<AddModalProps> = ({
             tog_standard();
           }}
         >
-          Update User
+          {t("Update User")}
         </ModalHeader>
         <ModalBody>
           <Form
@@ -88,7 +90,7 @@ const UpdateModal: React.FC<AddModalProps> = ({
           >
             {adminUserUpdated ? (
               <>
-                {toast("Your Redirect To Login Page...", {
+                {toast(t("Your Redirect To Login Page..."), {
                   position: "top-right",
                   hideProgressBar: false,
                   className: "bg-success text-white",
@@ -96,14 +98,14 @@ const UpdateModal: React.FC<AddModalProps> = ({
                   toastId: "",
                 })}
                 <ToastContainer autoClose={2000} limit={1} />
-                <Alert color="success">{"Data Added Successfully"}</Alert>
+                <Alert color="success">{t("Data Added Successfully")}</Alert>
               </>
             ) : null}
             <Row className="gy-4">
               <Col xxl={12} md={12}>
                 <div>
                   <Label htmlFor="phone" className="form-label">
-                    Phone
+                    {t("Phone")}
                   </Label>
                   <Input
                     type="text"
@@ -124,7 +126,7 @@ const UpdateModal: React.FC<AddModalProps> = ({
               <Col xxl={12} md={12}>
                 <div>
                   <Label htmlFor="email" className="form-label">
-                    Email
+                    {t("Email")}
                   </Label>
                   <div className="form-icon">
                     <Input
@@ -184,7 +186,7 @@ const UpdateModal: React.FC<AddModalProps> = ({
               tog_standard();
             }}
           >
-            Close
+            {t("Close")}
           </Button>
           <Button
             color="primary"
@@ -192,7 +194,7 @@ const UpdateModal: React.FC<AddModalProps> = ({
               document.getElementById("add-admin-user-btn")?.click();
             }}
           >
-            Save changes
+            {t("Save changes")}
           </Button>
         </div>
       </Modal>

@@ -33,8 +33,10 @@ import * as Yup from "yup";
 import { useFormik } from "formik";
 import { toast } from "react-toastify";
 import { errorToastManager } from "helpers/error-helper";
+import { useTranslation } from "react-i18next";
 
 const VendorCategories = () => {
+  const { t } = useTranslation();
   const { vendorId } = useParams<{ vendorId: string }>();
   const [vendorCategoriesData, setVendorCategoriesData] = useState<any[]>([]);
   const [modal_standard, setmodal_standard] = useState<boolean>(false);
@@ -99,7 +101,7 @@ const VendorCategories = () => {
         setVendorCategoriesData((prevData) => [...prevData, deletedCategory]);
         setDeletedCategory(null);
         // Show specific delete failure toast
-        toast.error("Failed to delete vendor category. Please try again.", {
+        toast.error(t("Failed to delete vendor category. Please try again."), {
           position: "top-right",
           autoClose: 3000,
         });
@@ -219,7 +221,7 @@ const VendorCategories = () => {
       if (deletedCategory) {
         setDeletedCategory(null);
         // Show delete success toast
-        toast.success("Vendor category deleted successfully!", {
+        toast.success(t("Vendor category deleted successfully!"), {
           position: "top-right",
           autoClose: 3000,
         });
@@ -254,20 +256,20 @@ const VendorCategories = () => {
         <Col lg={12}>
           <div className="d-flex justify-content-between align-items-center mb-3">
             <div className="d-flex align-items-center gap-3">
-              <Label className="form-label mb-0">Filter by Status:</Label>
+              <Label className="form-label mb-0">{t("Filter by Status:")}</Label>
               <select
                 className="form-select"
                 style={{ width: "auto" }}
                 value={statusFilter}
                 onChange={(e) => setStatusFilter(e.target.value)}
               >
-                <option value="all">All Categories</option>
-                <option value="published">Published</option>
-                <option value="unpublished">Unpublished</option>
+                <option value="all">{t("All Categories")}</option>
+                <option value="published">{t("Published")}</option>
+                <option value="unpublished">{t("Unpublished")}</option>
               </select>
             </div>
             <Button color="primary" onClick={() => tog_standard()}>
-              Add Category
+              {t("Add Category")}
             </Button>
           </div>
           <VendorCategoriesList
@@ -301,7 +303,7 @@ const VendorCategories = () => {
             tog_standard();
           }}
         >
-          Add Category
+          {t("Add Category")}
         </ModalHeader>
         <ModalBody>
           <Form
@@ -315,7 +317,7 @@ const VendorCategories = () => {
             {vendorCategoryAddedSuccess && !vendorError?.message ? (
               <>
                 <Alert color="success">
-                  Vendor Category Successfully Added
+                  {t("Vendor Category Successfully Added")}
                 </Alert>
               </>
             ) : null}
@@ -326,7 +328,7 @@ const VendorCategories = () => {
               <Col xxl={12} md={12}>
                 <div>
                   <Label htmlFor="name" className="form-label">
-                    English Name
+                    {t("English Name")}
                   </Label>
                   <Input
                     type="text"
@@ -352,7 +354,7 @@ const VendorCategories = () => {
               <Col xxl={12} md={12}>
                 <div>
                   <Label htmlFor="arName" className="form-label">
-                    Arabic Name
+                    {t("Arabic Name")}
                   </Label>
                   <Input
                     type="text"
@@ -378,7 +380,7 @@ const VendorCategories = () => {
               <Col xxl={12} md={12}>
                 <div>
                   <Label htmlFor="isPublished" className="form-label">
-                    Status
+                    {t("Status")}
                   </Label>
                   <select
                     className="form-select"
@@ -388,9 +390,9 @@ const VendorCategories = () => {
                     onBlur={validation.handleBlur}
                     value={validation.values.isPublished || ""}
                   >
-                    <option value="">Select Status</option>
-                    <option value="published">Published</option>
-                    <option value="unpublished">Unpublished</option>
+                    <option value="">{t("Select Status")}</option>
+                    <option value="published">{t("Published")}</option>
+                    <option value="unpublished">{t("Unpublished")}</option>
                   </select>
                   {validation.touched.isPublished &&
                   validation.errors.isPublished ? (
@@ -419,7 +421,7 @@ const VendorCategories = () => {
               tog_standard();
             }}
           >
-            Close
+            {t("Close")}
           </Button>
           <Button
             color="primary"
@@ -427,7 +429,7 @@ const VendorCategories = () => {
               document.getElementById("add-vendor-category-btn")?.click();
             }}
           >
-            Save changes
+            {t("Save changes")}
           </Button>
         </div>
       </Modal>
@@ -447,7 +449,7 @@ const VendorCategories = () => {
             tog_update();
           }}
         >
-          Update Category
+          {t("Update Category")}
         </ModalHeader>
         <ModalBody>
           <Form
@@ -461,7 +463,7 @@ const VendorCategories = () => {
             {vendorCategoryAddedSuccess && !vendorError?.message ? (
               <>
                 <Alert color="success">
-                  Vendor Category Successfully Updated
+                  {t("Vendor Category Successfully Updated")}
                 </Alert>
               </>
             ) : null}
@@ -491,7 +493,7 @@ const VendorCategories = () => {
               <Col xxl={12} md={12}>
                 <div>
                   <Label htmlFor="updateName" className="form-label">
-                    English Name
+                    {t("English Name")}
                   </Label>
                   <Input
                     type="text"
@@ -519,7 +521,7 @@ const VendorCategories = () => {
               <Col xxl={12} md={12}>
                 <div>
                   <Label htmlFor="updateArName" className="form-label">
-                    Arabic Name
+                    {t("Arabic Name")}
                   </Label>
                   <Input
                     type="text"
@@ -547,7 +549,7 @@ const VendorCategories = () => {
               <Col xxl={12} md={12}>
                 <div>
                   <Label htmlFor="updateIsPublished" className="form-label">
-                    Status
+                    {t("Status")}
                   </Label>
                   <select
                     className="form-select"
@@ -557,9 +559,9 @@ const VendorCategories = () => {
                     onBlur={updateValidation.handleBlur}
                     value={updateValidation.values.isPublished || ""}
                   >
-                    <option value="">Select Status</option>
-                    <option value="published">Published</option>
-                    <option value="unpublished">Unpublished</option>
+                    <option value="">{t("Select Status")}</option>
+                    <option value="published">{t("Published")}</option>
+                    <option value="unpublished">{t("Unpublished")}</option>
                   </select>
                   {updateValidation.touched.isPublished &&
                   updateValidation.errors.isPublished ? (
@@ -588,7 +590,7 @@ const VendorCategories = () => {
               tog_update();
             }}
           >
-            Close
+            {t("Close")}
           </Button>
           <Button
             color="primary"
@@ -596,7 +598,7 @@ const VendorCategories = () => {
               document.getElementById("update-vendor-category-btn")?.click();
             }}
           >
-            Save changes
+            {t("Save changes")}
           </Button>
         </div>
       </Modal>
@@ -614,12 +616,11 @@ const VendorCategories = () => {
             tog_delete();
           }}
         >
-          Confirm Delete
+          {t("Confirm Delete")}
         </ModalHeader>
         <ModalBody>
           <p>
-            Are you sure you want to delete this vendor category? This action
-            cannot be undone.
+            {t("Are you sure you want to delete this vendor category? This action cannot be undone.")}
           </p>
         </ModalBody>
         <div className="modal-footer">
@@ -629,7 +630,7 @@ const VendorCategories = () => {
               tog_delete();
             }}
           >
-            Cancel
+            {t("Cancel")}
           </Button>
           <Button
             color="danger"
@@ -638,7 +639,7 @@ const VendorCategories = () => {
               tog_delete();
             }}
           >
-            Delete
+            {t("Delete")}
           </Button>
         </div>
       </Modal>

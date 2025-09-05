@@ -1,12 +1,14 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Form, FormGroup, Input, Label } from "reactstrap";
+import { useTranslation } from "react-i18next";
 import TableContainer from "../../Components/Common/TableContainerReactTable";
 import { imgURL } from "services/api-handles";
 import EditProductModal from "./modals/edit-product-modal";
 import DeleteConfirmationModal from "./modals/delete-confirmation-modal";
 
 const VendorProductsList = ({ data }: { data: any[] }) => {
+  const { t } = useTranslation();
   const [filter, setFilter] = useState<any[]>([]);
   const [editModal, setEditModal] = useState(false);
   const [deleteModal, setDeleteModal] = useState(false);
@@ -60,7 +62,7 @@ const VendorProductsList = ({ data }: { data: any[] }) => {
   const columns = useMemo(
     () => [
       {
-        header: "ID",
+        header: t("ID"),
         cell: (cell: any) => {
           return <span className="fw-semibold">{cell.getValue()}</span>;
         },
@@ -68,7 +70,7 @@ const VendorProductsList = ({ data }: { data: any[] }) => {
         enableColumnFilter: false,
       },
       {
-        header: "Image",
+        header: t("Image"),
         accessorKey: "images",
         cell: (cell: any) => {
           return (
@@ -86,27 +88,27 @@ const VendorProductsList = ({ data }: { data: any[] }) => {
         enableColumnFilter: false,
       },
       {
-        header: "Name",
+        header: t("Name"),
         accessorKey: "name",
         enableColumnFilter: false,
       },
       {
-        header: "Arabic Name",
+        header: t("Arabic Name"),
         accessorKey: "arName",
         enableColumnFilter: false,
       },
       {
-        header: "Quantity",
+        header: t("Quantity"),
         accessorKey: "quantity",
         enableColumnFilter: false,
       },
       {
-        header: "Price",
+        header: t("Price"),
         accessorKey: "finalPrice",
         enableColumnFilter: false,
       },
       {
-        header: "Action",
+        header: t("Action"),
         cell: (cell: any) => {
           const row = cell.row.original;
           return (
@@ -114,7 +116,7 @@ const VendorProductsList = ({ data }: { data: any[] }) => {
               <button
                 className="btn btn-sm btn-outline-primary"
                 onClick={() => handleEdit(row)}
-                title="Edit Product"
+                title={t("Edit Product")}
               >
                 <i className="ri-edit-line"></i>
               </button>
@@ -123,7 +125,7 @@ const VendorProductsList = ({ data }: { data: any[] }) => {
                 to={"product/" + row.productId}
                 className="btn btn-sm btn-outline-info"
                 // onClick={() => handleView(row.productId)}
-                title="View Product"
+                title={t("View Product")}
               >
                 <i className="ri-eye-line"></i>
               </Link>
@@ -131,7 +133,7 @@ const VendorProductsList = ({ data }: { data: any[] }) => {
               <button
                 className="btn btn-sm btn-outline-danger"
                 onClick={() => handleDelete(row)}
-                title="Delete Product"
+                title={t("Delete Product")}
               >
                 <i className="ri-delete-bin-line"></i>
               </button>
@@ -141,7 +143,7 @@ const VendorProductsList = ({ data }: { data: any[] }) => {
                   type="switch"
                   checked={row.published || false}
                   onChange={() => handleTogglePublish(row)}
-                  title={row.published ? "Unpublish" : "Publish"}
+                  title={row.published ? t("Unpublish") : t("Publish")}
                 />
                 <Label check></Label>
               </FormGroup>
@@ -151,7 +153,7 @@ const VendorProductsList = ({ data }: { data: any[] }) => {
         enableColumnFilter: false,
       },
     ],
-    []
+    [t]
   );
 
   return (
@@ -161,7 +163,7 @@ const VendorProductsList = ({ data }: { data: any[] }) => {
         data={filter || []}
         isGlobalFilter={true}
         customPageSize={5}
-        SearchPlaceholder="Search..."
+        SearchPlaceholder={t("Search...")}
       />
 
       {data?.length > 0 ? (

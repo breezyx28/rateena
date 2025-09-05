@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { Card, CardBody, CardHeader, Col, Row, Input } from "reactstrap";
 import { useFormikContext } from "formik";
+import { useTranslation } from "react-i18next";
 import { imgURL } from "services/api-handles";
 
 type VendorUploadFilesProps = {
@@ -24,6 +25,7 @@ const VendorUploadFiles: React.FC<VendorUploadFilesProps> = ({
   uploadedFiles,
   defaultValues,
 }) => {
+  const { t } = useTranslation();
   const { errors } = useFormikContext<any>();
   const [licenseImageFile, setLicenseImageFile] = useState<File | null>(null);
   const [identityImageFile, setIdentityImageFile] = useState<File | null>(null);
@@ -113,7 +115,7 @@ const VendorUploadFiles: React.FC<VendorUploadFilesProps> = ({
       <Col lg={6}>
         <Card>
           <CardHeader>
-            <h4 className="card-title mb-0">Upload License Image</h4>
+            <h4 className="card-title mb-0">{t("Upload License Image")}</h4>
           </CardHeader>
           <CardBody>
             <Input
@@ -133,7 +135,7 @@ const VendorUploadFiles: React.FC<VendorUploadFilesProps> = ({
               <div className="mt-3">
                 <img
                   src={licensePreview}
-                  alt="License preview"
+                  alt={t("License preview")}
                   style={{
                     maxWidth: "100%",
                     maxHeight: "200px",
@@ -150,7 +152,7 @@ const VendorUploadFiles: React.FC<VendorUploadFilesProps> = ({
       <Col lg={6}>
         <Card>
           <CardHeader>
-            <h4 className="card-title mb-0">Upload UAE ID Image</h4>
+            <h4 className="card-title mb-0">{t("Upload UAE ID Image")}</h4>
           </CardHeader>
           <CardBody>
             <Input
@@ -170,7 +172,7 @@ const VendorUploadFiles: React.FC<VendorUploadFilesProps> = ({
               <div className="mt-3">
                 <img
                   src={identityPreview}
-                  alt="Identity preview"
+                  alt={t("Identity preview")}
                   style={{
                     maxWidth: "100%",
                     maxHeight: "200px",
@@ -187,7 +189,7 @@ const VendorUploadFiles: React.FC<VendorUploadFilesProps> = ({
       <Col lg={6}>
         <Card>
           <CardHeader>
-            <h4 className="card-title mb-0">Upload Profile Image</h4>
+            <h4 className="card-title mb-0">{t("Upload Profile Image")}</h4>
           </CardHeader>
           <CardBody>
             <Input
@@ -207,7 +209,7 @@ const VendorUploadFiles: React.FC<VendorUploadFilesProps> = ({
               <div className="mt-3">
                 <img
                   src={profilePreview}
-                  alt="Profile preview"
+                  alt={t("Profile preview")}
                   style={{
                     maxWidth: "100%",
                     maxHeight: "200px",
@@ -224,7 +226,7 @@ const VendorUploadFiles: React.FC<VendorUploadFilesProps> = ({
       <Col lg={6}>
         <Card>
           <CardHeader>
-            <h4 className="card-title mb-0">Upload Cover Image</h4>
+            <h4 className="card-title mb-0">{t("Upload Cover Image")}</h4>
           </CardHeader>
           <CardBody>
             <Input
@@ -244,7 +246,7 @@ const VendorUploadFiles: React.FC<VendorUploadFilesProps> = ({
               <div className="mt-3">
                 <img
                   src={coverPreview}
-                  alt="Cover preview"
+                  alt={t("Cover preview")}
                   style={{
                     maxWidth: "100%",
                     maxHeight: "200px",

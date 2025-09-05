@@ -6,8 +6,10 @@ import DeleteConfirmationModal from "./admin-users-modals/delete-confirmation-mo
 import { useDispatch, useSelector } from "react-redux";
 import { createSelector } from "reselect";
 import { deleteAdminUserMutation } from "slices/thunks";
+import { useTranslation } from "react-i18next";
 
 const AdminUsersListTable = ({ data }: { data: any[] }) => {
+  const { t } = useTranslation();
   const [filter, setFilter] = useState<any[]>(data || []);
   const [reset_password_modal_standard, setResetPasswordModalStandard] =
     useState<boolean>(false);
@@ -80,7 +82,7 @@ const AdminUsersListTable = ({ data }: { data: any[] }) => {
   const columns = useMemo(
     () => [
       {
-        header: "ID",
+        header: t("ID"),
         cell: (cell: any) => {
           return <span className="fw-semibold">{cell.getValue()}</span>;
         },
@@ -89,17 +91,17 @@ const AdminUsersListTable = ({ data }: { data: any[] }) => {
       },
 
       {
-        header: "Phone",
+        header: t("Phone"),
         accessorKey: "phone",
         enableColumnFilter: false,
       },
       {
-        header: "Email",
+        header: t("Email"),
         accessorKey: "email",
         enableColumnFilter: false,
       },
       {
-        header: "Action",
+        header: t("Action"),
         cell: (cell: any) => {
           const row = cell.row.original; // full row data
           return (
@@ -147,7 +149,7 @@ const AdminUsersListTable = ({ data }: { data: any[] }) => {
         enableColumnFilter: false,
       },
     ],
-    []
+    [t]
   );
 
   return (
@@ -157,7 +159,7 @@ const AdminUsersListTable = ({ data }: { data: any[] }) => {
         data={filter}
         isGlobalFilter={true}
         customPageSize={5}
-        SearchPlaceholder="Search..."
+        SearchPlaceholder={t("Search...")}
       />
       <ResetPasswordModal
         modal_standard={reset_password_modal_standard}

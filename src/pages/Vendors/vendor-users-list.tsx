@@ -1,5 +1,6 @@
 import React, { useMemo, useState, useEffect } from "react";
 import TableContainer from "../../Components/Common/TableContainerReactTable";
+import { useTranslation } from "react-i18next";
 
 const VendorUsersList = ({
   data,
@@ -10,6 +11,7 @@ const VendorUsersList = ({
   onEditUser?: (user: any) => void;
   onDeleteUser?: (userId: number) => void;
 }) => {
+  const { t } = useTranslation();
   const [filter, setFilter] = useState<any[]>([]);
 
   useEffect(() => {
@@ -34,7 +36,7 @@ const VendorUsersList = ({
   const columns = useMemo(
     () => [
       {
-        header: "ID",
+        header: t("ID"),
         cell: (cell: any) => {
           return <span className="fw-semibold">{cell.getValue()}</span>;
         },
@@ -42,17 +44,17 @@ const VendorUsersList = ({
         enableColumnFilter: false,
       },
       {
-        header: "Email",
+        header: t("Email"),
         accessorKey: "email",
         enableColumnFilter: false,
       },
       {
-        header: "Phone",
+        header: t("Phone"),
         accessorKey: "phone",
         enableColumnFilter: false,
       },
       {
-        header: "Action",
+        header: t("Action"),
         cell: (cell: any) => {
           const row = cell.row.original; // full row data
           return (
@@ -93,7 +95,7 @@ const VendorUsersList = ({
         data={filter || []}
         isGlobalFilter={true}
         customPageSize={5}
-        SearchPlaceholder="Search..."
+        SearchPlaceholder={t("Search...")}
       />
     </React.Fragment>
   );

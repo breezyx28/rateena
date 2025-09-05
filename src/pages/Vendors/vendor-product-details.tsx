@@ -175,7 +175,7 @@ const VendorProductDetails = () => {
     <React.Fragment>
       <div className="page-content">
         <Container fluid>
-          <BreadCrumb title="Product Details" pageTitle="Vendors" />
+          <BreadCrumb title={t("Product Details")} pageTitle={t("Vendors")} />
 
           <ToastContainer />
 
@@ -186,14 +186,13 @@ const VendorProductDetails = () => {
                 {selectedProduct.quantity <= 5 && (
                   <Alert color="warning" className="d-flex align-items-center">
                     <i className="ri-alert-line me-2"></i>
-                    Low quantity alert! Only {selectedProduct?.quantity} items
-                    left.
+                    {t("Low quantity alert! Only")} {selectedProduct?.quantity} {t("items left.")}
                     <Button
                       color="link"
                       className="p-0 ms-2 text-decoration-underline"
                       onClick={toggleEditModal}
                     >
-                      Update
+                      {t("Update")}
                     </Button>
                     {selectedProduct?.published && (
                       <Button
@@ -201,7 +200,7 @@ const VendorProductDetails = () => {
                         className="p-0 ms-2 text-decoration-underline"
                         onClick={handleTogglePublish}
                       >
-                        Unpublish
+                        {t("Unpublish")}
                       </Button>
                     )}
                   </Alert>
@@ -209,7 +208,7 @@ const VendorProductDetails = () => {
                 {!selectedProduct?.published && (
                   <Alert color="info" className="d-flex align-items-center">
                     <i className="ri-information-line me-2"></i>
-                    This product is not visible to customers
+                    {t("This product is not visible to customers")}
                   </Alert>
                 )}
               </div>
@@ -224,7 +223,7 @@ const VendorProductDetails = () => {
                     {selectedProduct?.category?.name}
                   </Badge>
                   <Badge color="info" className="fs-6">
-                    Company Profit: {selectedProduct?.companyProfit}%
+                    {t("Company Profit:")} {selectedProduct?.companyProfit}%
                   </Badge>
                   {/* <Button color="danger" size="sm" onClick={toggleDeleteModal}>
                     <i className="ri-delete-bin-line"></i>
@@ -261,7 +260,7 @@ const VendorProductDetails = () => {
                     {/* Product Characteristics */}
                     <Card>
                       <CardBody>
-                        <h5 className="card-title">Product Characteristics</h5>
+                        <h5 className="card-title">{t("Product Characteristics")}</h5>
                         {optionGroups.map((group: string) => (
                           <div
                             key={group}
@@ -317,7 +316,7 @@ const VendorProductDetails = () => {
                                 <div className="flex-grow-1">
                                   <Input
                                     type="text"
-                                    placeholder="Eg: Large"
+                                    placeholder={t("Eg: Large")}
                                     value={newOptionName}
                                     onChange={(e) =>
                                       setNewOptionName(e.target.value)
@@ -326,7 +325,7 @@ const VendorProductDetails = () => {
                                   />
                                 </div>
                                 <Button type="submit" color="primary" size="sm">
-                                  Add
+                                  {t("Add")}
                                 </Button>
                               </Form>
                             )}
@@ -341,7 +340,7 @@ const VendorProductDetails = () => {
                             <div className="flex-grow-1">
                               <Input
                                 type="text"
-                                placeholder="Eg: Size"
+                                placeholder={t("Eg: Size")}
                                 value={newOptionName}
                                 onChange={(e) =>
                                   setNewOptionName(e.target.value)
@@ -352,7 +351,7 @@ const VendorProductDetails = () => {
                             <div className="flex-grow-1">
                               <Input
                                 type="text"
-                                placeholder="Group name"
+                                placeholder={t("Group name")}
                                 value={newOptionGroup}
                                 onChange={(e) =>
                                   setNewOptionGroup(e.target.value)
@@ -361,7 +360,7 @@ const VendorProductDetails = () => {
                               />
                             </div>
                             <Button type="submit" color="primary" size="sm">
-                              Add
+                              {t("Add")}
                             </Button>
                           </Form>
                         )}
@@ -372,7 +371,7 @@ const VendorProductDetails = () => {
                           size="sm"
                           onClick={() => setShowNewGroupForm(!showNewGroupForm)}
                         >
-                          New Group
+                          {t("New Group")}
                         </Button>
                       </CardBody>
                     </Card>
@@ -380,7 +379,7 @@ const VendorProductDetails = () => {
                     {/* Product Addons */}
                     <Card>
                       <CardBody>
-                        <h5 className="card-title">Product Addons</h5>
+                        <h5 className="card-title">{t("Product Addons")}</h5>
                         <div className="border border-dashed rounded p-3">
                           <div className="d-flex flex-wrap align-items-start gap-2 mb-3">
                             {selectedProduct?.options
@@ -434,7 +433,7 @@ const VendorProductDetails = () => {
                               <div className="flex-grow-1">
                                 <Input
                                   type="text"
-                                  placeholder="Addon name"
+                                  placeholder={t("Addon name")}
                                   value={newOptionName}
                                   onChange={(e) =>
                                     setNewOptionName(e.target.value)
@@ -445,7 +444,7 @@ const VendorProductDetails = () => {
                               <div className="flex-grow-1">
                                 <Input
                                   type="number"
-                                  placeholder="Fee"
+                                  placeholder={t("Fee")}
                                   value={newOptionFee}
                                   onChange={(e) =>
                                     setNewOptionFee(e.target.value)
@@ -454,7 +453,7 @@ const VendorProductDetails = () => {
                                 />
                               </div>
                               <Button type="submit" color="primary" size="sm">
-                                Add
+                                {t("Add")}
                               </Button>
                             </Form>
                           )}
@@ -468,7 +467,7 @@ const VendorProductDetails = () => {
                 <Col lg={4}>
                   <Card>
                     <CardBody>
-                      <h5 className="card-title">Product Images</h5>
+                      <h5 className="card-title">{t("Product Images")}</h5>
                       <div className="d-flex flex-column gap-3">
                         {selectedProduct?.images?.map(
                           (img: string, index: number) => (
@@ -505,7 +504,7 @@ const VendorProductDetails = () => {
                           />
                           {selectedFiles.length > 0 && (
                             <div className="text-muted">
-                              {selectedFiles.length} file(s) selected
+                              {selectedFiles.length} {t("file(s) selected")}
                             </div>
                           )}
                         </div>
@@ -518,7 +517,7 @@ const VendorProductDetails = () => {
           ) : (
             <div className="text-center">
               <div className="spinner-border" role="status">
-                <span className="visually-hidden">Loading...</span>
+                <span className="visually-hidden">{t("Loading...")}</span>
               </div>
             </div>
           )}

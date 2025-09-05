@@ -28,7 +28,7 @@ import { createSelector } from "reselect";
 import { useTranslation } from "react-i18next";
 
 export const CustomersList = ({ data }: { data?: any[] }) => {
-  const { i18n } = useTranslation();
+  const { i18n, t } = useTranslation();
   const [customerId, setCustomerId] = useState<any>(null);
   const [modal_standard, setmodal_standard] = useState<boolean>(false);
   const [modal_delete, setmodal_delete] = useState<boolean>(false);
@@ -103,25 +103,25 @@ export const CustomersList = ({ data }: { data?: any[] }) => {
     },
     validationSchema: Yup.object({
       first_name: Yup.string()
-        .min(2, "First name must be at least 2 characters")
-        .max(50, "First name must not exceed 50 characters")
-        .required("First Name is Required"),
+        .min(2, t("First name must be at least 2 characters"))
+        .max(50, t("First name must not exceed 50 characters"))
+        .required(t("First Name is Required")),
       last_name: Yup.string()
-        .min(2, "Last name must be at least 2 characters")
-        .max(50, "Last name must not exceed 50 characters")
-        .required("Last Name is Required"),
+        .min(2, t("Last name must be at least 2 characters"))
+        .max(50, t("Last name must not exceed 50 characters"))
+        .required(t("Last Name is Required")),
       gender: Yup.string()
-        .oneOf(["MALE", "FEMALE"], "Gender must be either MALE or FEMALE")
-        .required("Gender is Required"),
+        .oneOf(["MALE", "FEMALE"], t("Gender must be either MALE or FEMALE"))
+        .required(t("Gender is Required")),
       date_of_birth: Yup.date()
-        .max(new Date(), "Date of birth cannot be in the future")
-        .required("Date Of Birth is Required"),
+        .max(new Date(), t("Date of birth cannot be in the future"))
+        .required(t("Date Of Birth is Required")),
       email: Yup.string()
-        .email("it should match email format")
-        .required("Email is Required"),
+        .email(t("it should match email format"))
+        .required(t("Email is Required")),
       phone: Yup.string()
-        .matches(/^(009665|\+9665|05)\d{8}$/, "it should match phone format")
-        .required("hone Number is Required"),
+        .matches(/^(009665|\+9665|05)\d{8}$/, t("it should match phone format"))
+        .required(t("hone Number is Required")),
     }),
     onSubmit: (values) => {
       console.log("form-values: ", values);
@@ -132,7 +132,7 @@ export const CustomersList = ({ data }: { data?: any[] }) => {
   const columns = useMemo(
     () => [
       {
-        header: "ID",
+        header: t("ID"),
         cell: (cell: any) => {
           return <span className="fw-semibold">{cell.getValue()}</span>;
         },
@@ -140,37 +140,37 @@ export const CustomersList = ({ data }: { data?: any[] }) => {
         enableColumnFilter: false,
       },
       {
-        header: "First Name",
+        header: t("First Name"),
         accessorKey: "customer.firstName",
         enableColumnFilter: false,
       },
       {
-        header: "Last Name",
+        header: t("Last Name"),
         accessorKey: "customer.lastName",
         enableColumnFilter: false,
       },
       {
-        header: "Email",
+        header: t("Email"),
         accessorKey: "customer.email",
         enableColumnFilter: false,
       },
       {
-        header: "Phone",
+        header: t("Phone"),
         accessorKey: "customer.phone",
         enableColumnFilter: false,
       },
       {
-        header: "Gender",
+        header: t("Gender"),
         accessorKey: "customer.gender",
         enableColumnFilter: false,
       },
       {
-        header: "Date Of Birth",
+        header: t("Date Of Birth"),
         accessorKey: "customer.dateOfBirth",
         enableColumnFilter: false,
       },
       {
-        header: "Action",
+        header: t("Action"),
         cell: (cell: any) => {
           return (
             <div className="d-flex gap-3">
@@ -215,7 +215,7 @@ export const CustomersList = ({ data }: { data?: any[] }) => {
         enableColumnFilter: false,
       },
     ],
-    []
+    [t]
   );
 
   return (
@@ -225,7 +225,7 @@ export const CustomersList = ({ data }: { data?: any[] }) => {
         data={filter || []}
         isGlobalFilter={true}
         customPageSize={5}
-        SearchPlaceholder="Search..."
+        SearchPlaceholder={t("Search...")}
       />
       {/* Default Modal */}
       <Modal
@@ -242,7 +242,7 @@ export const CustomersList = ({ data }: { data?: any[] }) => {
             tog_standard();
           }}
         >
-          Add User
+          {t("Add User")}
         </ModalHeader>
         <ModalBody>
           <Form
@@ -255,7 +255,7 @@ export const CustomersList = ({ data }: { data?: any[] }) => {
           >
             {customerData ? (
               <>
-                {toast("Your Redirect To Login Page...", {
+                {toast(t("Your Redirect To Login Page..."), {
                   position: "top-right",
                   hideProgressBar: false,
                   className: "bg-success text-white",
@@ -263,7 +263,7 @@ export const CustomersList = ({ data }: { data?: any[] }) => {
                   toastId: "",
                 })}
                 <ToastContainer autoClose={2000} limit={1} />
-                <Alert color="success">Customer Successfully Updated</Alert>
+                <Alert color="success">{t("Customer Successfully Updated")}</Alert>
               </>
             ) : null}
             <Row className="gy-4">
@@ -288,7 +288,7 @@ export const CustomersList = ({ data }: { data?: any[] }) => {
               <Col xxl={12} md={12}>
                 <div>
                   <Label htmlFor="first_name" className="form-label">
-                    Fist Name
+                    {t("Fist Name")}
                   </Label>
                   <Input
                     type="text"
@@ -310,7 +310,7 @@ export const CustomersList = ({ data }: { data?: any[] }) => {
               <Col xxl={12} md={12}>
                 <div>
                   <Label htmlFor="last_name" className="form-label">
-                    Last Name
+                    {t("Last Name")}
                   </Label>
                   <Input
                     type="text"
@@ -332,7 +332,7 @@ export const CustomersList = ({ data }: { data?: any[] }) => {
               <Col xxl={12} md={12}>
                 <div>
                   <Label htmlFor="phone" className="form-label">
-                    Phone
+                    {t("Phone")}
                   </Label>
                   <Input
                     type="text"
@@ -353,7 +353,7 @@ export const CustomersList = ({ data }: { data?: any[] }) => {
               <Col xxl={12} md={12}>
                 <div>
                   <Label htmlFor="email" className="form-label">
-                    Email
+                    {t("Email")}
                   </Label>
                   <div className="form-icon">
                     <Input
@@ -376,7 +376,7 @@ export const CustomersList = ({ data }: { data?: any[] }) => {
               <Col xxl={12} md={12}>
                 <div>
                   <Label htmlFor="dateOfBirth" className="form-label">
-                    Date of Birth
+                    {t("Date of Birth")}
                   </Label>
                   <div className="form-icon">
                     <Input
@@ -400,7 +400,7 @@ export const CustomersList = ({ data }: { data?: any[] }) => {
               <Col xxl={12} md={12}>
                 <div>
                   <Label htmlFor="gender" className="form-label">
-                    Select Gender
+                    {t("Select Gender")}
                   </Label>
                   <Input
                     type="select"
@@ -413,12 +413,12 @@ export const CustomersList = ({ data }: { data?: any[] }) => {
                       validation.touched.gender && !!validation.errors.gender
                     }
                   >
-                    <option value="">Select Gender</option>
+                    <option value="">{t("Select Gender")}</option>
                     <option value={"MALE"}>
-                      {i18n.dir() === "rtl" ? "ذكر" : "Male"}
+                      {t("Male")}
                     </option>
                     <option value={"FEMALE"}>
-                      {i18n.dir() === "rtl" ? "أنثى" : "Female"}
+                      {t("Female")}
                     </option>
                   </Input>
 
@@ -446,7 +446,7 @@ export const CustomersList = ({ data }: { data?: any[] }) => {
               tog_standard();
             }}
           >
-            Close
+            {t("Close")}
           </Button>
           <Button
             color="primary"
@@ -454,7 +454,7 @@ export const CustomersList = ({ data }: { data?: any[] }) => {
               document.getElementById("update-customer-btn")?.click();
             }}
           >
-            Save changes
+            {t("Save changes")}
           </Button>
         </div>
       </Modal>
@@ -472,12 +472,11 @@ export const CustomersList = ({ data }: { data?: any[] }) => {
             tog_delete();
           }}
         >
-          Confirm Delete
+          {t("Confirm Delete")}
         </ModalHeader>
         <ModalBody>
           <p>
-            Are you sure you want to delete this customer? This action cannot be
-            undone.
+            {t("Are you sure you want to delete this customer? This action cannot be undone.")}
           </p>
         </ModalBody>
         <div className="modal-footer">
@@ -487,7 +486,7 @@ export const CustomersList = ({ data }: { data?: any[] }) => {
               tog_delete();
             }}
           >
-            Cancel
+            {t("Cancel")}
           </Button>
           <Button
             color="danger"
@@ -497,7 +496,7 @@ export const CustomersList = ({ data }: { data?: any[] }) => {
               tog_delete();
             }}
           >
-            Delete
+            {t("Delete")}
           </Button>
         </div>
       </Modal>

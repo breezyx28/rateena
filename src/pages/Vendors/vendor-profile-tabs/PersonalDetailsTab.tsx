@@ -5,6 +5,7 @@ import { Formik, ErrorMessage, useFormikContext } from "formik";
 import * as Yup from "yup";
 import { useDispatch } from "react-redux";
 import { toast } from "react-toastify";
+import { useTranslation } from "react-i18next";
 import { addVendorMutation } from "slices/thunks";
 import { mapServerErrorsToFormik } from "../../../helpers/error-helper";
 import VendorUploadFiles from "../vendor-upload-files";
@@ -28,6 +29,7 @@ const PersonalDetailsTab: React.FC<PersonalDetailsTabProps> = ({
   selectedCoords,
   setSelectedCoords,
 }) => {
+  const { t } = useTranslation();
   const dispatch: any = useDispatch();
   const [files, setFiles] = useState({
     licenseImageFile: null,
@@ -210,7 +212,7 @@ const PersonalDetailsTab: React.FC<PersonalDetailsTabProps> = ({
             <Col lg={6}>
               <div className="mb-3">
                 <Label htmlFor="englishfullnameInput" className="form-label">
-                  English Name
+                  {t("English Name")}
                 </Label>
                 <Input
                   type="text"
@@ -218,7 +220,7 @@ const PersonalDetailsTab: React.FC<PersonalDetailsTabProps> = ({
                     errors.fullName && touched.fullName ? "is-invalid" : ""
                   }`}
                   id="englishfullnameInput"
-                  placeholder="Enter English Full Name"
+                  placeholder={t("Enter English Full Name")}
                   name="fullName"
                   value={values.fullName}
                   onChange={handleChange}
@@ -234,7 +236,7 @@ const PersonalDetailsTab: React.FC<PersonalDetailsTabProps> = ({
             <Col lg={6}>
               <div className="mb-3">
                 <Label htmlFor="arabicfullnameInput" className="form-label">
-                  Arabic Name
+                  {t("Arabic Name")}
                 </Label>
                 <Input
                   type="text"
@@ -242,7 +244,7 @@ const PersonalDetailsTab: React.FC<PersonalDetailsTabProps> = ({
                     errors.arFullName && touched.arFullName ? "is-invalid" : ""
                   }`}
                   id="arabicfullnameInput"
-                  placeholder="Enter Arabic Full Name"
+                  placeholder={t("Enter Arabic Full Name")}
                   name="arFullName"
                   value={values.arFullName}
                   onChange={handleChange}
@@ -258,7 +260,7 @@ const PersonalDetailsTab: React.FC<PersonalDetailsTabProps> = ({
             <Col lg={6}>
               <div className="mb-3">
                 <Label htmlFor="phonenumberInput" className="form-label">
-                  Phone Number
+                  {t("Phone Number")}
                 </Label>
                 <Input
                   type="text"
@@ -266,7 +268,7 @@ const PersonalDetailsTab: React.FC<PersonalDetailsTabProps> = ({
                     errors.userPhone && touched.userPhone ? "is-invalid" : ""
                   }`}
                   id="phonenumberInput"
-                  placeholder="Enter your phone number"
+                  placeholder={t("Enter your phone number")}
                   name="userPhone"
                   value={values.userPhone}
                   onChange={handleChange}
@@ -282,7 +284,7 @@ const PersonalDetailsTab: React.FC<PersonalDetailsTabProps> = ({
             <Col lg={6}>
               <div className="mb-3">
                 <Label htmlFor="emailInput" className="form-label">
-                  Email Address
+                  {t("Email Address")}
                 </Label>
                 <Input
                   type="email"
@@ -290,7 +292,7 @@ const PersonalDetailsTab: React.FC<PersonalDetailsTabProps> = ({
                     errors.userEmail && touched.userEmail ? "is-invalid" : ""
                   }`}
                   id="emailInput"
-                  placeholder="Enter your email"
+                  placeholder={t("Enter your email")}
                   name="userEmail"
                   value={values.userEmail}
                   onChange={handleChange}
@@ -307,7 +309,7 @@ const PersonalDetailsTab: React.FC<PersonalDetailsTabProps> = ({
             <Col lg={6}>
               <div className="mb-3">
                 <Label htmlFor="maxkilometerdelivery" className="form-label">
-                  Max Kilometer Delivery
+                  {t("Max Kilometer Delivery")}
                 </Label>
                 <Input
                   type="number"
@@ -318,7 +320,7 @@ const PersonalDetailsTab: React.FC<PersonalDetailsTabProps> = ({
                   }`}
                   id="maxkilometerdelivery"
                   name="maxKilometerDelivery"
-                  placeholder="Enter max Kilometer Delivery"
+                  placeholder={t("Enter max Kilometer Delivery")}
                   value={values.maxKilometerDelivery}
                   onChange={handleChange}
                   onBlur={handleBlur}
@@ -336,7 +338,7 @@ const PersonalDetailsTab: React.FC<PersonalDetailsTabProps> = ({
                   htmlFor="minchargeforlongdistance"
                   className="form-label"
                 >
-                  Min Charge For Long Distances
+                  {t("Min Charge For Long Distances")}
                 </Label>
                 <Input
                   type="number"
@@ -348,7 +350,7 @@ const PersonalDetailsTab: React.FC<PersonalDetailsTabProps> = ({
                   }`}
                   id="minchargeforlongdistance"
                   name="minChargeLongDistance"
-                  placeholder="Enter min Charge for Long Distance"
+                  placeholder={t("Enter min Charge for Long Distance")}
                   value={values.minChargeLongDistance}
                   onChange={handleChange}
                   onBlur={handleBlur}
@@ -364,7 +366,7 @@ const PersonalDetailsTab: React.FC<PersonalDetailsTabProps> = ({
             <Col lg={6}>
               <div className="mb-3">
                 <Label htmlFor="openingtimeinput" className="form-label">
-                  Opening Time
+                  {t("Opening Time")}
                 </Label>
                 <Flatpickr
                   className={`form-control ${
@@ -402,7 +404,7 @@ const PersonalDetailsTab: React.FC<PersonalDetailsTabProps> = ({
             <Col lg={6}>
               <div className="mb-3">
                 <Label htmlFor="closingtimeinput" className="form-label">
-                  Closing Time
+                  {t("Closing Time")}
                 </Label>
                 <Flatpickr
                   className={`form-control ${
@@ -440,7 +442,7 @@ const PersonalDetailsTab: React.FC<PersonalDetailsTabProps> = ({
             <Col lg={12}>
               <div className="mb-3">
                 <Label htmlFor="regionInput" className="form-label">
-                  Region
+                  {t("Region")}
                 </Label>
                 <select
                   className={`form-select ${
@@ -451,7 +453,7 @@ const PersonalDetailsTab: React.FC<PersonalDetailsTabProps> = ({
                   onChange={handleChange}
                   onBlur={handleBlur}
                 >
-                  <option value="">Select Region</option>
+                  <option value="">{t("Select Region")}</option>
                   {supportedRegions.map((region) => (
                     <option key={region.id} value={region.value}>
                       {region.name}
@@ -468,7 +470,7 @@ const PersonalDetailsTab: React.FC<PersonalDetailsTabProps> = ({
             <Col lg={12}>
               <div className="mb-3">
                 <Label htmlFor="vendorTypeInput" className="form-label">
-                  Vendor Type
+                  {t("Vendor Type")}
                 </Label>
                 <select
                   className={`form-select ${
@@ -479,7 +481,7 @@ const PersonalDetailsTab: React.FC<PersonalDetailsTabProps> = ({
                   onChange={handleChange}
                   onBlur={handleBlur}
                 >
-                  <option value="">Select Vendor Type</option>
+                  <option value="">{t("Select Vendor Type")}</option>
                   {supportedVendorType.map((type) => (
                     <option key={type.id} value={type.value}>
                       {type.name}
@@ -523,10 +525,10 @@ const PersonalDetailsTab: React.FC<PersonalDetailsTabProps> = ({
                   className="btn btn-primary"
                   disabled={isSubmitting}
                 >
-                  {isSubmitting ? "Updating..." : "Update Vendor Info"}
+                  {isSubmitting ? t("Updating...") : t("Update Vendor Info")}
                 </button>
                 <button type="button" className="btn btn-soft-success">
-                  Cancel
+                  {t("Cancel")}
                 </button>
               </div>
             </Col>

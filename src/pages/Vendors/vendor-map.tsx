@@ -6,6 +6,7 @@ import {
 } from "@react-google-maps/api";
 import React, { useState } from "react";
 import { Card, CardBody, CardHeader } from "reactstrap";
+import { useTranslation } from "react-i18next";
 
 const containerStyle = {
   width: "100%",
@@ -21,6 +22,7 @@ const VendorMap = ({
   selectedCoords: React.Dispatch<any>;
   currentCoords: { lat: number; lng: number } | undefined;
 }) => {
+  const { t } = useTranslation();
   const [selected, setSelected] = useState<{ lat: number; lng: number } | null>(
     null
   );
@@ -48,7 +50,7 @@ const VendorMap = ({
   return (
     <Card className="pb-4">
       <CardHeader>
-        <h4 className="card-title mb-0">Select Vendor Location</h4>
+        <h4 className="card-title mb-0">{t("Select Vendor Location")}</h4>
         {selected && (
           <div className="w-full d-flex justify-content-center justify-items-center gap-4">
             <span className="text-success badge-success">
@@ -98,7 +100,7 @@ const VendorMap = ({
                 >
                   <input
                     type="text"
-                    placeholder="Search location"
+                    placeholder={t("Search location")}
                     className="form-control"
                     style={{ background: "#fff" }}
                   />

@@ -4,8 +4,10 @@ import { OrdersList } from "./orders-list";
 import { useDispatch, useSelector } from "react-redux";
 import { createSelector } from "reselect";
 import { getOrdersListQuery } from "slices/thunks";
+import { useTranslation } from "react-i18next";
 
 const CustomersOrders = () => {
+  const { t } = useTranslation();
   document.title = "Customers Orders | Rateena - E-Shop Admin Panel";
 
   const dispatch: any = useDispatch();
@@ -43,7 +45,7 @@ const CustomersOrders = () => {
             <Col lg={12}>
               <Card>
                 <CardHeader>
-                  <h5 className="card-title mb-0">Search</h5>
+                  <h5 className="card-title mb-0">{t("Search")}</h5>
                 </CardHeader>
                 <CardBody>
                   <OrdersList data={ordersListSuccess?.list ?? []} />

@@ -1,5 +1,6 @@
 import React from "react";
 import { Button, Modal, ModalBody, ModalHeader } from "reactstrap";
+import { useTranslation } from "react-i18next";
 
 interface DeleteConfirmationModalProps {
   modal_standard: boolean;
@@ -16,6 +17,8 @@ const DeleteConfirmationModal: React.FC<DeleteConfirmationModalProps> = ({
   vendorId,
   vendorName,
 }) => {
+  const { t } = useTranslation();
+  
   const handleConfirm = () => {
     onConfirm();
     tog_standard();
@@ -38,7 +41,7 @@ const DeleteConfirmationModal: React.FC<DeleteConfirmationModalProps> = ({
             tog_standard();
           }}
         >
-          Confirm Delete Vendor
+          {t("Confirm Delete Vendor")}
         </ModalHeader>
         <ModalBody>
           <div className="text-center">
@@ -49,16 +52,15 @@ const DeleteConfirmationModal: React.FC<DeleteConfirmationModalProps> = ({
               ></i>
             </div>
             <h5 className="mb-3">
-              Are you sure you want to delete this vendor?
+              {t("Are you sure you want to delete this vendor?")}
             </h5>
             {vendorName && (
               <p className="text-muted mb-4">
-                Vendor: <strong>{vendorName}</strong> (ID: {vendorId})
+                {t("Vendor:")}{" "}<strong>{vendorName}</strong> (ID: {vendorId})
               </p>
             )}
             <p className="text-muted">
-              This action cannot be undone. The vendor and all associated data
-              will be permanently removed from the system.
+              {t("This action cannot be undone. The vendor and all associated data will be permanently removed from the system.")}
             </p>
           </div>
         </ModalBody>
@@ -69,10 +71,10 @@ const DeleteConfirmationModal: React.FC<DeleteConfirmationModalProps> = ({
               tog_standard();
             }}
           >
-            Cancel
+            {t("Cancel")}
           </Button>
           <Button color="danger" onClick={handleConfirm}>
-            Delete Vendor
+            {t("Delete Vendor")}
           </Button>
         </div>
       </Modal>

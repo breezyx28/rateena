@@ -40,7 +40,7 @@ const AdvertisementsList = ({
   data: any[];
   vendorsListSuccess?: any;
 }) => {
-  const { i18n } = useTranslation();
+  const { i18n, t } = useTranslation();
   const [imageModal, setImageModal] = useState(false);
   const [editModal, setEditModal] = useState(false);
   const [deleteModal, setDeleteModal] = useState(false);
@@ -195,7 +195,7 @@ const AdvertisementsList = ({
       !ad.isShown
     );
     toast.success(
-      `Advertisement ${ad.isShown ? "hidden" : "shown"} successfully`
+      `${t("Advertisement")} ${ad.isShown ? t("hidden") : t("shown")} ${t("successfully")}`
     );
   };
   // Normalize time to HH:mm:ss
@@ -327,7 +327,7 @@ const AdvertisementsList = ({
   // Show success toast when advertisement is updated successfully
   React.useEffect(() => {
     if (advertisementUpdatedSuccess && !advertisementError) {
-      toast.success("Advertisement updated successfully");
+      toast.success(t("Advertisement updated successfully"));
       setEditModal(false);
       editForm.resetForm();
       setSelectedFiles([]);
@@ -339,7 +339,7 @@ const AdvertisementsList = ({
     <React.Fragment>
       <Card>
         <CardHeader>
-          <h4 className="card-title mb-0">Advertisements by Priority</h4>
+          <h4 className="card-title mb-0">{t("Advertisements by Priority")}</h4>
         </CardHeader>
         <CardBody>
           {/* Search and Filter Section */}
@@ -349,7 +349,7 @@ const AdvertisementsList = ({
                 <Input
                   type="text"
                   className="form-control search"
-                  placeholder="Search advertisements..."
+                  placeholder={t("Search advertisements...")}
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                 />
@@ -364,9 +364,9 @@ const AdvertisementsList = ({
                   value={statusFilter}
                   onChange={(e) => setStatusFilter(e.target.value)}
                 >
-                  <option value="">All Status</option>
-                  <option value="active">Active</option>
-                  <option value="expired">Expired</option>
+                  <option value="">{t("All Status")}</option>
+                  <option value="active">{t("Active")}</option>
+                  <option value="expired">{t("Expired")}</option>
                 </Input>
               </div>
             </Col>
@@ -382,7 +382,7 @@ const AdvertisementsList = ({
                   disabled={!searchTerm && !statusFilter}
                 >
                   <i className="ri-refresh-line me-1"></i>
-                  Clear
+                  {t("Clear")}
                 </Button>
               </div>
             </Col>
@@ -393,16 +393,16 @@ const AdvertisementsList = ({
             <div className="mb-3">
               <p className="text-muted mb-0">
                 <i className="ri-information-line me-1"></i>
-                Showing{" "}
+                {t("Showing")}{" "}
                 {Object.values(
                   groupedAdvertisements as Record<number, any[]>
                 ).reduce(
                   (total: number, ads: any[]) => total + ads.length,
                   0
                 )}{" "}
-                result(s)
-                {searchTerm && ` for "${searchTerm}"`}
-                {statusFilter && ` with status "${statusFilter}"`}
+                {t("result(s)")}
+                {searchTerm && ` ${t("for")} "${searchTerm}"`}
+                {statusFilter && ` ${t("with status")} "${statusFilter}"`}
               </p>
             </div>
           )}
@@ -411,31 +411,31 @@ const AdvertisementsList = ({
             {Object.keys(groupedAdvertisements).length === 0 ? (
               <div className="text-center py-4">
                 <i className="ri-search-line fs-1 text-muted mb-3"></i>
-                <h5 className="text-muted">No advertisements found</h5>
+                <h5 className="text-muted">{t("No advertisements found")}</h5>
                 <p className="text-muted">
                   {searchTerm || statusFilter
-                    ? "Try adjusting your search criteria or filters."
-                    : "No advertisements available at the moment."}
+                    ? t("Try adjusting your search criteria or filters.")
+                    : t("No advertisements available at the moment.")}
                 </p>
               </div>
             ) : (
               <Table className="table-centered align-middle table-nowrap mb-0">
                 <thead className="text-muted table-light">
                   <tr>
-                    <th>Title</th>
+                    <th>{t("Title")}</th>
                     {/* <th>Arabic Title</th> */}
-                    <th>Subtitle</th>
+                    <th>{t("Subtitle")}</th>
                     {/* <th>Arabic Subtitle</th> */}
-                    <th>Start Date</th>
-                    <th>End Date</th>
+                    <th>{t("Start Date")}</th>
+                    <th>{t("End Date")}</th>
                     {/* <th>Start Time</th> */}
                     {/* <th>End Time</th> */}
                     {/* <th>Redirect Link</th> */}
-                    <th>Vendor Name</th>
+                    <th>{t("Vendor Name")}</th>
                     {/* <th>Ad Type</th> */}
-                    <th>Image</th>
-                    <th>Visibility</th>
-                    <th>Actions</th>
+                    <th>{t("Image")}</th>
+                    <th>{t("Visibility")}</th>
+                    <th>{t("Actions")}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -446,12 +446,12 @@ const AdvertisementsList = ({
                         <tr className="table-primary">
                           <td colSpan={14} className="fw-bold text-center">
                             <i className="ri-star-fill me-2"></i>
-                            Advertisement: {priority}
+                            {t("Advertisement:")}: {priority}
                             <span className="badge bg-light text-dark ms-2">
                               {ads.length}{" "}
                               {ads.length === 1
-                                ? "Advertisement"
-                                : "Advertisements"}
+                                ? t("Advertisement")
+                                : t("Advertisements")}
                             </span>
                           </td>
                         </tr>
@@ -528,10 +528,10 @@ const AdvertisementsList = ({
                                   onClick={() => handleImageView(ad.adsImage1)}
                                 >
                                   <i className="ri-image-line me-1"></i>
-                                  View
+                                  {t("View")}
                                 </Button>
                               ) : (
-                                <span className="text-muted">No image</span>
+                                <span className="text-muted">{t("No image")}</span>
                               )}
                             </td>
                             <td>
@@ -543,7 +543,7 @@ const AdvertisementsList = ({
                                 const badgeClass = expired
                                   ? "bg-danger"
                                   : "bg-success";
-                                const text = expired ? "Expired" : "Active";
+                                const text = expired ? t("Expired") : t("Active");
                                 return (
                                   <span className={`badge ${badgeClass}`}>
                                     {text}
@@ -601,7 +601,7 @@ const AdvertisementsList = ({
         centered
       >
         <ModalHeader toggle={() => setImageModal(false)}>
-          Advertisement Image
+          {t("Advertisement Image")}
         </ModalHeader>
         <ModalBody>
           {selectedImage && (
@@ -632,7 +632,7 @@ const AdvertisementsList = ({
             setSelectedAd(null);
           }}
         >
-          Edit Advertisement
+          {t("Edit Advertisement")}
         </ModalHeader>
         <ModalBody>
           <Form
@@ -644,7 +644,7 @@ const AdvertisementsList = ({
           >
             {editForm.status?.serverError && (
               <>
-                {toast("Error updating advertisement", {
+                {toast(t("Error updating advertisement"), {
                   position: "top-right",
                   hideProgressBar: false,
                   className: "bg-danger text-white",
@@ -661,7 +661,7 @@ const AdvertisementsList = ({
               <Col xxl={6} md={6}>
                 <div>
                   <Label htmlFor="title" className="form-label">
-                    English Title
+                    {t("English Title")}
                   </Label>
                   <Input
                     type="text"
@@ -683,7 +683,7 @@ const AdvertisementsList = ({
               <Col xxl={6} md={6}>
                 <div>
                   <Label htmlFor="arTitle" className="form-label">
-                    Arabic Title
+                    {t("Arabic Title")}
                   </Label>
                   <Input
                     type="text"
@@ -705,7 +705,7 @@ const AdvertisementsList = ({
               <Col xxl={6} md={6}>
                 <div>
                   <Label htmlFor="subtitle" className="form-label">
-                    English Subtitle
+                    {t("English Subtitle")}
                   </Label>
                   <Input
                     type="text"
@@ -727,7 +727,7 @@ const AdvertisementsList = ({
               <Col xxl={6} md={6}>
                 <div>
                   <Label htmlFor="arSubtitle" className="form-label">
-                    Arabic Subtitle
+                    {t("Arabic Subtitle")}
                   </Label>
                   <Input
                     type="text"
@@ -749,7 +749,7 @@ const AdvertisementsList = ({
               <Col xxl={6} md={6}>
                 <div>
                   <Label htmlFor="startDate" className="form-label">
-                    Start Date
+                    {t("Start Date")}
                   </Label>
                   <Input
                     type="date"
@@ -771,7 +771,7 @@ const AdvertisementsList = ({
               <Col xxl={6} md={6}>
                 <div>
                   <Label htmlFor="expireDate" className="form-label">
-                    End Date
+                    {t("End Date")}
                   </Label>
                   <Input
                     type="date"
@@ -793,7 +793,7 @@ const AdvertisementsList = ({
               <Col xxl={6} md={6}>
                 <div>
                   <Label htmlFor="startTime" className="form-label">
-                    Start Time
+                    {t("Start Time")}
                   </Label>
                   <Input
                     type="time"
@@ -815,7 +815,7 @@ const AdvertisementsList = ({
               <Col xxl={6} md={6}>
                 <div>
                   <Label htmlFor="endTime" className="form-label">
-                    End Time
+                    {t("End Time")}
                   </Label>
                   <Input
                     type="time"
@@ -837,7 +837,7 @@ const AdvertisementsList = ({
               <Col xxl={12} md={12}>
                 <div>
                   <Label htmlFor="url" className="form-label">
-                    Redirect URL
+                    {t("Redirect URL")}
                   </Label>
                   <Input
                     type="url"
@@ -862,7 +862,7 @@ const AdvertisementsList = ({
               <Col xxl={12} md={12}>
                 <div>
                   <Label htmlFor="adsImage1" className="form-label">
-                    Advertisement Image
+                    {t("Advertisement Image")}
                   </Label>
                   <Input
                     type="file"
@@ -877,7 +877,7 @@ const AdvertisementsList = ({
                   {selectedAd?.adsImage1 && selectedFiles.length === 0 && (
                     <div className="mt-3">
                       <Label className="form-label text-muted">
-                        Current Image:
+                        {t("Current Image:")}
                       </Label>
                       <div className="d-flex gap-2 flex-wrap">
                         <div className="position-relative">
@@ -900,7 +900,7 @@ const AdvertisementsList = ({
                   {selectedFiles.length > 0 && (
                     <div className="mt-3">
                       <Label className="form-label text-muted">
-                        Selected Image:
+                        {t("Selected Image:")}
                       </Label>
                       <div className="d-flex gap-2 flex-wrap">
                         <div className="position-relative">
@@ -933,7 +933,7 @@ const AdvertisementsList = ({
               <Col xxl={6} md={6}>
                 <div>
                   <Label htmlFor="banner" className="form-label">
-                    Banner Type
+                    {t("Banner Type")}
                   </Label>
                   <Input
                     type="select"
@@ -944,13 +944,13 @@ const AdvertisementsList = ({
                     onChange={editForm.handleChange}
                     onBlur={editForm.handleBlur}
                   >
-                    <option value="">Select banner type</option>
+                    <option value="">{t("Select banner type")}</option>
                     <option value="External Advertisements">
-                      External Advertisements
+                      {t("External Advertisements")}
                     </option>
-                    <option value="Resturants">Resturants</option>
-                    <option value="Grocery">Grocery</option>
-                    <option value="Stores">Stores</option>
+                    <option value="Resturants">{t("Resturants")}</option>
+                    <option value="Grocery">{t("Grocery")}</option>
+                    <option value="Stores">{t("Stores")}</option>
                   </Input>
                 </div>
               </Col>
@@ -959,7 +959,7 @@ const AdvertisementsList = ({
               <Col xxl={6} md={6}>
                 <div>
                   <Label htmlFor="vendorId" className="form-label">
-                    Vendor
+                    {t("Vendor")}
                   </Label>
                   <Select
                     id="vendorId"
@@ -975,7 +975,7 @@ const AdvertisementsList = ({
                       );
                     }}
                     onBlur={() => editForm.setFieldTouched("vendorId", true)}
-                    placeholder="Select vendor"
+                    placeholder={t("Select vendor")}
                     isClearable
                     isSearchable
                     className={
@@ -996,7 +996,7 @@ const AdvertisementsList = ({
               <Col xxl={6} md={6} sm={6}>
                 <div>
                   <Label htmlFor="priority" className="form-label">
-                    Priority
+                    {t("Priority")}
                   </Label>
                   <Input
                     type="select"
@@ -1007,12 +1007,12 @@ const AdvertisementsList = ({
                     onChange={editForm.handleChange}
                     onBlur={editForm.handleBlur}
                   >
-                    <option value="">Select priority</option>
-                    <option value={1}>advertisement 1</option>
-                    <option value={2}>advertisement 2</option>
-                    <option value={3}>advertisement 3</option>
-                    <option value={4}>advertisement 4</option>
-                    <option value={5}>advertisement 5</option>
+                    <option value="">{t("Select priority")}</option>
+                    <option value={1}>{t("advertisement 1")}</option>
+                    <option value={2}>{t("advertisement 2")}</option>
+                    <option value={3}>{t("advertisement 3")}</option>
+                    <option value={4}>{t("advertisement 4")}</option>
+                    <option value={5}>{t("advertisement 5")}</option>
                   </Input>
                 </div>
               </Col>
@@ -1034,7 +1034,7 @@ const AdvertisementsList = ({
                     }
                   />
                   <Label className="form-check-label" htmlFor="replacePriority">
-                    replace existed priority?
+                    {t("replace existed priority?")}
                   </Label>
                   {editForm.touched.replacePriority &&
                     editForm.errors.replacePriority && (
@@ -1055,10 +1055,10 @@ const AdvertisementsList = ({
                       setSelectedAd(null);
                     }}
                   >
-                    Cancel
+                    {t("Cancel")}
                   </Button>
                   <Button type="submit" color="success">
-                    Update Advertisement
+                    {t("Update Advertisement")}
                   </Button>
                 </div>
               </Col>
@@ -1071,7 +1071,7 @@ const AdvertisementsList = ({
         show={deleteModal}
         onDeleteClick={() => {
           console.log("Deleting advertisement:", selectedAd?.advertisementId);
-          toast.success("Advertisement deleted successfully");
+          toast.success(t("Advertisement deleted successfully"));
           setDeleteModal(false);
           setSelectedAd(null);
         }}

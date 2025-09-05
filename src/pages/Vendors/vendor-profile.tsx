@@ -32,7 +32,7 @@ import {
 
 const VendorProfile = () => {
   const { vendorId } = useParams<{ vendorId: string }>();
-  const { i18n } = useTranslation();
+  const { t, i18n } = useTranslation();
   const location = useLocation();
   const [activeTab, setActiveTab] = useState("1");
 
@@ -125,7 +125,7 @@ const VendorProfile = () => {
                       className="profile-photo-edit btn btn-light"
                     >
                       <i className="ri-image-edit-line align-bottom me-1"></i>{" "}
-                      Change Cover
+                      {t("Change Cover")}
                     </Label>
                   </div>
                 </div>
@@ -199,7 +199,7 @@ const VendorProfile = () => {
                     <div className="mt-3">
                       <div className="d-flex justify-content-center align-items-center gap-2">
                         <Label className="form-check-label mb-0 small">
-                          Status:
+                          {t("Status:")}
                         </Label>
                         <div className="form-check form-switch">
                           <Input
@@ -229,7 +229,7 @@ const VendorProfile = () => {
                             <div className="d-flex align-items-center gap-1">
                               <i className="las la-clock text-success"></i>
                               <small className="text-muted">
-                                Opens: {vendorInfo.fOpeningTime}
+                                {t("Opens:")} {vendorInfo.fOpeningTime}
                               </small>
                             </div>
                           )}
@@ -237,7 +237,7 @@ const VendorProfile = () => {
                             <div className="d-flex align-items-center gap-1">
                               <i className="las la-clock text-danger"></i>
                               <small className="text-muted">
-                                Closes: {vendorInfo.fClosingTime}
+                                {t("Closes:")} {vendorInfo.fClosingTime}
                               </small>
                             </div>
                           )}
@@ -264,7 +264,7 @@ const VendorProfile = () => {
                         }}
                       >
                         <i className="fas fa-home"></i>
-                        Personal Details
+                        {t("Personal Details")}
                       </NavLink>
                     </NavItem>
                     <NavItem>
@@ -277,7 +277,7 @@ const VendorProfile = () => {
                         type="button"
                       >
                         <i className="far fa-user"></i>
-                        Change Password
+                        {t("Change Password")}
                       </NavLink>
                     </NavItem>
                     <NavItem>
@@ -290,7 +290,7 @@ const VendorProfile = () => {
                         type="button"
                       >
                         <i className="far fa-envelope"></i>
-                        Products
+                        {t("Products")}
                       </NavLink>
                     </NavItem>
                     <NavItem>
@@ -303,7 +303,7 @@ const VendorProfile = () => {
                         type="button"
                       >
                         <i className="far fa-envelope"></i>
-                        Categories
+                        {t("Categories")}
                       </NavLink>
                     </NavItem>
                     <NavItem>
@@ -316,7 +316,7 @@ const VendorProfile = () => {
                         type="button"
                       >
                         <i className="far fa-envelope"></i>
-                        Users
+                        {t("Users")}
                       </NavLink>
                     </NavItem>
                   </Nav>

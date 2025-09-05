@@ -16,8 +16,10 @@ import { useDispatch, useSelector } from "react-redux";
 import { getOrderInvoiceQuery } from "slices/thunks";
 import { createSelector } from "reselect";
 import { orderInvoice } from "slices/orders/reducer";
+import { useTranslation } from "react-i18next";
 
 const CustomerOrderInvoiceDetails = () => {
+  const { t } = useTranslation();
   document.title = "Invoice Details | Rateena - E-Shop Admin Panel";
 
   const { orderId } = useParams<{ orderId: string }>();
@@ -55,7 +57,7 @@ const CustomerOrderInvoiceDetails = () => {
   return (
     <div className="page-content">
       <Container fluid>
-        <BreadCrumb title="Invoice Details" pageTitle="Invoices" />
+        <BreadCrumb title={t("Invoice Details")} pageTitle={t("Invoices")} />
 
         <Row className="justify-content-center">
           <Col xxl={9}>
@@ -73,7 +75,7 @@ const CustomerOrderInvoiceDetails = () => {
                         />
                         <div className="mt-sm-5 mt-4">
                           <h6 className="text-muted text-uppercase fw-semibold">
-                            Address
+                            {t("Address")}
                           </h6>
                           <p className="text-muted mb-1" id="address-details">
                             California, United States
@@ -86,12 +88,12 @@ const CustomerOrderInvoiceDetails = () => {
                       <div className="flex-shrink-0 mt-sm-0 mt-3">
                         <h6>
                           <span className="text-muted fw-normal">
-                            Legal Registration No:
+                            {t("Legal Registration No:")}
                           </span>{" "}
                           <span id="legal-register-no">987654</span>
                         </h6>
                         <h6>
-                          <span className="text-muted fw-normal">Email:</span>{" "}
+                          <span className="text-muted fw-normal">{t("Email")}:</span>{" "}
                           <span id="email">velzon@themesbrand.com</span>
                         </h6>
                         <h6>
@@ -102,7 +104,7 @@ const CustomerOrderInvoiceDetails = () => {
                         </h6>
                         <h6 className="mb-0">
                           <span className="text-muted fw-normal">
-                            Contact No:
+                            {t("Contact No:")}
                           </span>{" "}
                           <span id="contact-no"> +(01) 234 6789</span>
                         </h6>
@@ -115,7 +117,7 @@ const CustomerOrderInvoiceDetails = () => {
                     <Row className="g-3">
                       <Col lg={3} xs={6}>
                         <p className="text-muted mb-2 text-uppercase fw-semibold">
-                          Invoice No
+                          {t("Invoice No")}
                         </p>
                         <h5 className="fs-14 mb-0">
                           #
@@ -127,7 +129,7 @@ const CustomerOrderInvoiceDetails = () => {
                       </Col>
                       <Col lg={3} xs={6}>
                         <p className="text-muted mb-2 text-uppercase fw-semibold">
-                          Date
+                          {t("Date")}
                         </p>
                         <h5 className="fs-14 mb-0">
                           <span id="invoice-date">
@@ -148,7 +150,7 @@ const CustomerOrderInvoiceDetails = () => {
                       </Col>
                       <Col lg={3} xs={6}>
                         <p className="text-muted mb-2 text-uppercase fw-semibold">
-                          Payment Status
+                          {t("Payment Status")}
                         </p>
                         <span
                           className={`badge fs-11 ${
@@ -163,7 +165,7 @@ const CustomerOrderInvoiceDetails = () => {
                       </Col>
                       <Col lg={3} xs={6}>
                         <p className="text-muted mb-2 text-uppercase fw-semibold">
-                          Total Amount
+                          {t("Total Amount")}
                         </p>
                         <h5 className="fs-14 mb-0">
                           <span id="total-amount">
@@ -182,7 +184,7 @@ const CustomerOrderInvoiceDetails = () => {
                     <Row className="g-3">
                       <Col sm={6}>
                         <h6 className="text-muted text-uppercase fw-semibold mb-3">
-                          Billing Address
+                          {t("Billing Address")}
                         </h6>
                         <p className="fw-medium mb-2" id="billing-name">
                           {orderInvoiceData?.invoice?.order?.order?.customer
@@ -198,7 +200,7 @@ const CustomerOrderInvoiceDetails = () => {
                             ?.street || "305 S San Gabriel Blvd"}
                         </p>
                         <p className="text-muted mb-1">
-                          <span>Phone: +</span>
+                          <span>{t("Phone")}: +</span>
                           <span id="billing-phone-no">
                             {orderInvoiceData?.invoice?.order?.order?.customer
                               ?.customer?.phone || "(123) 456-7890"}
@@ -211,7 +213,7 @@ const CustomerOrderInvoiceDetails = () => {
                       </Col>
                       <Col sm={6}>
                         <h6 className="text-muted text-uppercase fw-semibold mb-3">
-                          Shipping Address
+                          {t("Shipping Address")}
                         </h6>
                         <p className="fw-medium mb-2" id="shipping-name">
                           {orderInvoiceData?.invoice?.order?.order?.address
@@ -225,7 +227,7 @@ const CustomerOrderInvoiceDetails = () => {
                             ?.street || "305 S San Gabriel Blvd"}
                         </p>
                         <p className="text-muted mb-1">
-                          <span>Phone: +</span>
+                          <span>{t("Phone")}: +</span>
                           <span id="shipping-phone-no">
                             {orderInvoiceData?.invoice?.order?.order?.address
                               ?.phone || "(123) 456-7890"}
@@ -244,11 +246,11 @@ const CustomerOrderInvoiceDetails = () => {
                             <th scope="col" style={{ width: "50px" }}>
                               #
                             </th>
-                            <th scope="col">Product Details</th>
-                            <th scope="col">Rate</th>
-                            <th scope="col">Quantity</th>
+                            <th scope="col">{t("Product Details")}</th>
+                            <th scope="col">{t("Rate")}</th>
+                            <th scope="col">{t("Quantity")}</th>
                             <th scope="col" className="text-end">
-                              Amount
+                              {t("Amount")}
                             </th>
                           </tr>
                         </thead>
@@ -286,7 +288,7 @@ const CustomerOrderInvoiceDetails = () => {
                               <th scope="row">01</th>
                               <td className="text-start">
                                 <span className="fw-medium">
-                                  No items found
+                                  {t("No items found")}
                                 </span>
                               </td>
                               <td>0 AED</td>
@@ -304,7 +306,7 @@ const CustomerOrderInvoiceDetails = () => {
                       >
                         <tbody>
                           <tr>
-                            <td>Sub Total</td>
+                            <td>{t("Sub Total")}</td>
                             <td className="text-end">
                               {orderInvoiceData?.invoice?.summary?.subtotal ??
                                 0}{" "}
@@ -312,14 +314,14 @@ const CustomerOrderInvoiceDetails = () => {
                             </td>
                           </tr>
                           <tr>
-                            <td>Taxes</td>
+                            <td>{t("Taxes")}</td>
                             <td className="text-end">
                               {orderInvoiceData?.invoice?.summary?.taxes ?? 0}{" "}
                               AED
                             </td>
                           </tr>
                           <tr>
-                            <td>Discount</td>
+                            <td>{t("Discount")}</td>
                             <td className="text-end">
                               -{" "}
                               {orderInvoiceData?.invoice?.summary?.discount ??
@@ -328,7 +330,7 @@ const CustomerOrderInvoiceDetails = () => {
                             </td>
                           </tr>
                           <tr>
-                            <td>Shipping Charge</td>
+                            <td>{t("Shipping Charge")}</td>
                             <td className="text-end">
                               {orderInvoiceData?.invoice?.summary
                                 ?.shippingCost ?? 0}{" "}
@@ -336,7 +338,7 @@ const CustomerOrderInvoiceDetails = () => {
                             </td>
                           </tr>
                           <tr className="border-top border-top-dashed fs-15">
-                            <th scope="row">Total Amount</th>
+                            <th scope="row">{t("Total Amount")}</th>
                             <th className="text-end">
                               {orderInvoiceData?.invoice?.summary?.total ?? 0}{" "}
                               AED
@@ -347,17 +349,17 @@ const CustomerOrderInvoiceDetails = () => {
                     </div>
                     <div className="mt-3">
                       <h6 className="text-muted text-uppercase fw-semibold mb-3">
-                        Payment Details:
+                        {t("Payment Details:")}
                       </h6>
                       <p className="text-muted mb-1">
-                        Payment Method:{" "}
+                        {t("Payment Method:")}{" "}
                         <span className="fw-medium" id="payment-method">
                           {orderInvoiceData?.invoice?.paymentMethod ||
                             "Mastercard"}
                         </span>
                       </p>
                       <p className="text-muted mb-1">
-                        Card Holder:{" "}
+                        {t("Card Holder:")}{" "}
                         <span className="fw-medium" id="card-holder-name">
                           {orderInvoiceData?.invoice?.order?.order?.customer
                             ?.customer
@@ -366,14 +368,14 @@ const CustomerOrderInvoiceDetails = () => {
                         </span>
                       </p>
                       <p className="text-muted mb-1">
-                        Order Number:{" "}
+                        {t("Order Number:")}{" "}
                         <span className="fw-medium" id="order-number">
                           {orderInvoiceData?.invoice?.order?.order
                             ?.orderNumber || "N/A"}
                         </span>
                       </p>
                       <p className="text-muted">
-                        Total Amount:{" "}
+                        {t("Total Amount:")}{" "}
                         <span className="fw-medium" id="">
                           {orderInvoiceData?.invoice?.summary?.total || 0} AED
                         </span>
@@ -382,15 +384,10 @@ const CustomerOrderInvoiceDetails = () => {
                     <div className="mt-4">
                       <div className="alert alert-info">
                         <p className="mb-0">
-                          <span className="fw-semibold">NOTES:</span>
+                          <span className="fw-semibold">{t("NOTES:")}</span>
                           <span id="note">
                             {" "}
-                            All accounts are to be paid within 7 days from
-                            receipt of invoice. To be paid by cheque or credit
-                            card or direct payment online. If account is not
-                            paid within 7 days the credits details supplied as
-                            confirmation of work undertaken will be charged the
-                            agreed quoted fee noted above.
+                            {t("All accounts are to be paid within 7 days from receipt of invoice. To be paid by cheque or credit card or direct payment online. If account is not paid within 7 days the credits details supplied as confirmation of work undertaken will be charged the agreed quoted fee noted above.")}
                           </span>
                         </p>
                       </div>
@@ -402,11 +399,11 @@ const CustomerOrderInvoiceDetails = () => {
                         className="btn btn-success"
                       >
                         <i className="ri-printer-line align-bottom me-1"></i>{" "}
-                        Print
+                        {t("Print")}
                       </Link>
                       <Link to="#" className="btn btn-primary">
                         <i className="ri-download-2-line align-bottom me-1"></i>{" "}
-                        Download
+                        {t("Download")}
                       </Link>
                     </div>
                   </CardBody>

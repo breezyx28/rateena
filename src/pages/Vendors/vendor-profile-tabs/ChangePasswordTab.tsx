@@ -14,6 +14,7 @@ import * as Yup from "yup";
 import { useFormik } from "formik";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { useTranslation } from "react-i18next";
 import {
   resetUserPassword,
   resetRestPasswordFlag,
@@ -28,6 +29,7 @@ const ChangePasswordTab: React.FC<any> = ({
 }: {
   vendorInfo: any;
 }) => {
+  const { t } = useTranslation();
   const dispatch: any = useDispatch();
   const [loader, setLoader] = useState<boolean>(false);
 
@@ -67,7 +69,7 @@ const ChangePasswordTab: React.FC<any> = ({
 
   useEffect(() => {
     if (adminUserUpdated) {
-      toast.success("Password changed successfully!", {
+      toast.success(t("Password changed successfully!"), {
         position: "top-right",
         autoClose: 2000,
       });
@@ -95,7 +97,7 @@ const ChangePasswordTab: React.FC<any> = ({
       >
         {adminUserUpdated && !adminUserError && (
           <Col lg={12}>
-            <Alert color="success">Password changed successfully!</Alert>
+            <Alert color="success">{t("Password changed successfully!")}</Alert>
           </Col>
         )}
         {adminUserError && !adminUserUpdated && (
@@ -107,14 +109,14 @@ const ChangePasswordTab: React.FC<any> = ({
           <Col lg={4}>
             <div>
               <Label htmlFor="phoneInput" className="form-label">
-                Phone Number*
+                {t("Phone Number*")}
               </Label>
               <Input
                 type="text"
                 className="form-control"
                 id="phoneInput"
                 name="phone"
-                placeholder="Enter phone number"
+                placeholder={t("Enter phone number")}
                 onChange={validation.handleChange}
                 onBlur={validation.handleBlur}
                 value={validation.values.phone || ""}
@@ -135,14 +137,14 @@ const ChangePasswordTab: React.FC<any> = ({
           <Col lg={4}>
             <div>
               <Label htmlFor="newpasswordInput" className="form-label">
-                New Password*
+                {t("New Password*")}
               </Label>
               <Input
                 type="password"
                 className="form-control"
                 id="newpasswordInput"
                 name="new_password"
-                placeholder="Enter new password"
+                placeholder={t("Enter new password")}
                 onChange={validation.handleChange}
                 onBlur={validation.handleBlur}
                 value={validation.values.new_password || ""}
@@ -165,14 +167,14 @@ const ChangePasswordTab: React.FC<any> = ({
           <Col lg={4}>
             <div>
               <Label htmlFor="confirmpasswordInput" className="form-label">
-                Confirm Password*
+                {t("Confirm Password*")}
               </Label>
               <Input
                 type="password"
                 className="form-control"
                 id="confirmpasswordInput"
                 name="new_password_confirmation"
-                placeholder="Confirm password"
+                placeholder={t("Confirm password")}
                 onChange={validation.handleChange}
                 onBlur={validation.handleBlur}
                 value={validation.values.new_password_confirmation || ""}
@@ -197,10 +199,10 @@ const ChangePasswordTab: React.FC<any> = ({
               <Button color="success" type="submit" disabled={loader}>
                 {loader && (
                   <Spinner size="sm" className="me-2">
-                    Loading...
+                    {t("Loading...")}
                   </Spinner>
                 )}
-                Change Password
+                {t("Change Password")}
               </Button>
             </div>
           </Col>

@@ -12,6 +12,7 @@ import {
   logError,
   errorToastManager,
 } from "helpers/error-helper";
+import { useTranslation } from "react-i18next";
 
 interface AddModalProps {
   modal_standard: boolean;
@@ -24,6 +25,7 @@ const AddModal: React.FC<AddModalProps> = ({
   tog_standard,
   vendorId,
 }) => {
+  const { t } = useTranslation();
   const dispatch: any = useDispatch();
 
   const selectLayoutState = (state: any) => state.Vendors;
@@ -83,7 +85,7 @@ const AddModal: React.FC<AddModalProps> = ({
             tog_standard();
           }}
         >
-          Add User
+          {t("Add User")}
         </ModalHeader>
         <ModalBody>
           <Form
@@ -110,7 +112,7 @@ const AddModal: React.FC<AddModalProps> = ({
               <Col xxl={12} md={12}>
                 <div>
                   <Label htmlFor="phone" className="form-label">
-                    Phone
+                    {t("Phone")}
                   </Label>
                   <Input
                     type="text"
@@ -131,7 +133,7 @@ const AddModal: React.FC<AddModalProps> = ({
               <Col xxl={12} md={12}>
                 <div>
                   <Label htmlFor="email" className="form-label">
-                    Email
+                    {t("Email")}
                   </Label>
                   <div className="form-icon">
                     <Input
@@ -154,7 +156,7 @@ const AddModal: React.FC<AddModalProps> = ({
               <Col xxl={12} md={12}>
                 <div>
                   <Label htmlFor="password" className="form-label">
-                    Password
+                    {t("Password")}
                   </Label>
                   <Input
                     type="password"
@@ -191,7 +193,7 @@ const AddModal: React.FC<AddModalProps> = ({
               tog_standard();
             }}
           >
-            Close
+            {t("Close")}
           </Button>
           <Button
             color="primary"
@@ -199,7 +201,7 @@ const AddModal: React.FC<AddModalProps> = ({
               document.getElementById("add-vendor-user-btn")?.click();
             }}
           >
-            Save changes
+            {t("Save changes")}
           </Button>
         </div>
       </Modal>

@@ -31,8 +31,10 @@ import * as Yup from "yup";
 import { useFormik } from "formik";
 import { toast } from "react-toastify";
 import { errorToastManager } from "helpers/error-helper";
+import { useTranslation } from "react-i18next";
 
 const VendorUsers = () => {
+  const { t } = useTranslation();
   const { vendorId } = useParams<{ vendorId: string }>();
   const [vendorUsersData, setVendorUsersData] = useState<any[]>([]);
   const [modal_standard, setmodal_standard] = useState<boolean>(false);
@@ -94,7 +96,7 @@ const VendorUsers = () => {
         setVendorUsersData((prevData) => [...prevData, deletedUser]);
         setDeletedUser(null);
         // Show specific delete failure toast
-        toast.error("Failed to delete vendor user. Please try again.", {
+        toast.error(t("Failed to delete vendor user. Please try again."), {
           position: "top-right",
           autoClose: 3000,
         });
@@ -179,7 +181,7 @@ const VendorUsers = () => {
       if (deletedUser) {
         setDeletedUser(null);
         // Show delete success toast
-        toast.success("Vendor user deleted successfully!", {
+        toast.success(t("Vendor user deleted successfully!"), {
           position: "top-right",
           autoClose: 3000,
         });
@@ -206,7 +208,7 @@ const VendorUsers = () => {
         <Col lg={12}>
           <div className="w-full d-flex justify-content-end">
             <Button color="primary" onClick={() => tog_standard()}>
-              Add User
+              {t("Add User")}
             </Button>
           </div>
           <VendorUsersList
@@ -239,7 +241,7 @@ const VendorUsers = () => {
             tog_standard();
           }}
         >
-          Add User
+          {t("Add User")}
         </ModalHeader>
         <ModalBody>
           <Form
@@ -252,7 +254,7 @@ const VendorUsers = () => {
           >
             {vendorUserAddedSuccess && !vendorError?.message ? (
               <>
-                <Alert color="success">Vendor User Successfully Added</Alert>
+                <Alert color="success">{t("Vendor User Successfully Added")}</Alert>
               </>
             ) : null}
             {vendorError && !vendorUserAddedSuccess ? (
@@ -264,7 +266,7 @@ const VendorUsers = () => {
               <Col xxl={12} md={12}>
                 <div>
                   <Label htmlFor="phone" className="form-label">
-                    Phone
+                    {t("Phone")}
                   </Label>
                   <Input
                     type="text"
@@ -290,7 +292,7 @@ const VendorUsers = () => {
               <Col xxl={12} md={12}>
                 <div>
                   <Label htmlFor="email" className="form-label">
-                    Email
+                    {t("Email")}
                   </Label>
                   <div className="form-icon">
                     <Input
@@ -318,7 +320,7 @@ const VendorUsers = () => {
               <Col xxl={12} md={12}>
                 <div>
                   <Label htmlFor="password" className="form-label">
-                    Password
+                    {t("Password")}
                   </Label>
                   <Input
                     type="password"
@@ -360,7 +362,7 @@ const VendorUsers = () => {
               tog_standard();
             }}
           >
-            Close
+            {t("Close")}
           </Button>
           <Button
             color="primary"
@@ -368,7 +370,7 @@ const VendorUsers = () => {
               document.getElementById("add-vendor-user-btn")?.click();
             }}
           >
-            Save changes
+            {t("Save changes")}
           </Button>
         </div>
       </Modal>
@@ -388,7 +390,7 @@ const VendorUsers = () => {
             tog_update();
           }}
         >
-          Update User
+          {t("Update User")}
         </ModalHeader>
         <ModalBody>
           <Form
@@ -401,7 +403,7 @@ const VendorUsers = () => {
           >
             {vendorUserAddedSuccess && !vendorError?.message ? (
               <>
-                <Alert color="success">Vendor User Successfully Updated</Alert>
+                <Alert color="success">{t("Vendor User Successfully Updated")}</Alert>
               </>
             ) : null}
             {vendorError && !vendorUserAddedSuccess ? (
@@ -432,7 +434,7 @@ const VendorUsers = () => {
               <Col xxl={12} md={12}>
                 <div>
                   <Label htmlFor="updatePhone" className="form-label">
-                    Phone
+                    {t("Phone")}
                   </Label>
                   <Input
                     type="text"
@@ -460,7 +462,7 @@ const VendorUsers = () => {
               <Col xxl={12} md={12}>
                 <div>
                   <Label htmlFor="updateEmail" className="form-label">
-                    Email
+                    {t("Email")}
                   </Label>
                   <div className="form-icon">
                     <Input
@@ -490,7 +492,7 @@ const VendorUsers = () => {
               <Col xxl={12} md={12}>
                 <div>
                   <Label htmlFor="updatePassword" className="form-label">
-                    Password
+                    {t("Password")}
                   </Label>
                   <Input
                     type="password"
@@ -534,7 +536,7 @@ const VendorUsers = () => {
               tog_update();
             }}
           >
-            Close
+            {t("Close")}
           </Button>
           <Button
             color="primary"
@@ -542,7 +544,7 @@ const VendorUsers = () => {
               document.getElementById("update-vendor-user-btn")?.click();
             }}
           >
-            Save changes
+            {t("Save changes")}
           </Button>
         </div>
       </Modal>
@@ -560,12 +562,11 @@ const VendorUsers = () => {
             tog_delete();
           }}
         >
-          Confirm Delete
+          {t("Confirm Delete")}
         </ModalHeader>
         <ModalBody>
           <p>
-            Are you sure you want to delete this vendor user? This action cannot
-            be undone.
+            {t("Are you sure you want to delete this vendor user? This action cannot be undone.")}
           </p>
         </ModalBody>
         <div className="modal-footer">
@@ -575,7 +576,7 @@ const VendorUsers = () => {
               tog_delete();
             }}
           >
-            Cancel
+            {t("Cancel")}
           </Button>
           <Button
             color="danger"
@@ -584,7 +585,7 @@ const VendorUsers = () => {
               tog_delete();
             }}
           >
-            Delete
+            {t("Delete")}
           </Button>
         </div>
       </Modal>

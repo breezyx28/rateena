@@ -6,9 +6,11 @@ import AddModal from "./admin-users-modals/add-modal";
 import { useDispatch, useSelector } from "react-redux";
 import { createSelector } from "reselect";
 import { getAdminUsersListQuery } from "slices/thunks";
+import { useTranslation } from "react-i18next";
 
 const AdminUsers = () => {
-  document.title = "Admin Users | Rateena - E-Shop Admin Panel";
+  const { t } = useTranslation();
+  document.title = `${t("Admin Users")} | Rateena - E-Shop Admin Panel`;
 
   const [modal_standard, setmodal_standard] = useState<boolean>(false);
   function tog_standard() {
@@ -51,12 +53,12 @@ const AdminUsers = () => {
                 <div className="live-preview w-full d-flex justify-content-end">
                   <div>
                     <Button color="primary" onClick={tog_standard}>
-                      Add User
+                      {t("Add User")}
                     </Button>
                   </div>
                 </div>
                 <CardHeader>
-                  <h5 className="card-title mb-0">Search</h5>
+                  <h5 className="card-title mb-0">{t("Search")}</h5>
                 </CardHeader>
                 <CardBody>
                   <AdminUsersListTable

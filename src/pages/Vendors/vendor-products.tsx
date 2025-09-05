@@ -3,6 +3,7 @@ import { Col, Row } from "reactstrap";
 import { Button } from "reactstrap";
 import { VendorProductsList } from "./vendor-products-list";
 import { useParams } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 import { useDispatch, useSelector } from "react-redux";
 import { createSelector } from "reselect";
@@ -10,6 +11,7 @@ import { getVendorProductsQuery } from "slices/thunks";
 import AddProductModal from "./modals/add-product-modal";
 
 const VendorProducts = () => {
+  const { t } = useTranslation();
   const { vendorId } = useParams<{ vendorId: string }>();
   const [vendorProductsData, setVendorProductsData] = useState<any[]>([]);
   const [modal_standard, setmodal_standard] = useState<boolean>(false);
@@ -57,7 +59,7 @@ const VendorProducts = () => {
         <Col lg={12}>
           <div className="w-full d-flex justify-content-end">
             <Button color="primary" onClick={() => tog_standard()}>
-              Add Product
+              {t("Add Product")}
             </Button>
           </div>
           <VendorProductsList data={vendorProductsData ?? []} />

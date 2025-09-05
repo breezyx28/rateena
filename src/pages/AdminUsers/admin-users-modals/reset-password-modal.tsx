@@ -7,6 +7,7 @@ import * as Yup from "yup";
 import { useFormik } from "formik";
 import { toast, ToastContainer } from "react-toastify";
 import { resetAdminUserPasswordMutation } from "slices/thunks";
+import { useTranslation } from "react-i18next";
 
 interface ResetPasswordModalProps {
   modal_standard: boolean;
@@ -19,6 +20,7 @@ const ResetPasswordModal: React.FC<ResetPasswordModalProps> = ({
   tog_standard,
   userId,
 }) => {
+  const { t } = useTranslation();
   const dispatch: any = useDispatch();
 
   const selectLayoutState = (state: any) => state.AdminUsers;
@@ -49,11 +51,11 @@ const ResetPasswordModal: React.FC<ResetPasswordModalProps> = ({
       new_password_confirmation: "",
     },
     validationSchema: Yup.object({
-      phone: Yup.string().required("Please Enter Your Phone Number"),
-      new_password: Yup.string().required("Please Enter Your New Password"),
+      phone: Yup.string().required(t("Please Enter Your Phone Number")),
+      new_password: Yup.string().required(t("Please Enter Your New Password")),
       new_password_confirmation: Yup.string()
-        .oneOf([Yup.ref("new_password")], "Passwords must match")
-        .required("Please Confirm Your Password"),
+        .oneOf([Yup.ref("new_password")], t("Passwords must match"))
+        .required(t("Please Confirm Your Password")),
     }),
     onSubmit: (values) => {
       console.log("form-values: ", values);
@@ -77,7 +79,7 @@ const ResetPasswordModal: React.FC<ResetPasswordModalProps> = ({
             tog_standard();
           }}
         >
-          Reset Password
+          {t("Reset Password")}
         </ModalHeader>
         <ModalBody>
           <Form
@@ -90,7 +92,7 @@ const ResetPasswordModal: React.FC<ResetPasswordModalProps> = ({
           >
             {resetPasswordSuccess ? (
               <>
-                {toast("Password Reset Successfully!", {
+                {toast(t("Password Reset Successfully!"), {
                   position: "top-right",
                   hideProgressBar: false,
                   className: "bg-success text-white",
@@ -98,14 +100,14 @@ const ResetPasswordModal: React.FC<ResetPasswordModalProps> = ({
                   toastId: "",
                 })}
                 <ToastContainer autoClose={2000} limit={1} />
-                <Alert color="success">Password Reset Successfully!</Alert>
+                <Alert color="success">{t("Password Reset Successfully!")}</Alert>
               </>
             ) : null}
             <Row className="gy-4">
               <Col xxl={12} md={12}>
                 <div>
                   <Label htmlFor="phone" className="form-label">
-                    phone
+                    {t("phone")}
                   </Label>
                   <Input
                     type="password"
@@ -126,7 +128,7 @@ const ResetPasswordModal: React.FC<ResetPasswordModalProps> = ({
               <Col xxl={12} md={12}>
                 <div>
                   <Label htmlFor="new_password" className="form-label">
-                    New Password
+                    {t("New Password")}
                   </Label>
                   <Input
                     type="password"
@@ -151,7 +153,7 @@ const ResetPasswordModal: React.FC<ResetPasswordModalProps> = ({
                     htmlFor="new_password_confirmation"
                     className="form-label"
                   >
-                    Confirm Password
+                    {t("Confirm Password")}
                   </Label>
                   <Input
                     type="password"
@@ -189,7 +191,7 @@ const ResetPasswordModal: React.FC<ResetPasswordModalProps> = ({
               tog_standard();
             }}
           >
-            Close
+            {t("Close")}
           </Button>
           <Button
             color="primary"
@@ -197,7 +199,7 @@ const ResetPasswordModal: React.FC<ResetPasswordModalProps> = ({
               document.getElementById("reset-password-btn")?.click();
             }}
           >
-            Reset Password
+            {t("Reset Password")}
           </Button>
         </div>
       </Modal>

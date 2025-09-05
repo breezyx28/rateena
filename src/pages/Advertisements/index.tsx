@@ -28,7 +28,7 @@ import { useTranslation } from "react-i18next";
 const Advertisements = () => {
   document.title = "Advertisements | Rateena - E-Shop Admin Panel";
 
-  const { i18n } = useTranslation();
+  const { i18n, t } = useTranslation();
   const [modal_standard, setmodal_standard] = useState<boolean>(false);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   function tog_standard() {
@@ -147,7 +147,7 @@ const Advertisements = () => {
   // Show success toast when advertisement is updated successfully
   React.useEffect(() => {
     if (advertisementUpdatedSuccess && !advertisementError) {
-      toast.success("Advertisement added successfully");
+      toast.success(t("Advertisement added successfully"));
       setmodal_standard(false);
       addForm.resetForm();
       setSelectedFiles([]);
@@ -280,7 +280,7 @@ const Advertisements = () => {
                 <div className="live-preview w-full d-flex justify-content-end">
                   <div>
                     <Button color="primary" onClick={() => tog_standard()}>
-                      Add Advertisement
+                      {t("Add Advertisement")}
                     </Button>
                   </div>
                 </div>
@@ -338,7 +338,7 @@ const Advertisements = () => {
               tog_standard();
             }}
           >
-            Add Advertisement
+            {t("Add Advertisement")}
           </ModalHeader>
           <ModalBody>
             <form
@@ -350,7 +350,7 @@ const Advertisements = () => {
             >
               {addForm.status?.serverError && !advertisementsListSuccess && (
                 <>
-                  {toast("Error adding advertisement", {
+                  {toast(t("Error adding advertisement"), {
                     position: "top-right",
                     hideProgressBar: false,
                     className: "bg-danger text-white",
@@ -367,7 +367,7 @@ const Advertisements = () => {
                 <Col xxl={4} md={4}>
                   <div>
                     <Label htmlFor="title" className="form-label">
-                      English Title
+                      {t("English Title")}
                     </Label>
                     <Input
                       type="text"
@@ -389,7 +389,7 @@ const Advertisements = () => {
                 <Col xxl={4} md={4}>
                   <div>
                     <Label htmlFor="arTitle" className="form-label">
-                      Arabic Title
+                      {t("Arabic Title")}
                     </Label>
                     <Input
                       type="text"
@@ -411,7 +411,7 @@ const Advertisements = () => {
                 <Col xxl={4} md={4}>
                   <div>
                     <Label htmlFor="subtitle" className="form-label">
-                      English Subtitle
+                      {t("English Subtitle")}
                     </Label>
                     <Input
                       type="text"
@@ -433,7 +433,7 @@ const Advertisements = () => {
                 <Col xxl={4} md={4}>
                   <div>
                     <Label htmlFor="arSubtitle" className="form-label">
-                      Arabic Subtitle
+                      {t("Arabic Subtitle")}
                     </Label>
                     <Input
                       type="text"
@@ -455,7 +455,7 @@ const Advertisements = () => {
                 <Col xxl={4} md={4}>
                   <div>
                     <Label htmlFor="startDate" className="form-label">
-                      Start Date
+                      {t("Start Date")}
                     </Label>
                     <Input
                       type="date"
@@ -477,7 +477,7 @@ const Advertisements = () => {
                 <Col xxl={4} md={4}>
                   <div>
                     <Label htmlFor="expireDate" className="form-label">
-                      End Date
+                      {t("End Date")}
                     </Label>
                     <Input
                       type="date"
@@ -499,7 +499,7 @@ const Advertisements = () => {
                 <Col xxl={4} md={4}>
                   <div>
                     <Label htmlFor="startTime" className="form-label">
-                      Start Time
+                      {t("Start Time")}
                     </Label>
                     <Input
                       type="time"
@@ -521,7 +521,7 @@ const Advertisements = () => {
                 <Col xxl={4} md={4}>
                   <div>
                     <Label htmlFor="endTime" className="form-label">
-                      End Time
+                      {t("End Time")}
                     </Label>
                     <Input
                       type="time"
@@ -543,7 +543,7 @@ const Advertisements = () => {
                 <Col xxl={12} md={12}>
                   <div>
                     <Label htmlFor="url" className="form-label">
-                      Redirect URL
+                      {t("Redirect URL")}
                     </Label>
                     <Input
                       type="url"
@@ -565,7 +565,7 @@ const Advertisements = () => {
                 <Col xxl={12} md={12}>
                   <div>
                     <Label htmlFor="adsImage1" className="form-label">
-                      Advertisement Image
+                      {t("Advertisement Image")}
                     </Label>
                     <Input
                       type="file"
@@ -578,7 +578,7 @@ const Advertisements = () => {
                     {selectedFiles.length > 0 && (
                       <div className="mt-3">
                         <Label className="form-label text-muted">
-                          Selected Image:
+                          {t("Selected Image:")}
                         </Label>
                         <div className="d-flex gap-2 flex-wrap">
                           <div className="position-relative">
@@ -611,7 +611,7 @@ const Advertisements = () => {
                 <Col xxl={4} md={4}>
                   <div>
                     <Label htmlFor="banner" className="form-label">
-                      Advertisement Type
+                      {t("Advertisement Type")}
                     </Label>
                     <Input
                       type="select"
@@ -629,13 +629,13 @@ const Advertisements = () => {
                       }}
                       onBlur={addForm.handleBlur}
                     >
-                      <option value="">Select advertisement type</option>
+                      <option value="">{t("Select advertisement type")}</option>
                       <option value="External Advertisements">
-                        External Advertisements
+                        {t("External Advertisements")}
                       </option>
-                      <option value="Resturants">Resturants</option>
-                      <option value="Grocery">Grocery</option>
-                      <option value="Stores">Stores</option>
+                      <option value="Resturants">{t("Resturants")}</option>
+                      <option value="Grocery">{t("Grocery")}</option>
+                      <option value="Stores">{t("Stores")}</option>
                     </Input>
                   </div>
                 </Col>
@@ -645,7 +645,7 @@ const Advertisements = () => {
                   <Col xxl={4} md={4}>
                     <div>
                       <Label htmlFor="vendorId" className="form-label">
-                        Vendor
+                        {t("Vendor")}
                       </Label>
                       <Select
                         id="vendorId"
@@ -662,7 +662,7 @@ const Advertisements = () => {
                           );
                         }}
                         onBlur={() => addForm.setFieldTouched("vendorId", true)}
-                        placeholder="Select vendor"
+                        placeholder={t("Select vendor")}
                         isClearable
                         isSearchable
                         className={
@@ -684,7 +684,7 @@ const Advertisements = () => {
                 <Col xxl={4} md={4} sm={6}>
                   <div>
                     <Label htmlFor="priority" className="form-label">
-                      Priority
+                      {t("Priority")}
                     </Label>
                     <Input
                       type="select"
@@ -695,12 +695,12 @@ const Advertisements = () => {
                       onChange={addForm.handleChange}
                       onBlur={addForm.handleBlur}
                     >
-                      <option value="">Select priority</option>
-                      <option value={1}>advertisement 1</option>
-                      <option value={2}>advertisement 2</option>
-                      <option value={3}>advertisement 3</option>
-                      <option value={4}>advertisement 4</option>
-                      <option value={5}>advertisement 5</option>
+                      <option value="">{t("Select priority")}</option>
+                      <option value={1}>{t("advertisement 1")}</option>
+                      <option value={2}>{t("advertisement 2")}</option>
+                      <option value={3}>{t("advertisement 3")}</option>
+                      <option value={4}>{t("advertisement 4")}</option>
+                      <option value={5}>{t("advertisement 5")}</option>
                     </Input>
                     {advertisementError?.errors?.priority?.[0] && (
                       <div className="invalid-feedback d-block">
@@ -732,7 +732,7 @@ const Advertisements = () => {
                       className="form-check-label"
                       htmlFor="replacePriority"
                     >
-                      replace existed priority?
+                      {t("replace existed priority?")}
                     </Label>
                   </div>
                 </Col>
@@ -746,7 +746,7 @@ const Advertisements = () => {
                       }}
                       disabled={isSubmitting}
                     >
-                      Cancel
+                      {t("Cancel")}
                     </Button>
                     <Button
                       type="submit"
@@ -760,10 +760,10 @@ const Advertisements = () => {
                             role="status"
                             aria-hidden="true"
                           ></span>
-                          Adding...
+                          {t("Adding...")}
                         </>
                       ) : (
-                        "Add Advertisement"
+                        t("Add Advertisement")
                       )}
                     </Button>
                   </div>

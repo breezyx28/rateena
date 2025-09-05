@@ -11,6 +11,7 @@ import {
   Alert,
 } from "reactstrap";
 import ParticlesAuth from "../AuthenticationInner/ParticlesAuth";
+import { useTranslation } from "react-i18next";
 
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -25,6 +26,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { createSelector } from "reselect";
 
 const VerifyUser = () => {
+  const { t } = useTranslation();
   const [OTP, setOTP] = React.useState<string>("");
   const [loading, setLoading] = React.useState<boolean>(false);
 
@@ -33,7 +35,7 @@ const VerifyUser = () => {
 
   const dispatch: any = useDispatch();
 
-  document.title = "OTP Verification | Rateena - E-Shop Admin Panel";
+  document.title = `${t("OTP Verification")} | Rateena - E-Shop Admin Panel`;
 
   const getInputElement = (index: number): HTMLInputElement => {
     return document.getElementById(
@@ -108,7 +110,7 @@ const VerifyUser = () => {
                       </Link>
                     </div>
                     <p className="mt-3 fs-15 fw-medium">
-                      Enter OTP that send to your phone number
+                      {t("Enter OTP that send to your phone number")}
                     </p>
                   </div>
                 </Col>
@@ -128,9 +130,9 @@ const VerifyUser = () => {
 
                       <div className="p-2 mt-4">
                         <div className="text-muted text-center mb-4 mx-lg-3">
-                          <h4 className="">Verify Your Account</h4>
+                          <h4 className="">{t("Verify Your Account")}</h4>
                           <p>
-                            Please enter the 6 digit code sent to{" "}
+                            {t("Please enter the 6 digit code sent to")}{" "}
                             <span className="fw-semibold">
                               {forgotPasswordSessionData?.phone
                                 ? forgotPasswordSessionData.phone
@@ -142,7 +144,7 @@ const VerifyUser = () => {
                         <form onSubmit={handleOTPverification}>
                           {error && error ? (
                             <>
-                              {toast("Some errors happened", {
+                              {toast(t("Some errors happened"), {
                                 position: "top-right",
                                 hideProgressBar: false,
                                 className: "bg-error text-white",
@@ -150,7 +152,7 @@ const VerifyUser = () => {
                                 toastId: "",
                               })}
                               <ToastContainer autoClose={2000} limit={1} />
-                              <Alert color="error">erro</Alert>
+                              <Alert color="error">{t("Some errors happened")}</Alert>
                             </>
                           ) : null}
                           <Row>
@@ -160,7 +162,7 @@ const VerifyUser = () => {
                                   htmlFor="digit1-input"
                                   className="visually-hidden"
                                 >
-                                  Digit 1
+                                  {t("Digit 1")}
                                 </label>
                                 <input
                                   type="text"
@@ -178,7 +180,7 @@ const VerifyUser = () => {
                                   htmlFor="digit2-input"
                                   className="visually-hidden"
                                 >
-                                  Digit 2
+                                  {t("Digit 2")}
                                 </label>
                                 <input
                                   type="text"
@@ -196,7 +198,7 @@ const VerifyUser = () => {
                                   htmlFor="digit3-input"
                                   className="visually-hidden"
                                 >
-                                  Digit 3
+                                  {t("Digit 3")}
                                 </label>
                                 <input
                                   type="text"
@@ -214,7 +216,7 @@ const VerifyUser = () => {
                                   htmlFor="digit4-input"
                                   className="visually-hidden"
                                 >
-                                  Digit 4
+                                  {t("Digit 4")}
                                 </label>
                                 <input
                                   type="text"
@@ -237,10 +239,10 @@ const VerifyUser = () => {
                               {loading && (
                                 <Spinner size="sm" className="me-2">
                                   {" "}
-                                  Loading...{" "}
+                                  {t("Loading...")}{" "}
                                 </Spinner>
                               )}
-                              Confirm
+                              {t("Confirm")}
                             </Button>
                           </div>
                         </form>
@@ -249,12 +251,12 @@ const VerifyUser = () => {
                   </Card>
                   <div className="mt-4 text-center">
                     <p className="mb-0">
-                      Didn't receive a code ?{" "}
+                      {t("Didn't receive a code ?")}{" "}
                       <Link
                         to="/auth-pass-reset-basic"
                         className="fw-semibold text-primary text-decoration-underline"
                       >
-                        Resend
+                        {t("Resend")}
                       </Link>{" "}
                     </p>
                   </div>

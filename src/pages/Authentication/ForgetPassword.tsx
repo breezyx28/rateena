@@ -12,6 +12,7 @@ import {
   Label,
   Form,
 } from "reactstrap";
+import { useTranslation } from "react-i18next";
 
 //redux
 import { useSelector, useDispatch } from "react-redux";
@@ -34,6 +35,7 @@ import ParticlesAuth from "../AuthenticationInner/ParticlesAuth";
 import { createSelector } from "reselect";
 
 const ForgetPasswordPage = (props: any) => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const dispatch: any = useDispatch();
 
@@ -47,7 +49,7 @@ const ForgetPasswordPage = (props: any) => {
     validationSchema: Yup.object({
       phone: Yup.string()
         .matches(/^(009665|\+9665|05)\d{8}$/)
-        .required("Please Enter Your Phone Number"),
+        .required(t("Please Enter Your Phone Number")),
     }),
     onSubmit: (values) => {
       dispatch(userForgetPassword(values, props.history));
@@ -75,7 +77,7 @@ const ForgetPasswordPage = (props: any) => {
     }
   }, [forgetError, forgetSuccessMsg]);
 
-  document.title = "Forgot Password | Rateena - E-Shop Admin Panel";
+  document.title = `${t("Forgot Password")} | Rateena - E-Shop Admin Panel`;
   return (
     <ParticlesAuth>
       <div className="auth-page-content mt-lg-5">
@@ -89,7 +91,7 @@ const ForgetPasswordPage = (props: any) => {
                   </Link>
                 </div>
                 <p className="mt-3 fs-15 fw-medium">
-                  Premium Admin & Dashboard Template
+                  {t("Premium Admin & Dashboard Template")}
                 </p>
               </div>
             </Col>
@@ -100,8 +102,8 @@ const ForgetPasswordPage = (props: any) => {
               <Card className="mt-4">
                 <CardBody className="p-4">
                   <div className="text-center mt-2">
-                    <h5 className="text-primary">Forgot Password?</h5>
-                    <p className="text-muted">Reset password with Rateena</p>
+                    <h5 className="text-primary">{t("Forgot Password?")}</h5>
+                    <p className="text-muted">{t("Reset password with Rateena")}</p>
 
                     <i className="ri-mail-send-line display-5 text-success mb-3"></i>
                   </div>
@@ -110,8 +112,7 @@ const ForgetPasswordPage = (props: any) => {
                     className="border-0 alert-warning text-center mb-2 mx-2"
                     role="alert"
                   >
-                    Enter your phone number and instructions will be sent to
-                    you!
+                    {t("Enter your phone number and instructions will be sent to you!")}
                   </Alert>
                   <div className="p-2">
                     {forgetError && forgetError ? (
@@ -132,11 +133,11 @@ const ForgetPasswordPage = (props: any) => {
                       }}
                     >
                       <div className="mb-4">
-                        <Label className="form-label">Phone</Label>
+                        <Label className="form-label">{t("Phone")}</Label>
                         <Input
                           name="phone"
                           className="form-control"
-                          placeholder="Enter Phone"
+                          placeholder={t("Enter Phone")}
                           type="text"
                           onChange={validation.handleChange}
                           onBlur={validation.handleBlur}
@@ -156,7 +157,7 @@ const ForgetPasswordPage = (props: any) => {
 
                       <div className="text-center mt-4">
                         <button className="btn btn-success w-100" type="submit">
-                          Send OTP
+                          {t("Send OTP")}
                         </button>
                       </div>
                     </Form>
@@ -166,13 +167,13 @@ const ForgetPasswordPage = (props: any) => {
 
               <div className="mt-4 text-center">
                 <p className="mb-0">
-                  Wait, I remember my password...{" "}
+                  {t("Wait, I remember my password...")}{" "}
                   <Link
                     to="/login"
                     className="fw-semibold text-primary text-decoration-underline"
                   >
                     {" "}
-                    Click here{" "}
+                    {t("Click here")}{" "}
                   </Link>{" "}
                 </p>
               </div>
