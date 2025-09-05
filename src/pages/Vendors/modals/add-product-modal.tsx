@@ -112,6 +112,8 @@ const AddProductModal = ({
         toggle={() => {
           tog_standard();
         }}
+        size="lg"
+        fullscreen
       >
         <ModalHeader
           className="modal-title"
@@ -159,7 +161,7 @@ const AddProductModal = ({
                 </>
               ) : null}
               <Row className="gy-4">
-                <Col xxl={12} md={12}>
+                <Col xxl={4} md={6}>
                   <div>
                     <Label htmlFor="name" className="form-label">
                       English Name
@@ -181,7 +183,7 @@ const AddProductModal = ({
                   </div>
                 </Col>
 
-                <Col xxl={12} md={12}>
+                <Col xxl={4} md={6}>
                   <div>
                     <Label htmlFor="ar_name" className="form-label">
                       Arabic Name
@@ -206,7 +208,7 @@ const AddProductModal = ({
                   </div>
                 </Col>
 
-                <Col xxl={12} md={12}>
+                <Col xxl={4} md={6}>
                   <div>
                     <Label htmlFor="quantity" className="form-label">
                       Qunatity
@@ -232,7 +234,7 @@ const AddProductModal = ({
                   </div>
                 </Col>
 
-                <Col xxl={12} md={12}>
+                <Col xxl={4} md={6}>
                   <div className="form-check form-switch">
                     <Input
                       type="switch"
@@ -248,7 +250,7 @@ const AddProductModal = ({
                   </div>
                 </Col>
 
-                <Col xxl={12} md={12}>
+                <Col xxl={4} md={6}>
                   <div>
                     <Label htmlFor="price" className="form-label">
                       Price
@@ -273,7 +275,7 @@ const AddProductModal = ({
                   </div>
                 </Col>
 
-                <Col xxl={12} md={12}>
+                <Col xxl={4} md={6}>
                   <div>
                     <Label htmlFor="company_profit" className="form-label">
                       Company Profit %
@@ -299,7 +301,7 @@ const AddProductModal = ({
                   </div>
                 </Col>
 
-                <Col xxl={12} md={12}>
+                <Col xxl={4} md={6}>
                   <div>
                     <Label htmlFor="duration" className="form-label">
                       Ready within
@@ -325,7 +327,7 @@ const AddProductModal = ({
                   </div>
                 </Col>
 
-                <Col xxl={12} md={12}>
+                <Col xxl={4} md={6}>
                   <div>
                     <Label htmlFor="category_id" className="form-label">
                       Select Category
@@ -362,7 +364,7 @@ const AddProductModal = ({
                   </div>
                 </Col>
 
-                <Col xxl={12} md={12}>
+                <Col xxl={4} md={6}>
                   <div>
                     <Label htmlFor="images" className="form-label">
                       Product Images
@@ -418,7 +420,7 @@ const AddProductModal = ({
                   </div>
                 </Col>
 
-                <Col xxl={12} md={12}>
+                <Col xxl={6} md={6}>
                   <div>
                     <Label htmlFor="description" className="form-label">
                       English Description
@@ -443,7 +445,7 @@ const AddProductModal = ({
                   </div>
                 </Col>
 
-                <Col xxl={12} md={12}>
+                <Col xxl={6} md={6}>
                   <div>
                     <Label htmlFor="ar_description" className="form-label">
                       Arabic Description
