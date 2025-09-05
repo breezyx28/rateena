@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 const Navdata = () => {
   const history = useNavigate();
+  const { t } = useTranslation();
   //state data
   const [isDashboard, setIsDashboard] = useState<boolean>(false);
   const [isVendor, setIsVendor] = useState<boolean>(false);
@@ -145,7 +147,7 @@ const Navdata = () => {
     },
     {
       id: "vendors",
-      label: "Vendors",
+      label: t("Vendors"),
       icon: "ri-store-3-line",
       link: "/#",
       stateVariables: isVendor,
@@ -158,13 +160,13 @@ const Navdata = () => {
       subItems: [
         {
           id: "vendors-list",
-          label: "List",
+          label: t("List"),
           link: "/dashboard/vendors",
           parentId: "vendors",
         },
         {
           id: "add-vendor-page",
-          label: "Create",
+          label: t("Create"),
           link: "/dashboard/vendors/add",
           parentId: "vendors",
         },
@@ -182,7 +184,7 @@ const Navdata = () => {
     },
     {
       id: "advertisements",
-      label: "Advertisements",
+      label: t("Advertisements"),
       icon: "ri-advertisement-line",
       link: "/dashboard/advertisements",
       click: function (e: any) {
@@ -192,7 +194,7 @@ const Navdata = () => {
     },
     {
       id: "users",
-      label: "Users",
+      label: t("Users"),
       icon: "ri-group-line",
       link: "/#",
       stateVariables: isUser,
@@ -205,13 +207,13 @@ const Navdata = () => {
       subItems: [
         {
           id: "admin-users-list",
-          label: "Admins",
+          label: t("Admins"),
           link: "/dashboard/admin-users",
           parentId: "users",
         },
         {
           id: "customers-list",
-          label: "Customers",
+          label: t("Customers"),
           link: "/dashboard/customers",
           parentId: "users",
         },
