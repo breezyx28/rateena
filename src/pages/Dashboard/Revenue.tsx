@@ -154,7 +154,7 @@ const Revenue = ({ details }: { details: any }) => {
                 <h5 className="mb-1">
                   <CountUp
                     suffix={""}
-                    prefix="$"
+                    prefix="AED "
                     start={0}
                     decimals={2}
                     end={countEarnings as number}

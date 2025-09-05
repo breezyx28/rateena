@@ -1,7 +1,7 @@
 // themes-rtl.scss
 
 // Import Google Fonts for Arabic
-@import url("https://fonts.googleapis.com/css2?family=Cairo:wght@200;300;400;500;600;700;800;900");
+@import url("https://fonts.googleapis.com/css2?family=Cairo:wght@200;300;400;500;600;700;800;900&display=swap");
 
 body[dir="rtl"] {
   // Arabic Font Stack - Most popular Arabic fonts
@@ -16,4 +16,29 @@ body[dir="rtl"] {
   @import "../scss/rtl/layouts-rtl";
   @import "../scss/rtl/plugins-rtl";
   @import "../scss/rtl/pages-rtl";
+
+  h6,
+  .h6,
+  h5,
+  .h5,
+  h4,
+  .h4,
+  h3,
+  .h3,
+  h2,
+  .h2,
+  h1,
+  .h1 {
+    font-family: "Cairo", sans-serif !important;
+  }
+
+  span {
+    font-family: "Cairo", sans-serif !important;
+  }
+  a {
+    font-family: "Cairo", sans-serif !important;
+  }
+  div {
+    font-family: "Cairo", sans-serif !important;
+  }
 }

@@ -16,7 +16,7 @@ if (token) axios.defaults.headers.common["Authorization"] = "Bearer " + token;
 // Language header
 const getCurrentLanguage = () => {
   const currentLang = localStorage.getItem("I18N_LANGUAGE") || "en";
-  return currentLang === "ar" ? "arabic" : "english";
+  return currentLang === "ar" ? "ar" : "en";
 };
 
 // Set language header
@@ -82,7 +82,7 @@ const setAuthorization = (token: string) => {
  */
 const updateLanguageHeader = () => {
   const currentLang = localStorage.getItem("I18N_LANGUAGE") || "en";
-  const languageHeader = currentLang === "ar" ? "arabic" : "english";
+  const languageHeader = currentLang === "ar" ? "ar" : "en";
   axios.defaults.headers.common["Accept-Language"] = languageHeader;
 };
 
