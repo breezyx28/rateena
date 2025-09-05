@@ -262,5 +262,22 @@
   "Advertisements": "Advertisements",
   "Admins": "Admins",
   "Users": "Users",
-  "Create": "Create"
+  "Create": "Create",
+  "Search:": "Search:",
+  "Search by name": "Search by name",
+  "Vendor Card": "Vendor Card",
+  "Active": "Active",
+  "Inactive": "Inactive",
+  "Status:": "Status:",
+  "Share vendor location": "Share vendor location",
+  "View details": "View details",
+  "Delete vendor": "Delete vendor",
+  "No vendors found.": "No vendors found.",
+  "Location for": "Location for",
+  "copied to clipboard!": "copied to clipboard!",
+  "Failed to copy location to clipboard": "Failed to copy location to clipboard",
+  "Vendor status updated successfully!": "Vendor status updated successfully!",
+  "deleted successfully!": "deleted successfully!",
+  "Please Enter Your Phone Number": "Please Enter Your Phone Number",
+  "Please Enter Your Password": "Please Enter Your Password"
 }

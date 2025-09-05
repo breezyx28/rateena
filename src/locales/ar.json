@@ -262,5 +262,22 @@
   "Advertisements": "الإعلانات",
   "Admins": "المديرون",
   "Users": "المستخدمين",
-  "Create": "أنشئ"
+  "Create": "أنشئ",
+  "Search:": "البحث:",
+  "Search by name": "البحث بالاسم",
+  "Vendor Card": "بطاقة البائع",
+  "Active": "نشط",
+  "Inactive": "غير نشط",
+  "Status:": "الحالة:",
+  "Share vendor location": "مشاركة موقع البائع",
+  "View details": "عرض التفاصيل",
+  "Delete vendor": "حذف البائع",
+  "No vendors found.": "لم يتم العثور على بائعين.",
+  "Location for": "موقع",
+  "copied to clipboard!": "تم نسخه إلى الحافظة!",
+  "Failed to copy location to clipboard": "فشل في نسخ الموقع إلى الحافظة",
+  "Vendor status updated successfully!": "تم تحديث حالة البائع بنجاح!",
+  "deleted successfully!": "تم الحذف بنجاح!",
+  "Please Enter Your Phone Number": "يرجى إدخال رقم هاتفك",
+  "Please Enter Your Password": "يرجى إدخال كلمة المرور"
 }

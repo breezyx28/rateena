@@ -22,7 +22,7 @@ const SearchTable = () => {
     <React.Fragment>
       <VendorsList />
       {/* Default Modal */}
-      <Modal
+      {/* <Modal
         id="myModal"
         isOpen={modal_standard}
         toggle={() => {
@@ -95,7 +95,7 @@ const SearchTable = () => {
           </Button>
           <Button color="primary">Save changes</Button>
         </div>
-      </Modal>
+      </Modal> */}
     </React.Fragment>
   );
 };

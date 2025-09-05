@@ -67,8 +67,8 @@ const Login = (props: any) => {
       password: "",
     },
     validationSchema: Yup.object({
-      phone: Yup.string().required("Please Enter Your Phone Number"),
-      password: Yup.string().required("Please Enter Your Password"),
+      phone: Yup.string().required(t("Please Enter Your Phone Number")),
+      password: Yup.string().required(t("Please Enter Your Password")),
     }),
     onSubmit: (values) => {
       dispatch(loginUser(values, props.router.navigate));

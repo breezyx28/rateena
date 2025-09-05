@@ -97,7 +97,7 @@ const vendorCardStyles = `
 `;
 
 const VendorsList = () => {
-  const { i18n } = useTranslation();
+  const { i18n, t } = useTranslation();
   const dispatch: any = useDispatch();
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [vendorState, setVendorState] = useState<{
@@ -160,18 +160,21 @@ const VendorsList = () => {
     navigator.clipboard
       .writeText(googleMapsUrl)
       .then(() => {
-        toast.success(`Location for ${vendorName} copied to clipboard!`, {
-          position: "top-right",
-          autoClose: 3000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-        });
+        toast.success(
+          `${t("Location for")} ${vendorName} ${t("copied to clipboard!")}`,
+          {
+            position: "top-right",
+            autoClose: 3000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+          }
+        );
       })
       .catch((err) => {
         console.error("Failed to copy: ", err);
-        toast.error("Failed to copy location to clipboard", {
+        toast.error(t("Failed to copy location to clipboard"), {
           position: "top-right",
           autoClose: 3000,
         });
@@ -185,7 +188,7 @@ const VendorsList = () => {
       vendorId,
       currentState: !currentStatus,
     });
-    toast.success(`Vendor status updated successfully!`, {
+    toast.success(t("Vendor status updated successfully!"), {
       position: "top-right",
       autoClose: 2000,
     });
@@ -208,11 +211,11 @@ const VendorsList = () => {
       dispatch(deleteVendorMutation(vendorToDelete.vendorId));
 
       toast.success(
-        `Vendor ${
+        `${t("Vendors")} ${
           i18n.dir() === "ltr"
             ? vendorToDelete.fullName
             : vendorToDelete.arFullName
-        } deleted successfully!`,
+        } ${t("deleted successfully!")}`,
         {
           position: "top-right",
           autoClose: 2000,
@@ -273,12 +276,12 @@ const VendorsList = () => {
         <Col xl={12}>
           <div className="d-flex align-items-center gap-2">
             <Label htmlFor="vendor-search" className="form-label mb-0">
-              Search:
+              {t("Search:")}
             </Label>
             <Input
               id="vendor-search"
               type="text"
-              placeholder="Search by name"
+              placeholder={t("Search by name")}
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               style={{ maxWidth: 320 }}
@@ -291,14 +294,14 @@ const VendorsList = () => {
           <Col md={6} lg={4} key={item.vendorId}>
             <Card className="vendor-card">
               <CardHeader className="d-flex justify-content-between align-items-center">
-                <h6 className="card-title mb-0">Vendor Card</h6>
+                <h6 className="card-title mb-0">{t("Vendor Card")}</h6>
                 <div className="d-flex align-items-center gap-2">
                   {/* Status Badge */}
                   <Badge
                     color={item.working ? "success" : "secondary"}
                     className="status-badge"
                   >
-                    {item.working ? "Active" : "Inactive"}
+                    {item.working ? t("Active") : t("Inactive")}
                   </Badge>
                 </div>
               </CardHeader>
@@ -347,7 +350,7 @@ const VendorsList = () => {
                   {/* Status Toggle Switch */}
                   <div className="d-flex align-items-center gap-2">
                     <Label className="form-check-label mb-0 small">
-                      Status:
+                      {t("Status:")}
                     </Label>
                     <div className="form-check form-switch">
                       <Input
@@ -371,7 +374,7 @@ const VendorsList = () => {
                     {/* Share Location */}
                     <button
                       className="btn btn-sm btn-primary"
-                      title="Share vendor location"
+                      title={t("Share vendor location")}
                       onClick={() =>
                         shareVendorLocation(
                           item.lat || 0,
@@ -387,7 +390,7 @@ const VendorsList = () => {
                     <Link
                       to={`${item.vendorId}`}
                       className="btn btn-sm btn-info"
-                      title="View details"
+                      title={t("View details")}
                     >
                       <i className="las la-eye"></i>
                     </Link>
@@ -395,7 +398,7 @@ const VendorsList = () => {
                     {/* Delete Vendor */}
                     <button
                       className="btn btn-sm btn-danger"
-                      title="Delete vendor"
+                      title={t("Delete vendor")}
                       onClick={() => showDeleteConfirmation(item)}
                     >
                       <i className="las la-trash-alt"></i>
@@ -408,7 +411,9 @@ const VendorsList = () => {
         ))}
         {filteredVendors?.length === 0 && (
           <Col xl={12}>
-            <div className="text-center text-muted py-5">No vendors found.</div>
+            <div className="text-center text-muted py-5">
+              {t("No vendors found.")}
+            </div>
           </Col>
         )}
       </Row>
