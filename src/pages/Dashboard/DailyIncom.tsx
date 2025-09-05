@@ -10,16 +10,19 @@ import {
 } from "reactstrap";
 import { StoreVisitsCharts } from "./DashboardEcommerceCharts";
 import * as XLSX from "xlsx";
+import { useTranslation } from "react-i18next";
 
 const DailyIncome = ({ details }: { details: any }) => {
+  const { t } = useTranslation();
+
   const generateExcelReport = () => {
     const dailyIncome = details?.dailyIncome || {};
 
     // Prepare data for Excel
     const excelData = Object.entries(dailyIncome).map(([category, value]) => ({
-      Category: category,
+      [t("Category")]: category,
       // Value: typeof value === "string" ? value : value?.toString() || "0",
-      Percentage:
+      [t("Percentage")]:
         typeof value === "string" && value.includes("%") ? value : `${value}%`,
     }));
 
@@ -36,7 +39,7 @@ const DailyIncome = ({ details }: { details: any }) => {
     worksheet["!cols"] = columnWidths;
 
     // Add worksheet to workbook
-    XLSX.utils.book_append_sheet(workbook, worksheet, "Daily Income Report");
+    XLSX.utils.book_append_sheet(workbook, worksheet, t("Daily Income Report"));
 
     // Generate filename with current date
     const currentDate = new Date().toISOString().split("T")[0];
@@ -51,7 +54,7 @@ const DailyIncome = ({ details }: { details: any }) => {
       <Col xl={4}>
         <Card className="card-height-100">
           <CardHeader className="align-items-center d-flex">
-            <h4 className="card-title mb-0 flex-grow-1">Daily Income</h4>
+            <h4 className="card-title mb-0 flex-grow-1">{t("Daily Income")}</h4>
             <div className="flex-shrink-0">
               <UncontrolledDropdown className="card-header-dropdown">
                 <DropdownToggle
@@ -60,12 +63,13 @@ const DailyIncome = ({ details }: { details: any }) => {
                   role="button"
                 >
                   <span className="text-muted">
-                    Report<i className="mdi mdi-chevron-down ms-1"></i>
+                    {t("Report")}
+                    <i className="mdi mdi-chevron-down ms-1"></i>
                   </span>
                 </DropdownToggle>
                 <DropdownMenu className="dropdown-menu-end">
                   <DropdownItem onClick={generateExcelReport}>
-                    Download Report
+                    {t("Download Report")}
                   </DropdownItem>
                 </DropdownMenu>
               </UncontrolledDropdown>

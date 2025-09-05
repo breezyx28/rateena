@@ -5,8 +5,11 @@ import { recentOrders } from "../../common/data";
 import { TOrderStatus } from "types";
 import { imgURL } from "services/api-handles";
 import * as XLSX from "xlsx";
+import { useTranslation } from "react-i18next";
 
 const RecentOrders = ({ details }: { details: any }) => {
+  const { t } = useTranslation();
+
   const statusBadge = (status: TOrderStatus) => {
     switch (status) {
       case "WAITING":
@@ -35,15 +38,15 @@ const RecentOrders = ({ details }: { details: any }) => {
 
     // Prepare data for Excel
     const excelData = orders.map((item: any) => ({
-      "Order ID": item.order_number,
-      "Customer Name": `${item.customer?.first_name || ""} ${
+      [t("Order ID")]: item.order_number,
+      [t("Customer Name")]: `${item.customer?.first_name || ""} ${
         item.customer?.last_name || ""
       }`.trim(),
-      "Items Count": item.cart_items?.length || 0,
-      "Total Amount": `$${item.total}`,
-      Vendor: item.vendor?.full_name || "",
-      Status: item.status,
-      "Order Date": item.order_date
+      [t("Items Count")]: item.cart_items?.length || 0,
+      [t("Total Amount")]: `$${item.total}`,
+      [t("Vendor")]: item.vendor?.full_name || "",
+      [t("Status")]: item.status,
+      [t("Order Date")]: item.order_date
         ? new Date(item.order_date).toLocaleDateString()
         : "",
     }));
@@ -65,7 +68,11 @@ const RecentOrders = ({ details }: { details: any }) => {
     worksheet["!cols"] = columnWidths;
 
     // Add worksheet to workbook
-    XLSX.utils.book_append_sheet(workbook, worksheet, "Recent Orders");
+    XLSX.utils.book_append_sheet(
+      workbook,
+      worksheet,
+      t("Recent Orders Report")
+    );
 
     // Generate filename with current date
     const currentDate = new Date().toISOString().split("T")[0];
@@ -79,15 +86,17 @@ const RecentOrders = ({ details }: { details: any }) => {
       <Col xl={8}>
         <Card>
           <CardHeader className="align-items-center d-flex">
-            <h4 className="card-title mb-0 flex-grow-1">Recent Orders</h4>
+            <h4 className="card-title mb-0 flex-grow-1">
+              {t("Recent Orders")}
+            </h4>
             <div className="flex-shrink-0">
               <button
                 type="button"
                 className="btn btn-soft-info btn-sm"
                 onClick={generateExcelReport}
               >
-                <i className="ri-file-list-3-line align-middle"></i> Generate
-                Report
+                <i className="ri-file-list-3-line align-middle"></i>{" "}
+                {t("Generate Report")}
               </button>
             </div>
           </CardHeader>
@@ -97,12 +106,12 @@ const RecentOrders = ({ details }: { details: any }) => {
               <table className="table table-borderless table-centered align-middle table-nowrap mb-0">
                 <thead className="text-muted table-light">
                   <tr>
-                    <th scope="col">Order ID</th>
-                    <th scope="col">Customer</th>
-                    <th scope="col">Product</th>
-                    <th scope="col">Amount</th>
-                    <th scope="col">Vendor</th>
-                    <th scope="col">Status</th>
+                    <th scope="col">{t("Order ID")}</th>
+                    <th scope="col">{t("Customer")}</th>
+                    <th scope="col">{t("Product")}</th>
+                    <th scope="col">{t("Amount")}</th>
+                    <th scope="col">{t("Vendor")}</th>
+                    <th scope="col">{t("Status")}</th>
                     {/* <th scope="col">Rating</th> */}
                   </tr>
                 </thead>
@@ -137,7 +146,9 @@ const RecentOrders = ({ details }: { details: any }) => {
                         <td>
                           <div className="d-flex align-items-center">
                             <i className="ri-shopping-bag-line me-2"></i>
-                            <span>{item.cart_items?.length || 0} items</span>
+                            <span>
+                              {item.cart_items?.length || 0} {t("items")}
+                            </span>
                           </div>
                         </td>
                         <td>

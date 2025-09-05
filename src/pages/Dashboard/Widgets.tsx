@@ -2,8 +2,11 @@ import React from "react";
 import CountUp from "react-countup";
 import { Link } from "react-router-dom";
 import { Card, CardBody, Col } from "reactstrap";
+import { useTranslation } from "react-i18next";
 
 const Widgets = ({ details }: { details: any }) => {
+  const { t } = useTranslation();
+
   const suffixTag = (item: number) =>
     item > 999 && item < 1000000 ? "K" : item > 99999 ? "M" : "";
 
@@ -41,12 +44,12 @@ const Widgets = ({ details }: { details: any }) => {
     {
       id: 1,
       cardColor: "primary",
-      label: "Company Profit",
+      label: t("Company Profit"),
       badge: getBadgeProps(details?.companyProfit?.change ?? 0).badge,
       badgeClass: getBadgeProps(details?.companyProfit?.change ?? 0).badgeClass,
       percentage: details?.companyProfit?.change ?? "+0.00 %",
       counter: details?.companyProfit?.value ?? 0,
-      link: "View net earnings",
+      link: t("View net earnings"),
       bgcolor: "success",
       icon: "bx bx-money", // Changed from bx bx-dollar-circle to bx bx-money for a generic currency icon
       decimals: 2,
@@ -56,12 +59,12 @@ const Widgets = ({ details }: { details: any }) => {
     {
       id: 2,
       cardColor: "secondary",
-      label: "Total Revenue",
+      label: t("Total Revenue"),
       badge: getBadgeProps(details?.totalRevenue?.change ?? 0).badge,
       badgeClass: getBadgeProps(details?.totalRevenue?.change ?? 0).badgeClass,
       percentage: details?.totalRevenue?.change ?? "+0.00%",
       counter: details?.totalRevenue?.value ?? 0,
-      link: "View all orders",
+      link: t("View all orders"),
       bgcolor: "info",
       icon: "bx bx-shopping-bag",
       decimals: 2,
@@ -72,12 +75,12 @@ const Widgets = ({ details }: { details: any }) => {
     {
       id: 3,
       cardColor: "success",
-      label: "New Customers",
+      label: t("New Customers"),
       badge: getBadgeProps(details?.newCustomers?.change ?? 0).badge,
       badgeClass: getBadgeProps(details?.newCustomers?.change ?? 0).badgeClass,
       percentage: details?.newCustomers?.change ?? "+0.00%",
       counter: details?.newCustomers?.value ?? 0,
-      link: "See details",
+      link: t("See details"),
       bgcolor: "warning",
       icon: "bx bx-user-circle",
       decimals: 0,
@@ -87,12 +90,12 @@ const Widgets = ({ details }: { details: any }) => {
     {
       id: 4,
       cardColor: "info",
-      label: "In Process Orders",
+      label: t("In Process Orders"),
       badge: null,
       badgeClass: null,
       percentage: null,
       counter: details?.inProcessOrders?.value ?? 0,
-      link: "Withdraw money",
+      link: t("Withdraw money"),
       bgcolor: "primary",
       icon: "bx bx-receipt", // Changed to represent orders
       decimals: 0,

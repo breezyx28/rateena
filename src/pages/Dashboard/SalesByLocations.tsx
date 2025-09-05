@@ -4,16 +4,19 @@ import { Card, CardBody, CardHeader, Col } from "reactstrap";
 import { VectorMap } from "@south-paw/react-vector-maps";
 import world from "../../common/world.svg.json";
 import * as XLSX from "xlsx";
+import { useTranslation } from "react-i18next";
 
 const SalesByLocations = ({ details }: { details: any }) => {
+  const { t } = useTranslation();
+
   const generateExcelReport = () => {
     const salesByLocation = details?.salesByLocation || {};
 
     // Prepare data for Excel
     const excelData = Object.entries(salesByLocation).map(
       ([location, value]) => ({
-        Location: location,
-        Percentage:
+        [t("Location")]: location,
+        [t("Percentage")]:
           typeof value === "string" && value.includes("%")
             ? value
             : `${value}%`,
@@ -32,7 +35,7 @@ const SalesByLocations = ({ details }: { details: any }) => {
     worksheet["!cols"] = columnWidths;
 
     // Add worksheet to workbook
-    XLSX.utils.book_append_sheet(workbook, worksheet, "Sales by Locations");
+    XLSX.utils.book_append_sheet(workbook, worksheet, t("Sales by Locations"));
 
     // Generate filename with current date
     const currentDate = new Date().toISOString().split("T")[0];
@@ -47,14 +50,16 @@ const SalesByLocations = ({ details }: { details: any }) => {
       <Col xl={4}>
         <Card className="card-height-100">
           <CardHeader className="align-items-center d-flex">
-            <h4 className="card-title mb-0 flex-grow-1">Sales by Locations</h4>
+            <h4 className="card-title mb-0 flex-grow-1">
+              {t("Sales by Locations")}
+            </h4>
             <div className="flex-shrink-0">
               <button
                 type="button"
                 className="btn btn-soft-primary btn-sm material-shadow-none"
                 onClick={generateExcelReport}
               >
-                Export Report
+                {t("Export Report")}
               </button>
             </div>
           </CardHeader>

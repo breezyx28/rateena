@@ -2,8 +2,11 @@ import React, { useState, useEffect } from "react";
 import { Card, CardBody, CardHeader, Col, Row } from "reactstrap";
 import { RevenueCharts } from "./DashboardEcommerceCharts";
 import CountUp from "react-countup";
+import { useTranslation } from "react-i18next";
 
 const Revenue = ({ details }: { details: any }) => {
+  const { t } = useTranslation();
+
   const [countOrders, setCountOrders] = useState<number | string>(
     details?.revenue?.orders ?? 0
   );
@@ -41,17 +44,17 @@ const Revenue = ({ details }: { details: any }) => {
 
     return [
       {
-        name: "Orders",
+        name: t("Orders"),
         type: "area",
         data: ordersData,
       },
       {
-        name: "Earnings",
+        name: t("Earnings"),
         type: "bar",
         data: earningsData,
       },
       {
-        name: "Refunds",
+        name: t("Refunds"),
         type: "line",
         data: refundsData,
       },
@@ -68,29 +71,29 @@ const Revenue = ({ details }: { details: any }) => {
     } else {
       setchartData([
         {
-          name: "Orders",
+          name: t("Orders"),
           type: "area",
           data: [],
         },
         {
-          name: "Earnings",
+          name: t("Earnings"),
           type: "bar",
           data: [],
         },
         {
-          name: "Refunds",
+          name: t("Refunds"),
           type: "line",
           data: [],
         },
       ]);
     }
-  }, [details]);
+  }, [details, t]);
 
   return (
     <React.Fragment>
       <Card>
         <CardHeader className="border-0 align-items-center d-flex">
-          <h4 className="card-title mb-0 flex-grow-1">Revenue</h4>
+          <h4 className="card-title mb-0 flex-grow-1">{t("Revenue")}</h4>
           {/* <div className="d-flex gap-1">
             <button
               type="button"
@@ -143,7 +146,7 @@ const Revenue = ({ details }: { details: any }) => {
                     separator=","
                   />
                 </h5>
-                <p className="text-muted mb-0">Orders</p>
+                <p className="text-muted mb-0">{t("Orders")}</p>
               </div>
             </Col>
             <Col xs={6} sm={4}>
@@ -158,7 +161,7 @@ const Revenue = ({ details }: { details: any }) => {
                     duration={3}
                   />
                 </h5>
-                <p className="text-muted mb-0">Earnings</p>
+                <p className="text-muted mb-0">{t("Earnings")}</p>
               </div>
             </Col>
             <Col xs={6} sm={4}>
@@ -170,7 +173,7 @@ const Revenue = ({ details }: { details: any }) => {
                     duration={3}
                   />
                 </h5>
-                <p className="text-muted mb-0">Canceled Orders</p>
+                <p className="text-muted mb-0">{t("Canceled Orders")}</p>
               </div>
             </Col>
             {/* <Col xs={6} sm={3}>

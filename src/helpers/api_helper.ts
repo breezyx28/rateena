@@ -13,6 +13,15 @@ const authUser: any = sessionStorage.getItem("authUser");
 const token = JSON.parse(authUser) ? JSON.parse(authUser).token : null;
 if (token) axios.defaults.headers.common["Authorization"] = "Bearer " + token;
 
+// Language header
+const getCurrentLanguage = () => {
+  const currentLang = localStorage.getItem("I18N_LANGUAGE") || "en";
+  return currentLang === "ar" ? "ar" : "en";
+};
+
+// Set language header
+axios.defaults.headers.common["Accept-Language"] = getCurrentLanguage();
+
 // intercepting to capture errors
 axios.interceptors.response.use(
   function (response) {
@@ -44,6 +53,18 @@ axios.interceptors.response.use(
 const setAuthorization = (token: string) => {
   axios.defaults.headers.common["Authorization"] = "Bearer " + token;
 };
+
+/**
+ * Updates the language header based on current language
+ */
+const updateLanguageHeader = () => {
+  const currentLang = localStorage.getItem("I18N_LANGUAGE") || "en";
+  const languageHeader = currentLang === "ar" ? "arabic" : "english";
+  axios.defaults.headers.common["Accept-Language"] = languageHeader;
+};
+
+// Export the function so it can be called when language changes
+export { updateLanguageHeader };
 
 class APIClient {
   /**
