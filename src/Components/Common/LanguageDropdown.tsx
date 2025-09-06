@@ -10,6 +10,7 @@ import { get } from "lodash";
 //i18n
 import i18n from "../../i18n";
 import languages from "../../common/languages";
+import { t } from "i18next";
 
 const LanguageDropdown = () => {
   // Declare a new state variable, which we'll call "menu"
@@ -43,6 +44,8 @@ const LanguageDropdown = () => {
       }
     }
   };
+
+  console.log("selectedLang: ", selectedLang);
 
   const updateBodyDirection = (lang: string) => {
     const body = document.body;
@@ -102,7 +105,7 @@ const LanguageDropdown = () => {
                 height="18"
               />
               <span className="align-middle">
-                {get(languages, `${key}.label`)}
+                {t(get(languages, `${key}.label`) ?? "")}
               </span>
             </DropdownItem>
           ))}

@@ -16,6 +16,9 @@ import LoadingReducer from "./loadingSlice";
 // Home
 import HomeDetailsReducer from "./Home/reducer";
 
+// Notifications
+import NotificationsReducer from "./notifications/reducer";
+
 // Vendors
 import VendorsReducer from "./vendors/reducer";
 
@@ -113,7 +116,7 @@ const rootReducer = combineReducers({
   AdminUsers: AdminUsersReducer,
   Customers: CustomersReducer,
   Advertisements: AdvertisementsReducer,
-
+  Notifications: NotificationsReducer,
   Invoice: InvoiceReducer,
   Calendar: CalendarReducer,
   Chat: chatReducer,

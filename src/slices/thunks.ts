@@ -13,6 +13,9 @@ export * from "./auth/verifyOtp/thunk";
 // Home
 export * from "./Home/thunk";
 
+// Notifications
+export * from "./notifications/thunk";
+
 // Vendors
 export * from "./vendors/thunk";
 

@@ -649,5 +649,21 @@
   "Digit 4": "الرقم 4",
   "Confirm": "تأكيد",
   "Didn't receive a code ?": "لم تستلم رمزاً؟",
-  "Resend": "إعادة إرسال"
+  "Resend": "إعادة إرسال",
+  "unread messages": "رسائل غير مقروءة",
+  "Notifications": "الإشعارات",
+  "New": "جديد",
+  "All": "الكل",
+  "Your Elite author Graphic Optimization reward is ready!": "مكافأتك لتحسين الرسوميات للمؤلف المميز جاهزة!",
+  "Just 30 sec ago": "منذ 30 ثانية فقط",
+  "Answered to your comment on the cash flow forecast's graph": "رد على تعليقك على رسم توقع التدفق النقدي",
+  "48 min ago": "منذ 48 دقيقة",
+  "You have received 20 new messages in the conversation": "لقد تلقيت 20 رسالة جديدة في المحادثة",
+  "2 hrs ago": "منذ ساعتين",
+  "We talked about a project on linkedin.": "تحدثنا عن مشروع على لينكد إن.",
+  "4 hrs ago": "منذ 4 ساعات",
+  "View All Notifications": "عرض جميع الإشعارات",
+  "Hey! You have no any notifications": "مرحباً! ليس لديك أي إشعارات",
+  "English": "الإنجليزية",
+  "Arabic": "العربية"
 }
