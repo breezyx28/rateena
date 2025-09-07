@@ -66,6 +66,7 @@ const PersonalDetailsTab: React.FC<PersonalDetailsTabProps> = ({
     closingTime: formatTimeToHis(vendorInfo?.closingTime || ""),
     region: vendorInfo?.region || "",
     vendorType: vendorInfo?.vendorType || "",
+    always_open: vendorInfo?.always_open || false, // Add always_open field
   });
 
   // Validation schema for vendor info form
@@ -99,8 +100,9 @@ const PersonalDetailsTab: React.FC<PersonalDetailsTabProps> = ({
       .max(10000, "Min charge for long distance must be less than 10000")
       .required("Min charge for long distance is required")
       .typeError("Min charge for long distance must be a number"),
-    openingTime: Yup.string().required("Opening time is required"),
-    closingTime: Yup.string().required("Closing time is required"),
+    always_open: Yup.boolean(),
+    openingTime: Yup.string(),
+    closingTime: Yup.string(),
     region: Yup.string().required("Region is required"),
     vendorType: Yup.string().required("Vendor type is required"),
   });
@@ -120,6 +122,7 @@ const PersonalDetailsTab: React.FC<PersonalDetailsTabProps> = ({
       maxKilometerDelivery: parseInt(values.maxKilometerDelivery),
       openingTime: values.openingTime, // Map fOpeningTime to openingTime
       closingTime: values.closingTime, // Map fClosingTime to closingTime
+      always_open: values.always_open || false, // Map fClosingTime to closingTime
       region: values.region,
       vendorType: values.vendorType,
       minChargeLongDistance: parseInt(values.minChargeLongDistance),
@@ -363,82 +366,120 @@ const PersonalDetailsTab: React.FC<PersonalDetailsTabProps> = ({
               </div>
             </Col>
 
-            <Col lg={6}>
+            <Col lg={12}>
               <div className="mb-3">
-                <Label htmlFor="openingtimeinput" className="form-label">
-                  {t("Opening Time")}
-                </Label>
-                <Flatpickr
-                  className={`form-control ${
-                    errors.openingTime && touched.openingTime
-                      ? "is-invalid"
-                      : ""
-                  }`}
-                  type="time"
-                  value={values.openingTime}
-                  onChange={(date) =>
-                    setFieldValue(
-                      "openingTime",
-                      date[0] ? date[0].toTimeString().slice(0, 8) : ""
-                    )
-                  }
-                  onBlur={() =>
-                    handleBlur({
-                      target: { name: "openingTime" },
-                    })
-                  }
-                  options={{
-                    enableTime: true,
-                    noCalendar: true,
-                    dateFormat: "H:i:s",
-                    time_24hr: true,
-                  }}
-                />
+                <div className="form-check form-switch">
+                  <Input
+                    className="form-check-input"
+                    type="checkbox"
+                    role="switch"
+                    id="alwaysOpenToggle"
+                    name="always_open"
+                    checked={values.always_open}
+                    onChange={(e) => {
+                      handleChange(e);
+                      if (e.target.checked) {
+                        setFieldValue("openingTime", "");
+                        setFieldValue("closingTime", "");
+                      }
+                    }}
+                    onBlur={handleBlur}
+                  />
+                  <Label
+                    className="form-check-label"
+                    htmlFor="alwaysOpenToggle"
+                  >
+                    {t("Always Open")}
+                  </Label>
+                </div>
                 <ErrorMessage
-                  name="openingTime"
+                  name="always_open"
                   component="div"
                   className="invalid-feedback"
                 />
               </div>
             </Col>
-            <Col lg={6}>
-              <div className="mb-3">
-                <Label htmlFor="closingtimeinput" className="form-label">
-                  {t("Closing Time")}
-                </Label>
-                <Flatpickr
-                  className={`form-control ${
-                    errors.closingTime && touched.closingTime
-                      ? "is-invalid"
-                      : ""
-                  }`}
-                  type="time"
-                  value={values.closingTime}
-                  onChange={(date) =>
-                    setFieldValue(
-                      "closingTime",
-                      date[0] ? date[0].toTimeString().slice(0, 8) : ""
-                    )
-                  }
-                  onBlur={() =>
-                    handleBlur({
-                      target: { name: "closingTime" },
-                    })
-                  }
-                  options={{
-                    enableTime: true,
-                    noCalendar: true,
-                    dateFormat: "H:i:s",
-                    time_24hr: true,
-                  }}
-                />
-                <ErrorMessage
-                  name="closingTime"
-                  component="div"
-                  className="invalid-feedback"
-                />
-              </div>
-            </Col>
+
+            {!values.always_open && (
+              <>
+                <Col lg={6}>
+                  <div className="mb-3">
+                    <Label htmlFor="openingtimeinput" className="form-label">
+                      {t("Opening Time")}
+                    </Label>
+                    <Flatpickr
+                      className={`form-control ${
+                        errors.openingTime && touched.openingTime
+                          ? "is-invalid"
+                          : ""
+                      }`}
+                      type="time"
+                      value={values.openingTime}
+                      onChange={(date) =>
+                        setFieldValue(
+                          "openingTime",
+                          date[0] ? date[0].toTimeString().slice(0, 8) : ""
+                        )
+                      }
+                      onBlur={() =>
+                        handleBlur({
+                          target: { name: "openingTime" },
+                        })
+                      }
+                      options={{
+                        enableTime: true,
+                        noCalendar: true,
+                        dateFormat: "H:i:s",
+                        time_24hr: true,
+                      }}
+                    />
+                    <ErrorMessage
+                      name="openingTime"
+                      component="div"
+                      className="invalid-feedback"
+                    />
+                  </div>
+                </Col>
+                <Col lg={6}>
+                  <div className="mb-3">
+                    <Label htmlFor="closingtimeinput" className="form-label">
+                      {t("Closing Time")}
+                    </Label>
+                    <Flatpickr
+                      className={`form-control ${
+                        errors.closingTime && touched.closingTime
+                          ? "is-invalid"
+                          : ""
+                      }`}
+                      type="time"
+                      value={values.closingTime}
+                      onChange={(date) =>
+                        setFieldValue(
+                          "closingTime",
+                          date[0] ? date[0].toTimeString().slice(0, 8) : ""
+                        )
+                      }
+                      onBlur={() =>
+                        handleBlur({
+                          target: { name: "closingTime" },
+                        })
+                      }
+                      options={{
+                        enableTime: true,
+                        noCalendar: true,
+                        dateFormat: "H:i:s",
+                        time_24hr: true,
+                      }}
+                    />
+                    <ErrorMessage
+                      name="closingTime"
+                      component="div"
+                      className="invalid-feedback"
+                    />
+                  </div>
+                </Col>
+              </>
+            )}
             <Col lg={12}>
               <div className="mb-3">
                 <Label htmlFor="regionInput" className="form-label">

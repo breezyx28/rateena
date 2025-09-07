@@ -9,6 +9,7 @@ const Navdata = () => {
   const [isDashboard, setIsDashboard] = useState<boolean>(false);
   const [isVendor, setIsVendor] = useState<boolean>(false);
   const [isUser, setIsUser] = useState<boolean>(false);
+  const [isProduct, setIsProduct] = useState<boolean>(false);
   // const [isApps, setIsApps] = useState<boolean>(false);
   // const [isAuth, setIsAuth] = useState<boolean>(false);
   // const [isPages, setIsPages] = useState<boolean>(false);
@@ -71,6 +72,9 @@ const Navdata = () => {
     if (iscurrentState !== "Users") {
       setIsUser(false);
     }
+    if (iscurrentState !== "Products") {
+      setIsProduct(false);
+    }
     // if (iscurrentState !== "Apps") {
     //   setIsApps(false);
     // }
@@ -117,6 +121,7 @@ const Navdata = () => {
     isUser,
     iscurrentState,
     isDashboard,
+    isProduct,
     // isApps,
     // isAuth,
     // isPages,
@@ -172,6 +177,16 @@ const Navdata = () => {
         },
       ],
     },
+    // {
+    //   id: "products",
+    //   label: "Products",
+    //   icon: "ri-shopping-cart-line", // Updated to a more relevant icon
+    //   link: "/dashboard/products",
+    //   click: function (e: any) {
+    //     e.preventDefault();
+    //     setIscurrentState("Products");
+    //   },
+    // },
     {
       id: "orders",
       label: "Orders",

@@ -88,8 +88,21 @@ const VendorProfile = () => {
   };
 
   const tabChange = (tab: any) => {
-    if (activeTab !== tab) setActiveTab(tab);
+    if (activeTab !== tab) {
+      setActiveTab(tab);
+      window.location.hash = `tab-${tab}`; // Update URL hash
+    }
   };
+
+  React.useEffect(() => {
+    const hash = window.location.hash;
+    if (hash) {
+      const tab = hash.replace("#tab-", "");
+      if (tab) {
+        setActiveTab(tab);
+      }
+    }
+  }, []);
 
   document.title = "Vendor Profile | Rateena - E-Shop Admin Panel";
 

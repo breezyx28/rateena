@@ -6,6 +6,7 @@ import {
   getProduct,
   getProducts,
   removeProductImage,
+  toggleProductApprove,
   toggleProductPublish,
 } from "services/products";
 import {
@@ -57,6 +58,22 @@ export const toggleProductPublishQuery =
     try {
       let response;
       response = toggleProductPublish(productId);
+      const data = await response;
+      if (data) {
+        dispatch(productSuccess(data));
+        dispatch(getProductQuery(productId));
+      }
+    } catch (error: any) {
+      console.log("errors: ", error);
+      dispatch(productsListError(error));
+    }
+  };
+
+export const toggleProductApproveQuery =
+  (productId: any) => async (dispatch: any) => {
+    try {
+      let response;
+      response = toggleProductApprove(productId);
       const data = await response;
       if (data) {
         dispatch(productSuccess(data));

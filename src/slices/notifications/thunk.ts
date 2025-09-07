@@ -59,6 +59,7 @@ export const readNotificationQuery =
       if (data) {
         dispatch(notificationSuccess(data));
         dispatch(notificationReaded());
+        dispatch(getNotificationsQuery());
       }
     } catch (error: any) {
       console.log("errors: ", error);

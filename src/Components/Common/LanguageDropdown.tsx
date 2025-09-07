@@ -45,8 +45,6 @@ const LanguageDropdown = () => {
     }
   };
 
-  console.log("selectedLang: ", selectedLang);
-
   const updateBodyDirection = (lang: string) => {
     const body = document.body;
     if (lang === "ar") {

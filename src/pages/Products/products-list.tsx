@@ -12,7 +12,7 @@ import {
 } from "slices/thunks";
 import { useDispatch } from "react-redux";
 
-const VendorProductsList = ({ data }: { data: any[] }) => {
+const ProductsList = ({ data }: { data: any[] }) => {
   const { t } = useTranslation();
   const [filter, setFilter] = useState<any[]>([]);
   const [editModal, setEditModal] = useState(false);
@@ -288,4 +288,4 @@ const VendorProductsList = ({ data }: { data: any[] }) => {
   );
 };
 
-export { VendorProductsList };
+export { ProductsList };

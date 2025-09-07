@@ -592,5 +592,11 @@
   "View All Notifications": "View All Notifications",
   "Hey! You have no any notifications": "Hey! You have no any notifications",
   "English": "English",
-  "Arabic": "Arabic"
+  "Arabic": "Arabic",
+  "Always Open": "Always Open",
+  "Closed": "Closed",
+  "Approved": "Approved",
+  "Not Approved": "Not Approved",
+  "Select Publish Status": "Select Publish Status",
+  "Select Approval Status": "Select Approval Status"
 }

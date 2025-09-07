@@ -665,5 +665,12 @@
   "View All Notifications": "عرض جميع الإشعارات",
   "Hey! You have no any notifications": "مرحباً! ليس لديك أي إشعارات",
   "English": "الإنجليزية",
-  "Arabic": "العربية"
+  "Arabic": "العربية",
+  "Always Open": "مفتوح دائماً",
+  "Approved": "موافق عليه",
+  "Not Approved": "غير موافق عليه",
+  "Pending": "قيد الانتظار",
+  "Approval Status": "حالة الموافقة",
+  "Select Approval Status": "اختر حالة الموافقة",
+  "Select Publish Status": "اختر حالة النشر"
 }

@@ -24,6 +24,11 @@ export const deleteOption = (optionId: any) =>
 export const toggleProductPublish = (productId: any) =>
   api.get(url.TOGGLE_PUBLISH_URL.replace("{productId}", productId.toString()));
 
+export const toggleProductApprove = (productId: any) =>
+  api.get(
+    url.TOGGLE_PRODUCT_APPROVE_URL.replace("{productId}", productId.toString())
+  );
+
 export const addProductImage = (productId: any, data: any) =>
   api.create(
     url.ADD_IIMAGE_URL.replace("{productId}", productId.toString()),

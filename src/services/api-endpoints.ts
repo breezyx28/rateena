@@ -57,7 +57,8 @@ export const GET_ORDER_INVOICE = "/invoices/order/{orderId}";
 // Notifications
 export const GET_NOTIFICATIONS = "/users/notifications";
 export const GET_NOTIFICATIONS_COUNT = "/users/notifications/count";
-export const GET_READ_NOTIFICATION = "/users/notifications/{notificationId}";
+export const GET_READ_NOTIFICATION =
+  "/users/notifications/{notificationId}/read";
 
 // Advertisements
 export const GET_ADVERTISEMENTS_LIST = "/advertisements";
@@ -74,6 +75,8 @@ export const PRODUCT_DELETE_URL = "/products/delete/{productId}";
 export const ADD_OPTION_INFO_URL = "/options/save";
 export const OPTION_DELETE_URL = "/options/delete/{optionId}";
 export const TOGGLE_PUBLISH_URL = "/products/toggle/publish/{productId}";
+export const TOGGLE_PRODUCT_APPROVE_URL =
+  "/products/toggle/approved/{productId}";
 export const ADD_IIMAGE_URL = "/products/{productId}/add-image";
 export const REMOVE_IIMAGE_URL =
   "/products/{productId}/remove-image?imagePath=${imagePath}";
