@@ -17,13 +17,16 @@ import {
   addOrUpdateAdvertisementMutation,
   getAdvertisementsListQuery,
 } from "slices/advertisements/thunk";
+import { clearAdvertisementError } from "slices/advertisements/reducer";
 import { useFormik } from "formik";
 import * as Yup from "yup";
-import { toast, ToastContainer } from "react-toastify";
+import Swal from "sweetalert2";
 // Removed FilePond in favor of simple input uploader like add-product-modal
 import { vendorsList } from "slices/thunks";
 import Select from "react-select";
 import { useTranslation } from "react-i18next";
+import { useAdvertisementWithValidation } from "../../hooks/useAdvertisementWithValidation";
+import { useAdvertisementsList } from "hooks";
 
 const Advertisements = () => {
   document.title = "Advertisements | Rateena - E-Shop Admin Panel";
@@ -31,24 +34,43 @@ const Advertisements = () => {
   const { i18n, t } = useTranslation();
   const [modal_standard, setmodal_standard] = useState<boolean>(false);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   function tog_standard() {
     setmodal_standard(!modal_standard);
   }
 
-  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
+  const { data: adsData, fetchAdvertisements } = useAdvertisementsList();
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files) {
-      const files = Array.from(e.target.files);
-      setSelectedFiles(files);
-      addForm.setFieldValue("adsImage1", files.length > 0 ? files[0] : "");
+  // Use the advertisement with validation hook
+  const { formik, submit, data, error, isSuccess, isError, isLoading, reset } =
+    useAdvertisementWithValidation({
+      onSuccess: (data) => {
+        Swal.fire({
+          title: t("Advertisement added successfully"),
+          icon: "success",
+          timer: 2000,
+          showConfirmButton: false,
+        });
+        setmodal_standard(false);
+        reset();
+        setSelectedFiles([]);
+        // Refresh the advertisements list
+        fetchAdvertisements();
+      },
+      onError: (error) => {
+        console.log("Advertisement error:", error);
+      },
+    });
+
+  React.useEffect(() => {
+    fetchAdvertisements();
+  }, []);
+
+  React.useEffect(() => {
+    if (adsData?.data) {
+      console.log("adsData: ", adsData?.data);
     }
-  };
-
-  const removeSelectedFile = () => {
-    setSelectedFiles([]);
-    addForm.setFieldValue("adsImage1", "");
-  };
+  }, [adsData?.data]);
 
   const dispatch: any = useDispatch();
 
@@ -80,20 +102,6 @@ const Advertisements = () => {
     }
   };
 
-  const selectLayoutState = (state: any) => state.Advertisements;
-  const selectLayoutProperties = createSelector(selectLayoutState, (state) => ({
-    success: state.success,
-    error: state.error,
-    advertisementUpdatedSuccess: state.advertisementUpdatedSuccess,
-    advertisementsListSuccess: state.advertisementsListSuccess,
-    advertisementError: state.advertisementError,
-  }));
-  // Inside your component
-  const {
-    advertisementsListSuccess,
-    advertisementError,
-    advertisementUpdatedSuccess,
-  } = useSelector(selectLayoutProperties);
   // Vendor Reducer
   const selectVendorsLayoutState = (state: any) => state.Vendors;
   const selectVendorLayoutProperties = createSelector(
@@ -125,150 +133,113 @@ const Advertisements = () => {
   }, []);
 
   React.useEffect(() => {
-    if (advertisementsListSuccess) {
-      console.log("advertisementsListSuccess: ", advertisementsListSuccess);
-    }
-    if (advertisementUpdatedSuccess) {
-      console.log("advertisementUpdatedSuccess: ", advertisementUpdatedSuccess);
-    }
     if (vendorsListSuccess) {
       console.log("vendorsListSuccess: ", vendorsListSuccess);
     }
-    if (advertisementError) {
-      console.log("advertisementError: ", advertisementError);
-    }
-  }, [
-    advertisementError,
-    advertisementsListSuccess,
-    vendorsListSuccess,
-    advertisementUpdatedSuccess,
-  ]);
+  }, [vendorsListSuccess]);
 
-  // Show success toast when advertisement is updated successfully
-  React.useEffect(() => {
-    if (advertisementUpdatedSuccess && !advertisementError) {
-      toast.success(t("Advertisement added successfully"));
-      setmodal_standard(false);
-      addForm.resetForm();
-      setSelectedFiles([]);
-      setIsSubmitting(false);
-    }
-  }, [advertisementUpdatedSuccess, advertisementError]);
+  // // Normalize time to HH:mm:ss
+  // const normalizeTimeToHms = (timeString: string) => {
+  //   if (!timeString) return "";
+  //   if (/^\d{2}:\d{2}:\d{2}$/.test(timeString)) return timeString;
+  //   if (/^\d{2}:\d{2}$/.test(timeString)) return `${timeString}:00`;
+  //   try {
+  //     const date = new Date(`1970-01-01T${timeString}`);
+  //     const hh = String(date.getHours()).padStart(2, "0");
+  //     const mm = String(date.getMinutes()).padStart(2, "0");
+  //     const ss = String(date.getSeconds()).padStart(2, "0");
+  //     return `${hh}:${mm}:${ss}`;
+  //   } catch {
+  //     return timeString;
+  //   }
+  // };
 
-  // Handle loading state when error occurs
-  React.useEffect(() => {
-    if (advertisementError) {
-      setIsSubmitting(false);
-    }
-  }, [advertisementError]);
+  // const addForm = useFormik({
+  //   enableReinitialize: false,
+  //   initialValues: {
+  //     title: "",
+  //     arTitle: "",
+  //     subtitle: "",
+  //     arSubtitle: "",
+  //     startDate: "",
+  //     expireDate: "",
+  //     startTime: "",
+  //     endTime: "",
+  //     url: "",
+  //     banner: "",
+  //     priority: "",
+  //     vendorId: "",
+  //     replacePriority: false,
+  //   },
+  //   validationSchema: Yup.object().shape({
+  //     title: Yup.string().required("English title is required"),
+  //     arTitle: Yup.string().required("Arabic title is required"),
+  //     subtitle: Yup.string().required("English subtitle is required"),
+  //     arSubtitle: Yup.string().required("Arabic subtitle is required"),
+  //     startDate: Yup.date().required("Start date is required"),
+  //     expireDate: Yup.date().required("End date is required"),
+  //     startTime: Yup.string().required("Start time is required"),
+  //     endTime: Yup.string().required("End time is required"),
+  //     // URL optional always; allow empty string by transforming to undefined
+  //     url: Yup.string()
+  //       .transform((value, originalValue) =>
+  //         originalValue === "" ? undefined : value
+  //       )
+  //       .url("Must be a valid URL")
+  //       .notRequired()
+  //       .nullable(),
+  //     vendorId: Yup.string().when("banner", {
+  //       is: (val: string) => val !== "External Advertisements",
+  //       then: (schema) => schema.required("Vendor is required"),
+  //       otherwise: (schema) => schema.notRequired(),
+  //     }),
+  //   }),
+  //   onSubmit: (values) => {
+  //     // clear any previous server error
+  //     addForm.setStatus(undefined);
+  //     dispatch(clearAdvertisementError());
+  //     setIsSubmitting(true);
 
-  // Normalize time to HH:mm:ss
-  const normalizeTimeToHms = (timeString: string) => {
-    if (!timeString) return "";
-    if (/^\d{2}:\d{2}:\d{2}$/.test(timeString)) return timeString;
-    if (/^\d{2}:\d{2}$/.test(timeString)) return `${timeString}:00`;
-    try {
-      const date = new Date(`1970-01-01T${timeString}`);
-      const hh = String(date.getHours()).padStart(2, "0");
-      const mm = String(date.getMinutes()).padStart(2, "0");
-      const ss = String(date.getSeconds()).padStart(2, "0");
-      return `${hh}:${mm}:${ss}`;
-    } catch {
-      return timeString;
+  //     const normalizedValues = {
+  //       ...values,
+  //       // Null vendorId when external advertisement type is selected
+  //       vendorId:
+  //         values.banner === "External Advertisements" ? null : values.vendorId,
+  //       startTime: normalizeTimeToHms(values.startTime as any),
+  //       endTime: normalizeTimeToHms(values.endTime as any),
+  //     } as typeof values;
+  //     const payload = {
+  //       AdvertisementPayload: normalizedValues,
+  //       adsImage1:
+  //         selectedFiles && selectedFiles.length > 0 ? selectedFiles[0] : null,
+  //     };
+
+  //     const formData = new FormData();
+  //     formData.append(
+  //       "AdvertisementPayload",
+  //       JSON.stringify(payload.AdvertisementPayload)
+  //     );
+
+  //     if (payload.adsImage1) {
+  //       formData.append("adsImage1", payload.adsImage1);
+  //     }
+
+  //     dispatch(addOrUpdateAdvertisementMutation(formData));
+  //   },
+  // });
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files) {
+      const files = Array.from(e.target.files);
+      setSelectedFiles(files);
+      formik.setFieldValue("adsImage1", files.length > 0 ? files[0] : null);
     }
   };
 
-  // Map server validation errors into Formik status/field errors
-  React.useEffect(() => {
-    if (!advertisementError) return;
-    const serverMessage = advertisementError?.message;
-    const serverErrors = advertisementError?.errors || {};
-    addForm.setStatus({ serverError: serverMessage });
-    if (serverErrors && typeof serverErrors === "object") {
-      Object.entries(serverErrors).forEach(([key, value]) => {
-        const firstMessage = Array.isArray(value)
-          ? String(value[0])
-          : String(value);
-        // Only map to known fields; otherwise keep it as server status
-        if (key in addForm.values) {
-          addForm.setFieldError(key as any, firstMessage);
-        }
-      });
-    }
-  }, [advertisementError]);
-
-  const addForm = useFormik({
-    enableReinitialize: false,
-    initialValues: {
-      title: "",
-      arTitle: "",
-      subtitle: "",
-      arSubtitle: "",
-      startDate: "",
-      expireDate: "",
-      startTime: "",
-      endTime: "",
-      url: "",
-      banner: "",
-      priority: "",
-      vendorId: "",
-      replacePriority: false,
-    },
-    validationSchema: Yup.object().shape({
-      title: Yup.string().required("English title is required"),
-      arTitle: Yup.string().required("Arabic title is required"),
-      subtitle: Yup.string().required("English subtitle is required"),
-      arSubtitle: Yup.string().required("Arabic subtitle is required"),
-      startDate: Yup.date().required("Start date is required"),
-      expireDate: Yup.date().required("End date is required"),
-      startTime: Yup.string().required("Start time is required"),
-      endTime: Yup.string().required("End time is required"),
-      // URL optional always; allow empty string by transforming to undefined
-      url: Yup.string()
-        .transform((value, originalValue) =>
-          originalValue === "" ? undefined : value
-        )
-        .url("Must be a valid URL")
-        .notRequired()
-        .nullable(),
-      vendorId: Yup.string().when("banner", {
-        is: (val: string) => val !== "External Advertisements",
-        then: (schema) => schema.required("Vendor is required"),
-        otherwise: (schema) => schema.notRequired(),
-      }),
-    }),
-    onSubmit: (values) => {
-      // clear any previous server error
-      addForm.setStatus(undefined);
-      setIsSubmitting(true);
-
-      const normalizedValues = {
-        ...values,
-        // Null vendorId when external advertisement type is selected
-        vendorId:
-          values.banner === "External Advertisements" ? null : values.vendorId,
-        startTime: normalizeTimeToHms(values.startTime as any),
-        endTime: normalizeTimeToHms(values.endTime as any),
-      } as typeof values;
-      const payload = {
-        AdvertisementPayload: normalizedValues,
-        adsImage1:
-          selectedFiles && selectedFiles.length > 0 ? selectedFiles[0] : null,
-      };
-
-      const formData = new FormData();
-      formData.append(
-        "AdvertisementPayload",
-        JSON.stringify(payload.AdvertisementPayload)
-      );
-
-      if (payload.adsImage1) {
-        formData.append("adsImage1", payload.adsImage1);
-      }
-
-      dispatch(addOrUpdateAdvertisementMutation(formData));
-    },
-  });
+  const removeSelectedFile = () => {
+    setSelectedFiles([]);
+    formik.setFieldValue("adsImage1", null);
+  };
 
   return (
     <React.Fragment>
@@ -287,23 +258,21 @@ const Advertisements = () => {
                 <CardHeader>
                   <CardHeader className="p-0 border-0 bg-light-subtle">
                     <Row className="g-0 text-center">
-                      {advertisementsListSuccess &&
-                        Object.keys(
-                          advertisementsListSuccess?.availableBanners
-                        ).map((key) => (
-                          <Col xs={6} sm={3}>
-                            <div className="p-3">
-                              <h5 className="mb-1">
-                                <span className={""}>{Number(key) + 1}</span>
-                              </h5>
-                              <p className="text-muted mb-0">
-                                {advertisementsListSuccess?.availableBanners[
-                                  key
-                                ] ?? "---"}
-                              </p>
-                            </div>
-                          </Col>
-                        ))}
+                      {adsData?.data?.availableBanners &&
+                        Object.keys(adsData.data.availableBanners).map(
+                          (key) => (
+                            <Col xs={6} sm={3} key={key}>
+                              <div className="p-3">
+                                <h5 className="mb-1">
+                                  <span className={""}>{Number(key) + 1}</span>
+                                </h5>
+                                <p className="text-muted mb-0">
+                                  {adsData.data.availableBanners[key] ?? "---"}
+                                </p>
+                              </div>
+                            </Col>
+                          )
+                        )}
                     </Row>
                   </CardHeader>
                 </CardHeader>
@@ -311,8 +280,9 @@ const Advertisements = () => {
                   <Row>
                     <Col lg={12}>
                       <AdvertisementsList
-                        data={advertisementsListSuccess?.list ?? []}
+                        data={adsData?.data?.list ?? []}
                         vendorsListSuccess={vendorsListSuccess}
+                        onRefresh={fetchAdvertisements}
                       />
                     </Col>
                   </Row>
@@ -344,24 +314,15 @@ const Advertisements = () => {
             <form
               onSubmit={(e) => {
                 e.preventDefault();
-                addForm.handleSubmit();
+                submit();
                 return false;
               }}
             >
-              {addForm.status?.serverError && !advertisementsListSuccess && (
-                <>
-                  {toast(t("Error adding advertisement"), {
-                    position: "top-right",
-                    hideProgressBar: false,
-                    className: "bg-danger text-white",
-                    progress: undefined,
-                    toastId: "advertisement-error",
-                  })}
-                  <ToastContainer autoClose={2000} limit={1} />
-                  <Alert color="danger">
-                    {String(addForm.status.serverError)}
-                  </Alert>
-                </>
+              {/* Server Error Display */}
+              {formik.status?.serverError && (
+                <Alert color="danger">
+                  {String(formik.status.serverError)}
+                </Alert>
               )}
               <Row className="gy-4">
                 <Col xxl={4} md={4}>
@@ -374,11 +335,11 @@ const Advertisements = () => {
                       className="form-control"
                       id="title"
                       name="title"
-                      onChange={addForm.handleChange}
-                      onBlur={addForm.handleBlur}
-                      value={addForm.values.title}
+                      onChange={formik.handleChange}
+                      onBlur={formik.handleBlur}
+                      value={formik.values.title}
                       invalid={
-                        addForm.touched.title && addForm.errors.title
+                        formik.touched.title && formik.errors.title
                           ? true
                           : false
                       }
@@ -396,11 +357,11 @@ const Advertisements = () => {
                       className="form-control"
                       id="arTitle"
                       name="arTitle"
-                      onChange={addForm.handleChange}
-                      onBlur={addForm.handleBlur}
-                      value={addForm.values.arTitle}
+                      onChange={formik.handleChange}
+                      onBlur={formik.handleBlur}
+                      value={formik.values.arTitle}
                       invalid={
-                        addForm.touched.arTitle && addForm.errors.arTitle
+                        formik.touched.arTitle && formik.errors.arTitle
                           ? true
                           : false
                       }
@@ -418,11 +379,11 @@ const Advertisements = () => {
                       className="form-control"
                       id="subtitle"
                       name="subtitle"
-                      onChange={addForm.handleChange}
-                      onBlur={addForm.handleBlur}
-                      value={addForm.values.subtitle}
+                      onChange={formik.handleChange}
+                      onBlur={formik.handleBlur}
+                      value={formik.values.subtitle}
                       invalid={
-                        addForm.touched.subtitle && addForm.errors.subtitle
+                        formik.touched.subtitle && formik.errors.subtitle
                           ? true
                           : false
                       }
@@ -440,11 +401,11 @@ const Advertisements = () => {
                       className="form-control"
                       id="arSubtitle"
                       name="arSubtitle"
-                      onChange={addForm.handleChange}
-                      onBlur={addForm.handleBlur}
-                      value={addForm.values.arSubtitle}
+                      onChange={formik.handleChange}
+                      onBlur={formik.handleBlur}
+                      value={formik.values.arSubtitle}
                       invalid={
-                        addForm.touched.arSubtitle && addForm.errors.arSubtitle
+                        formik.touched.arSubtitle && formik.errors.arSubtitle
                           ? true
                           : false
                       }
@@ -462,11 +423,11 @@ const Advertisements = () => {
                       className="form-control"
                       id="startDate"
                       name="startDate"
-                      onChange={addForm.handleChange}
-                      onBlur={addForm.handleBlur}
-                      value={addForm.values.startDate}
+                      onChange={formik.handleChange}
+                      onBlur={formik.handleBlur}
+                      value={formik.values.startDate}
                       invalid={
-                        addForm.touched.startDate && addForm.errors.startDate
+                        formik.touched.startDate && formik.errors.startDate
                           ? true
                           : false
                       }
@@ -484,11 +445,11 @@ const Advertisements = () => {
                       className="form-control"
                       id="expireDate"
                       name="expireDate"
-                      onChange={addForm.handleChange}
-                      onBlur={addForm.handleBlur}
-                      value={addForm.values.expireDate}
+                      onChange={formik.handleChange}
+                      onBlur={formik.handleBlur}
+                      value={formik.values.expireDate}
                       invalid={
-                        addForm.touched.expireDate && addForm.errors.expireDate
+                        formik.touched.expireDate && formik.errors.expireDate
                           ? true
                           : false
                       }
@@ -506,11 +467,11 @@ const Advertisements = () => {
                       className="form-control"
                       id="startTime"
                       name="startTime"
-                      onChange={addForm.handleChange}
-                      onBlur={addForm.handleBlur}
-                      value={addForm.values.startTime}
+                      onChange={formik.handleChange}
+                      onBlur={formik.handleBlur}
+                      value={formik.values.startTime}
                       invalid={
-                        addForm.touched.startTime && addForm.errors.startTime
+                        formik.touched.startTime && formik.errors.startTime
                           ? true
                           : false
                       }
@@ -528,11 +489,11 @@ const Advertisements = () => {
                       className="form-control"
                       id="endTime"
                       name="endTime"
-                      onChange={addForm.handleChange}
-                      onBlur={addForm.handleBlur}
-                      value={addForm.values.endTime}
+                      onChange={formik.handleChange}
+                      onBlur={formik.handleBlur}
+                      value={formik.values.endTime}
                       invalid={
-                        addForm.touched.endTime && addForm.errors.endTime
+                        formik.touched.endTime && formik.errors.endTime
                           ? true
                           : false
                       }
@@ -551,11 +512,11 @@ const Advertisements = () => {
                       id="url"
                       name="url"
                       placeholder="https://example.com"
-                      onChange={addForm.handleChange}
-                      onBlur={addForm.handleBlur}
-                      value={addForm.values.url}
+                      onChange={formik.handleChange}
+                      onBlur={formik.handleBlur}
+                      value={formik.values.url}
                       invalid={
-                        addForm.touched.url && addForm.errors.url ? true : false
+                        formik.touched.url && formik.errors.url ? true : false
                       }
                     />
                   </div>
@@ -618,16 +579,16 @@ const Advertisements = () => {
                       id="banner"
                       name="banner"
                       className="form-select"
-                      value={addForm.values.banner}
+                      value={formik.values.banner}
                       onChange={(e) => {
-                        addForm.handleChange(e);
+                        formik.handleChange(e);
                         const newVal = e.target.value;
                         if (newVal === "External Advertisements") {
                           // clear and null vendorId on external type
-                          addForm.setFieldValue("vendorId", "");
+                          formik.setFieldValue("vendorId", "");
                         }
                       }}
-                      onBlur={addForm.handleBlur}
+                      onBlur={formik.handleBlur}
                     >
                       <option value="">{t("Select advertisement type")}</option>
                       <option value="External Advertisements">
@@ -641,7 +602,7 @@ const Advertisements = () => {
                 </Col>
 
                 {/* Vendor Selection */}
-                {addForm.values.banner !== "External Advertisements" && (
+                {formik.values.banner !== "External Advertisements" && (
                   <Col xxl={4} md={4}>
                     <div>
                       <Label htmlFor="vendorId" className="form-label">
@@ -653,27 +614,27 @@ const Advertisements = () => {
                         options={vendorOptions}
                         value={vendorOptions.find(
                           (option: any) =>
-                            option.value === addForm.values.vendorId
+                            option.value === formik.values.vendorId
                         )}
                         onChange={(selectedOption: any) => {
-                          addForm.setFieldValue(
+                          formik.setFieldValue(
                             "vendorId",
                             selectedOption?.value || ""
                           );
                         }}
-                        onBlur={() => addForm.setFieldTouched("vendorId", true)}
+                        onBlur={() => formik.setFieldTouched("vendorId", true)}
                         placeholder={t("Select vendor")}
                         isClearable
                         isSearchable
                         className={
-                          addForm.touched.vendorId && addForm.errors.vendorId
+                          formik.touched.vendorId && formik.errors.vendorId
                             ? "is-invalid"
                             : ""
                         }
                       />
-                      {addForm.touched.vendorId && addForm.errors.vendorId && (
+                      {formik.touched.vendorId && formik.errors.vendorId && (
                         <div className="invalid-feedback d-block">
-                          {String(addForm.errors.vendorId)}
+                          {String(formik.errors.vendorId)}
                         </div>
                       )}
                     </div>
@@ -691,9 +652,9 @@ const Advertisements = () => {
                       id="priority"
                       name="priority"
                       className="form-select"
-                      value={addForm.values.priority}
-                      onChange={addForm.handleChange}
-                      onBlur={addForm.handleBlur}
+                      value={formik.values.priority}
+                      onChange={formik.handleChange}
+                      onBlur={formik.handleBlur}
                     >
                       <option value="">{t("Select priority")}</option>
                       <option value={1}>{t("advertisement 1")}</option>
@@ -702,9 +663,9 @@ const Advertisements = () => {
                       <option value={4}>{t("advertisement 4")}</option>
                       <option value={5}>{t("advertisement 5")}</option>
                     </Input>
-                    {advertisementError?.errors?.priority?.[0] && (
+                    {formik?.errors?.priority?.[0] && (
                       <div className="invalid-feedback d-block">
-                        {String(advertisementError?.errors?.priority?.[0])}
+                        {String(formik?.errors?.priority)}
                       </div>
                     )}
                   </div>
@@ -719,10 +680,10 @@ const Advertisements = () => {
                       id="replacePriority"
                       name="replacePriority"
                       checked={
-                        addForm.values.replacePriority as unknown as boolean
+                        formik.values.replacePriority as unknown as boolean
                       }
                       onChange={(e) =>
-                        addForm.setFieldValue(
+                        formik.setFieldValue(
                           "replacePriority",
                           e.target.checked
                         )
@@ -744,16 +705,12 @@ const Advertisements = () => {
                       onClick={() => {
                         setmodal_standard(false);
                       }}
-                      disabled={isSubmitting}
+                      disabled={isLoading}
                     >
                       {t("Cancel")}
                     </Button>
-                    <Button
-                      type="submit"
-                      color="success"
-                      disabled={isSubmitting}
-                    >
-                      {isSubmitting ? (
+                    <Button type="submit" color="success" disabled={isLoading}>
+                      {isLoading ? (
                         <>
                           <span
                             className="spinner-border spinner-border-sm me-2"

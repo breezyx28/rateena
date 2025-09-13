@@ -28,12 +28,12 @@ export const imgURL = process.env.REACT_APP_IMAGES_ENDPOINT;
 // intercepting to capture errors
 axios.interceptors.response.use(
   function (response) {
-    return response.data ? response.data : response;
+    return response?.data ? response?.data : response;
   },
   function (error) {
     console.log("api-handler-error: ", error);
     // Any status codes that falls outside the range of 2xx cause this function to trigger
-    const status = error.response?.status || error.status;
+    const status = error?.response?.status || error?.status;
     let message;
 
     switch (status) {
@@ -56,14 +56,14 @@ axios.interceptors.response.use(
 
     // Create a comprehensive error object that includes all necessary information
     const errorResponse = {
-      message: error.response?.data,
-      status: error.response?.status || error.status,
-      statusText: error.response?.statusText,
-      data: error.response?.data,
-      errors: error.response?.data?.errors,
-      error: error.response?.data?.error,
-      url: error.response?.config?.url,
-      method: error.response?.config?.method,
+      message: error?.response?.data,
+      status: error?.response?.status || error.status,
+      statusText: error?.response?.statusText,
+      data: error?.response?.data,
+      errors: error?.response?.data?.errors,
+      error: error?.response?.data?.error,
+      url: error?.response?.config?.url,
+      method: error?.response?.config?.method,
     };
 
     return Promise.reject(errorResponse);

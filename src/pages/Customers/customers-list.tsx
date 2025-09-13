@@ -15,7 +15,7 @@ import {
   Row,
 } from "reactstrap";
 import { useFormik } from "formik";
-import { toast, ToastContainer } from "react-toastify";
+import Swal from "sweetalert2";
 import * as Yup from "yup";
 import {
   blockCustomerMutation,
@@ -255,14 +255,12 @@ export const CustomersList = ({ data }: { data?: any[] }) => {
           >
             {customerData ? (
               <>
-                {toast(t("Your Redirect To Login Page..."), {
-                  position: "top-right",
-                  hideProgressBar: false,
-                  className: "bg-success text-white",
-                  progress: undefined,
-                  toastId: "",
+                {Swal.fire({
+                  title: t("Your Redirect To Login Page..."),
+                  icon: "success",
+                  timer: 2000,
+                  showConfirmButton: false
                 })}
-                <ToastContainer autoClose={2000} limit={1} />
                 <Alert color="success">{t("Customer Successfully Updated")}</Alert>
               </>
             ) : null}

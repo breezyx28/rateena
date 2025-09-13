@@ -4,6 +4,7 @@ import {
   advertisementsError,
   advertisementsListError,
   advertisementsListSuccess,
+  clearAdvertisementError,
 } from "./reducer";
 import {
   getAdvertisement,
@@ -73,6 +74,9 @@ export const toggleAdvertisementQuery =
 export const addOrUpdateAdvertisementMutation =
   (body: any) => async (dispatch: any) => {
     try {
+      // Clear any previous errors
+      dispatch(clearAdvertisementError());
+
       let response;
 
       response = postAddOrUpdateAdvertisement(body);
@@ -84,7 +88,7 @@ export const addOrUpdateAdvertisementMutation =
         dispatch(getAdvertisementsListQuery());
       }
     } catch (error: any) {
-      console.log("errors: ", error);
+      console.log("Advertisement API Error: ", error);
 
       dispatch(advertisementsError(error));
     }

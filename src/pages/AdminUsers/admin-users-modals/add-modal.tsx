@@ -6,7 +6,7 @@ import { createSelector } from "reselect";
 import { addOrUpdateUserMutation } from "slices/thunks";
 import * as Yup from "yup";
 import { useFormik } from "formik";
-import { toast, ToastContainer } from "react-toastify";
+import Swal from "sweetalert2";
 import { useTranslation } from "react-i18next";
 
 interface AddModalProps {
@@ -89,14 +89,12 @@ const AddModal: React.FC<AddModalProps> = ({
         >
           {adminUserAdded ? (
             <>
-              {toast(t("Your Redirect To Login Page..."), {
-                position: "top-right",
-                hideProgressBar: false,
-                className: "bg-success text-white",
-                progress: undefined,
-                toastId: "",
+              {Swal.fire({
+                title: t("Your Redirect To Login Page..."),
+                icon: "success",
+                timer: 2000,
+                showConfirmButton: false
               })}
-              <ToastContainer autoClose={2000} limit={1} />
               <Alert color="success">{t("Data Added Successfully")}</Alert>
             </>
           ) : null}

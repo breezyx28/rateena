@@ -13,7 +13,7 @@ import {
   ModalHeader,
   Row,
 } from "reactstrap";
-import { toast } from "react-toastify";
+import Swal from "sweetalert2";
 import { addVendorProductMutation } from "slices/thunks";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
@@ -136,12 +136,11 @@ const AddProductModal = ({
             >
               {vendorProductSuccess && !vendorError?.message ? (
                 <>
-                  {toast("Your Redirect To Login Page...", {
-                    position: "top-right",
-                    hideProgressBar: false,
-                    className: "bg-success text-white",
-                    progress: undefined,
-                    toastId: "",
+                  {Swal.fire({
+                    title: "Your Redirect To Login Page...",
+                    icon: "success",
+                    timer: 2000,
+                    showConfirmButton: false
                   })}
                   <Alert color="success">
                     {t("Product has been added successfully")}
@@ -150,12 +149,11 @@ const AddProductModal = ({
               ) : null}
               {vendorError?.message && !vendorProductSuccess ? (
                 <>
-                  {toast(t("Error Adding Product"), {
-                    position: "top-right",
-                    hideProgressBar: false,
-                    className: "bg-danger text-white",
-                    progress: undefined,
-                    toastId: "",
+                  {Swal.fire({
+                    title: t("Error Adding Product"),
+                    icon: "error",
+                    timer: 2000,
+                    showConfirmButton: false
                   })}
                   <Alert color="danger">{vendorError?.message}</Alert>
                 </>

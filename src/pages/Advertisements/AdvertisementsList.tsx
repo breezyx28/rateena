@@ -19,7 +19,7 @@ import {
 } from "reactstrap";
 import { useFormik } from "formik";
 import * as Yup from "yup";
-import { toast, ToastContainer } from "react-toastify";
+import Swal from "sweetalert2";
 import DeleteModal from "../../Components/Common/DeleteModal";
 import { imgURL } from "services/api-handles";
 import { FilePond, registerPlugin } from "react-filepond";
@@ -29,16 +29,20 @@ import Select from "react-select";
 import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
 import { addOrUpdateAdvertisementMutation } from "slices/thunks";
+import { clearAdvertisementError } from "slices/advertisements/reducer";
 import { createSelector } from "reselect";
+import { useDeleteAdvertisement, useToggleAdvertisement } from "hooks";
 
 registerPlugin(FilePondPluginImageExifOrientation, FilePondPluginImagePreview);
 
 const AdvertisementsList = ({
   data,
   vendorsListSuccess,
+  onRefresh,
 }: {
   data: any[];
   vendorsListSuccess?: any;
+  onRefresh?: () => void;
 }) => {
   const { i18n, t } = useTranslation();
   const [imageModal, setImageModal] = useState(false);
@@ -52,6 +56,12 @@ const AdvertisementsList = ({
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 
   const dispatch: any = useDispatch();
+  const {
+    deleteAdvertisement,
+    isLoading: isDeleting,
+    isSuccess: deleteSuccess,
+  } = useDeleteAdvertisement();
+  const { toggleAdvertisement, isLoading: isToggling, isSuccess: toggleSuccess } = useToggleAdvertisement();
 
   const selectLayoutState = (state: any) => state.Advertisements;
   const selectLayoutProperties = createSelector(selectLayoutState, (state) => ({
@@ -188,15 +198,7 @@ const AdvertisementsList = ({
   };
 
   const handleToggleVisibility = (ad: any) => {
-    console.log(
-      "Toggle visibility for ad:",
-      ad.advertisementId,
-      "New status:",
-      !ad.isShown
-    );
-    toast.success(
-      `${t("Advertisement")} ${ad.isShown ? t("hidden") : t("shown")} ${t("successfully")}`
-    );
+    toggleAdvertisement(ad.advertisementId);
   };
   // Normalize time to HH:mm:ss
   const normalizeTimeToHms = (timeString: string) => {
@@ -213,6 +215,32 @@ const AdvertisementsList = ({
       return timeString;
     }
   };
+
+  // Map server validation errors into Formik status/field errors for edit form
+  React.useEffect(() => {
+    if (!advertisementError) return;
+
+    console.log("Advertisement Error in Edit Component: ", advertisementError);
+    console.log("Error message: ", advertisementError?.message);
+    console.log("Error data: ", advertisementError?.data);
+    console.log("Error errors: ", advertisementError?.errors);
+
+    const serverMessage = advertisementError?.message;
+    const serverErrors = advertisementError?.errors || {};
+    editForm.setStatus({ serverError: serverMessage });
+    if (serverErrors && typeof serverErrors === "object") {
+      Object.entries(serverErrors).forEach(([key, value]) => {
+        const firstMessage = Array.isArray(value)
+          ? String(value[0])
+          : String(value);
+        // Only map to known fields; otherwise keep it as server status
+        if (key in editForm.values) {
+          editForm.setFieldError(key as any, firstMessage);
+        }
+      });
+    }
+  }, [advertisementError]);
+
   const editForm = useFormik({
     enableReinitialize: true,
     initialValues: {
@@ -279,6 +307,7 @@ const AdvertisementsList = ({
     onSubmit: (values) => {
       // clear any previous server error
       editForm.setStatus(undefined);
+      dispatch(clearAdvertisementError());
       setIsSubmitting(true);
 
       const normalizedValues = {
@@ -324,16 +353,50 @@ const AdvertisementsList = ({
     editForm.setFieldValue("adsImage1", null);
   };
 
-  // Show success toast when advertisement is updated successfully
+  // Show success alert when advertisement is updated successfully
   React.useEffect(() => {
     if (advertisementUpdatedSuccess && !advertisementError) {
-      toast.success(t("Advertisement updated successfully"));
+      Swal.fire({
+        title: t("Advertisement updated successfully"),
+        icon: "success",
+        timer: 2000,
+        showConfirmButton: false,
+      });
       setEditModal(false);
       editForm.resetForm();
       setSelectedFiles([]);
       setIsSubmitting(false);
+      onRefresh?.();
+    } else if (advertisementError) {
+      setIsSubmitting(false);
     }
   }, [advertisementUpdatedSuccess, advertisementError]);
+
+  // Handle delete success
+  React.useEffect(() => {
+    if (deleteSuccess) {
+      Swal.fire({
+        title: t("Advertisement deleted successfully"),
+        icon: "success",
+        timer: 2000,
+        showConfirmButton: false,
+      });
+      onRefresh?.();
+    }
+  }, [deleteSuccess]);
+
+  // Handle toggle success
+  React.useEffect(() => {
+    if (toggleSuccess) {
+      Swal.fire({
+        title: t("Advertisement visibility updated successfully"),
+        icon: "success",
+        timer: 2000,
+        showConfirmButton: false,
+      });
+      onRefresh?.();
+    }
+  }, [toggleSuccess]);
 
   return (
     <React.Fragment>
@@ -531,7 +594,9 @@ const AdvertisementsList = ({
                                   {t("View")}
                                 </Button>
                               ) : (
-                                <span className="text-muted">{t("No image")}</span>
+                                <span className="text-muted">
+                                  {t("No image")}
+                                </span>
                               )}
                             </td>
                             <td>
@@ -543,7 +608,9 @@ const AdvertisementsList = ({
                                 const badgeClass = expired
                                   ? "bg-danger"
                                   : "bg-success";
-                                const text = expired ? t("Expired") : t("Active");
+                                const text = expired
+                                  ? t("Expired")
+                                  : t("Active");
                                 return (
                                   <span className={`badge ${badgeClass}`}>
                                     {text}
@@ -643,19 +710,9 @@ const AdvertisementsList = ({
             }}
           >
             {editForm.status?.serverError && (
-              <>
-                {toast(t("Error updating advertisement"), {
-                  position: "top-right",
-                  hideProgressBar: false,
-                  className: "bg-danger text-white",
-                  progress: undefined,
-                  toastId: "advertisement-error",
-                })}
-                <ToastContainer autoClose={2000} limit={1} />
-                <Alert color="danger">
-                  {String(editForm.status.serverError)}
-                </Alert>
-              </>
+              <Alert color="danger">
+                {String(editForm.status.serverError)}
+              </Alert>
             )}
             <Row className="gy-4">
               <Col xxl={6} md={6}>
@@ -1070,8 +1127,9 @@ const AdvertisementsList = ({
       <DeleteModal
         show={deleteModal}
         onDeleteClick={() => {
-          console.log("Deleting advertisement:", selectedAd?.advertisementId);
-          toast.success(t("Advertisement deleted successfully"));
+          if (selectedAd?.advertisementId) {
+            deleteAdvertisement(selectedAd.advertisementId);
+          }
           setDeleteModal(false);
           setSelectedAd(null);
         }}
@@ -1081,8 +1139,6 @@ const AdvertisementsList = ({
         }}
         recordId={selectedAd?.advertisementId}
       />
-
-      {/* <ToastContainer autoClose={2000} limit={1} /> */}
     </React.Fragment>
   );
 };

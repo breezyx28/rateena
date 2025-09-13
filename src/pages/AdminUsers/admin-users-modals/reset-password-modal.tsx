@@ -5,7 +5,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { createSelector } from "reselect";
 import * as Yup from "yup";
 import { useFormik } from "formik";
-import { toast, ToastContainer } from "react-toastify";
+import Swal from "sweetalert2";
 import { resetAdminUserPasswordMutation } from "slices/thunks";
 import { useTranslation } from "react-i18next";
 
@@ -92,14 +92,12 @@ const ResetPasswordModal: React.FC<ResetPasswordModalProps> = ({
           >
             {resetPasswordSuccess ? (
               <>
-                {toast(t("Password Reset Successfully!"), {
-                  position: "top-right",
-                  hideProgressBar: false,
-                  className: "bg-success text-white",
-                  progress: undefined,
-                  toastId: "",
+                {Swal.fire({
+                  title: t("Password Reset Successfully!"),
+                  icon: "success",
+                  timer: 2000,
+                  showConfirmButton: false
                 })}
-                <ToastContainer autoClose={2000} limit={1} />
                 <Alert color="success">{t("Password Reset Successfully!")}</Alert>
               </>
             ) : null}
