@@ -672,5 +672,6 @@
   "Pending": "قيد الانتظار",
   "Approval Status": "حالة الموافقة",
   "Select Approval Status": "اختر حالة الموافقة",
-  "Select Publish Status": "اختر حالة النشر"
+  "Select Publish Status": "اختر حالة النشر",
+  "Change Status": "تغيير حالة الطلب"
 }

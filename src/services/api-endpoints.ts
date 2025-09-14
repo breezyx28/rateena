@@ -53,6 +53,8 @@ export const POST_USER_DELETE = "/users/delete/{userId}";
 export const GET_ORDERS_LIST = "/orders";
 export const GET_ORDER = "/orders/{orderId}";
 export const GET_ORDER_INVOICE = "/invoices/order/{orderId}";
+export const CHANGE_ORDER_STATUS =
+  "/orders/change/status/{orderId}?status={status}";
 
 // Notifications
 export const GET_NOTIFICATIONS = "/users/notifications";

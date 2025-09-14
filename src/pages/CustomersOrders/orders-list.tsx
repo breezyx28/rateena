@@ -1,18 +1,98 @@
 import React, { useMemo, useState } from "react";
 import TableContainer from "../../Components/Common/TableContainerReactTable";
-import { Button, Col, Input, Label, Row } from "reactstrap";
+import {
+  Button,
+  Col,
+  Input,
+  Label,
+  Row,
+  Modal,
+  ModalHeader,
+  ModalBody,
+} from "reactstrap";
 import * as XLSX from "xlsx";
 import { Link } from "react-router-dom";
 import { TOrderStatus } from "types";
 import { useTranslation } from "react-i18next";
+import { useDispatch, useSelector } from "react-redux";
+import { createSelector } from "reselect";
+import { changeOrderInvoiceQuery } from "slices/orders/thunk";
+import Swal from "sweetalert2";
 
 const OrdersList = ({ data }: { data: any[] }) => {
   const { t } = useTranslation();
+  const dispatch: any = useDispatch();
   const [statusFilter, setStatusFilter] = useState("");
   const [vendorTypeFilter, setVendorTypeFilter] = useState("");
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
+  const [statusModal, setStatusModal] = useState(false);
+  const [selectedOrder, setSelectedOrder] = useState<any>(null);
+  const [isUpdating, setIsUpdating] = useState(false);
+
+  const selectLayoutState = (state: any) => state.Orders;
+  const selectLayoutProperties = createSelector(selectLayoutState, (state) => ({
+    orderUpdatedData: state.orderUpdatedData,
+    ordersListError: state.ordersListError,
+  }));
+  const { orderUpdatedData, ordersListError } = useSelector(
+    selectLayoutProperties
+  );
+
+  React.useEffect(() => {
+    if (orderUpdatedData) {
+      setIsUpdating(false);
+      Swal.fire({
+        title: t("Order status updated successfully"),
+        icon: "success",
+        timer: 3000,
+        showConfirmButton: false,
+      });
+      setTimeout(() => {
+        setStatusModal(false);
+        setSelectedOrder(null);
+      }, 3000);
+    }
+  }, [orderUpdatedData]);
+
+  React.useEffect(() => {
+    if (ordersListError) {
+      setIsUpdating(false);
+      Swal.fire({
+        title: t("Error"),
+        text: ordersListError?.message || t("Failed to update order status"),
+        icon: "error",
+        timer: 3000,
+        showConfirmButton: false,
+      });
+    }
+  }, [ordersListError]);
+
+  const handleStatusChange = (newStatus: TOrderStatus) => {
+    if (newStatus === selectedOrder?.status) return;
+
+    Swal.fire({
+      title: t("Are you sure?"),
+      text: t(`Change order status to ${newStatus}?`),
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: t("Yes, change it!"),
+      cancelButtonText: t("Cancel"),
+    }).then((result) => {
+      if (result.isConfirmed) {
+        setIsUpdating(true);
+        dispatch(changeOrderInvoiceQuery(selectedOrder.orderId, newStatus));
+      }
+    });
+  };
+
+  const openStatusModal = (order: any) => {
+    setSelectedOrder(order);
+    setStatusModal(true);
+  };
 
   const filteredData = data.filter((row) => {
     const statusMatch = statusFilter ? row.status === statusFilter : true;
@@ -151,7 +231,22 @@ const OrdersList = ({ data }: { data: any[] }) => {
         header: t("Status"),
         accessorKey: "status",
         enableColumnFilter: false,
-        cell: (cell: any) => statusCellBadge(cell.getValue()),
+        cell: (cell: any) => {
+          const row = cell.row.original;
+          const currentStatus = cell.getValue();
+          return (
+            <div className="d-flex flex-column gap-2">
+              {statusCellBadge(currentStatus)}
+              <Button
+                color="primary"
+                size="sm"
+                onClick={() => openStatusModal(row)}
+              >
+                {t("Change Status")}
+              </Button>
+            </div>
+          );
+        },
       },
       {
         header: t("Total"),
@@ -256,6 +351,58 @@ const OrdersList = ({ data }: { data: any[] }) => {
         isGlobalFilter={false}
         customPageSize={5}
       />
+
+      <Modal isOpen={statusModal} toggle={() => setStatusModal(false)} centered>
+        <ModalHeader toggle={() => setStatusModal(false)}>
+          {t("Change Order Status")}
+        </ModalHeader>
+        <ModalBody>
+          <div className="d-grid gap-2">
+            <Button
+              color="warning"
+              onClick={() => handleStatusChange("WAITING")}
+              disabled={isUpdating || selectedOrder?.status === "WAITING"}
+            >
+              {t("WAITING")}
+            </Button>
+            <Button
+              color="success"
+              onClick={() => handleStatusChange("CONFIRMED")}
+              disabled={isUpdating || selectedOrder?.status === "CONFIRMED"}
+            >
+              {t("CONFIRMED")}
+            </Button>
+            <Button
+              color="info"
+              onClick={() => handleStatusChange("PROGRESSING")}
+              disabled={isUpdating || selectedOrder?.status === "PROGRESSING"}
+            >
+              {t("PROGRESSING")}
+            </Button>
+            <Button
+              color="info"
+              onClick={() => handleStatusChange("PROCESSING")}
+              disabled={isUpdating || selectedOrder?.status === "PROCESSING"}
+            >
+              {t("PROCESSING")}
+            </Button>
+            <Button
+              color="success"
+              onClick={() => handleStatusChange("DELIVERED")}
+              disabled={isUpdating || selectedOrder?.status === "DELIVERED"}
+            >
+              {t("DELIVERED")}
+            </Button>
+            <Button
+              color="danger"
+              onClick={() => handleStatusChange("CANCELED")}
+              disabled={isUpdating || selectedOrder?.status === "CANCELED"}
+            >
+              {t("CANCELED")}
+            </Button>
+          </div>
+        </ModalBody>
+      </Modal>
     </React.Fragment>
   );
 };

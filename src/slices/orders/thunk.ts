@@ -1,3 +1,4 @@
+import { TOrderStatus } from "types";
 import {
   ordersError,
   orderSuccess,
@@ -5,8 +6,10 @@ import {
   ordersListError,
   ordersListSuccess,
   orderInvoice,
+  ordersUpdatedSuccess,
 } from "./reducer";
 import {
+  changeOrderStatus,
   getOrder as getOrderApi,
   getOrderInvoice,
   getOrdersList,
@@ -65,3 +68,23 @@ export const getOrderInvoiceQuery = (orderId: any) => async (dispatch: any) => {
     dispatch(ordersListError(error));
   }
 };
+
+export const changeOrderInvoiceQuery =
+  (orderId: any, status: TOrderStatus) => async (dispatch: any) => {
+    try {
+      let response;
+
+      response = changeOrderStatus(orderId, status);
+
+      const data = await response;
+
+      if (data) {
+        dispatch(ordersUpdatedSuccess(data));
+        dispatch(getOrdersListQuery());
+      }
+    } catch (error: any) {
+      console.log("errors: ", error);
+
+      dispatch(ordersListError(error));
+    }
+  };

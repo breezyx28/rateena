@@ -7,6 +7,7 @@ export const initialState = {
   ordersListSuccess: null,
   orderData: null,
   orderInvoiceData: null,
+  orderUpdatedData: null,
   orderError: null,
 };
 
@@ -34,6 +35,11 @@ const ordersSlice = createSlice({
       state.success = true;
       state.error = false;
     },
+    ordersUpdatedSuccess(state, action) {
+      state.orderUpdatedData = action.payload;
+      state.success = true;
+      state.error = false;
+    },
     ordersListError(state, action) {
       state.orderError = action.payload;
       state.success = false;
@@ -53,6 +59,7 @@ export const {
   orderSuccess,
   ordersError,
   orderUpdated,
+  ordersUpdatedSuccess,
   orderInvoice,
 } = ordersSlice.actions;
 

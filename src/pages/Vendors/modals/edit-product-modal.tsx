@@ -339,6 +339,30 @@ const EditProductModal = ({
 
                 <Col xxl={4} md={4}>
                   <div>
+                    <Label htmlFor="final_price" className="form-label">
+                      {t("Final Price")}
+                    </Label>
+                    <div className="form-icon">
+                      <Input
+                        type="number"
+                        className="form-control form-control-sm"
+                        bsSize="sm"
+                        id="final_price"
+                        name="final_price"
+                        readOnly
+                        disabled
+                        value={
+                          validation.values.price && validation.values.companyProfit
+                            ? (parseFloat(validation.values.price) + (parseFloat(validation.values.price) * parseFloat(validation.values.companyProfit) / 100)).toFixed(2)
+                            : validation.values.price || "0.00"
+                        }
+                      />
+                    </div>
+                  </div>
+                </Col>
+
+                <Col xxl={4} md={4}>
+                  <div>
                     <Label htmlFor="duration" className="form-label">
                       {t("Ready within")}
                     </Label>
