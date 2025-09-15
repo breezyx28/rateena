@@ -10,7 +10,7 @@ import {
   Input,
   Label,
 } from "reactstrap";
-import { toast, ToastContainer } from "react-toastify";
+import Swal from "sweetalert2";
 import { formatErrorMessage, errorToastManager } from "helpers/error-helper";
 
 import { useDispatch, useSelector } from "react-redux";
@@ -149,49 +149,89 @@ const VendorsList = () => {
   };
 
   // Share vendor location function
-  const shareVendorLocation = (
+  const shareVendorLocation = async (
     lat: number,
     lng: number,
     vendorName: string
   ) => {
-    const googleMapsUrl = `https://www.google.com/maps?q=${lat},${lng}`;
+    const result = await Swal.fire({
+      title: t("Are you sure?"),
+      text: t("Do you want to share this vendor's location?"),
+      icon: "question",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: t("Yes, Share"),
+      cancelButtonText: t("Cancel"),
+    });
 
-    // Copy to clipboard
-    navigator.clipboard
-      .writeText(googleMapsUrl)
-      .then(() => {
-        toast.success(
-          `${t("Location for")} ${vendorName} ${t("copied to clipboard!")}`,
-          {
-            position: "top-right",
-            autoClose: 3000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-          }
-        );
-      })
-      .catch((err) => {
-        console.error("Failed to copy: ", err);
-        toast.error(t("Failed to copy location to clipboard"), {
-          position: "top-right",
-          autoClose: 3000,
+    if (result.isConfirmed) {
+      const googleMapsUrl = `https://www.google.com/maps?q=${lat},${lng}`;
+
+      // Copy to clipboard
+      navigator.clipboard
+        .writeText(googleMapsUrl)
+        .then(() => {
+          Swal.fire({
+            icon: "success",
+            title: t("Success!"),
+            text: `${t("Location for")} ${vendorName} ${t("copied to clipboard!")}`,
+            confirmButtonText: t("OK"),
+          });
+        })
+        .catch((err) => {
+          console.error("Failed to copy: ", err);
+          Swal.fire({
+            icon: "error",
+            title: t("Error!"),
+            text: t("Failed to copy location to clipboard"),
+            confirmButtonText: t("OK"),
+          });
         });
-      });
+    }
   };
 
   // Toggle vendor working status
-  const toggleVendorStatus = (vendorId: string, currentStatus: boolean) => {
-    dispatch(toggleVendorStateQuery(vendorId));
-    setVendorState({
-      vendorId,
-      currentState: !currentStatus,
+  const toggleVendorStatus = async (vendorId: string, currentStatus: boolean) => {
+    const result = await Swal.fire({
+      title: t("Are you sure?"),
+      text: t("Do you want to change this vendor's status?"),
+      icon: "question",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: t("Yes, Change Status"),
+      cancelButtonText: t("Cancel"),
     });
-    toast.success(t("Vendor status updated successfully!"), {
-      position: "top-right",
-      autoClose: 2000,
-    });
+
+    if (result.isConfirmed) {
+      Swal.fire({
+        title: t("Updating..."),
+        text: t("Please wait while we update the vendor status."),
+        allowOutsideClick: false,
+        allowEscapeKey: false,
+        showConfirmButton: false,
+        didOpen: () => {
+          Swal.showLoading();
+        },
+      });
+
+      dispatch(toggleVendorStateQuery(vendorId));
+      setVendorState({
+        vendorId,
+        currentState: !currentStatus,
+      });
+
+      // Simulate API response time and show success
+      setTimeout(() => {
+        Swal.fire({
+          icon: "success",
+          title: t("Success!"),
+          text: t("Vendor status updated successfully!"),
+          confirmButtonText: t("OK"),
+        });
+      }, 1000);
+    }
   };
 
   // Toggle delete confirmation modal
@@ -200,28 +240,50 @@ const VendorsList = () => {
   };
 
   // Show delete confirmation modal
-  const showDeleteConfirmation = (vendor: any) => {
-    setVendorToDelete(vendor);
-    tog_deleteConfirmationModal();
+  const showDeleteConfirmation = async (vendor: any) => {
+    const result = await Swal.fire({
+      title: t("Are you sure?"),
+      text: t("Are you sure you want to delete this vendor?"),
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#d33",
+      cancelButtonColor: "#3085d6",
+      confirmButtonText: t("Yes, Delete"),
+      cancelButtonText: t("Cancel"),
+    });
+
+    if (result.isConfirmed) {
+      Swal.fire({
+        title: t("Deleting..."),
+        text: t("Please wait while we delete the vendor."),
+        allowOutsideClick: false,
+        allowEscapeKey: false,
+        showConfirmButton: false,
+        didOpen: () => {
+          Swal.showLoading();
+        },
+      });
+
+      dispatch(deleteVendorMutation(vendor.vendorId));
+
+      // Simulate API response time and show success
+      setTimeout(() => {
+        Swal.fire({
+          icon: "success",
+          title: t("Success!"),
+          text: `${t("Vendors")} ${
+            i18n.dir() === "ltr" ? vendor.fullName : vendor.arFullName
+          } ${t("deleted successfully!")}`,
+          confirmButtonText: t("OK"),
+        });
+      }, 1000);
+    }
   };
 
-  // Confirm delete vendor
+  // Confirm delete vendor (keeping for modal compatibility)
   const confirmDeleteVendor = () => {
     if (vendorToDelete) {
       dispatch(deleteVendorMutation(vendorToDelete.vendorId));
-
-      toast.success(
-        `${t("Vendors")} ${
-          i18n.dir() === "ltr"
-            ? vendorToDelete.fullName
-            : vendorToDelete.arFullName
-        } ${t("deleted successfully!")}`,
-        {
-          position: "top-right",
-          autoClose: 2000,
-        }
-      );
-
       setVendorToDelete(null);
     }
   };
@@ -245,8 +307,12 @@ const VendorsList = () => {
   React.useEffect(() => {
     if (error) {
       console.log("error: ", vendorsListError);
-      // Use error toast manager to prevent duplicate toasts
-      errorToastManager.showError(vendorsListError, toast.error);
+      Swal.fire({
+        icon: "error",
+        title: t("Error!"),
+        text: vendorsListError?.message || t("An error occurred while loading vendors."),
+        confirmButtonText: t("OK"),
+      });
       setVendorState({
         currentState: null,
         vendorId: null,
@@ -271,7 +337,7 @@ const VendorsList = () => {
   return (
     <React.Fragment>
       <style>{vendorCardStyles}</style>
-      <ToastContainer />
+
       <Row className="mb-3">
         <Col xl={12}>
           <div className="d-flex align-items-center gap-2">

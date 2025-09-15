@@ -144,8 +144,16 @@ const VendorAdd = () => {
       .required("Min charge for long distance is required")
       .typeError("Min charge for long distance must be a number"),
     always_open: Yup.boolean().required("Always open status is required"),
-    openingTime: Yup.string().required("Opening time is required"),
-    closingTime: Yup.string().required("Closing time is required"),
+    openingTime: Yup.string().when("always_open", {
+      is: false,
+      then: (schema) => schema.required("Opening time is required"),
+      otherwise: (schema) => schema.nullable(),
+    }),
+    closingTime: Yup.string().when("always_open", {
+      is: false,
+      then: (schema) => schema.required("Closing time is required"),
+      otherwise: (schema) => schema.nullable(),
+    }),
     region: Yup.string().required("Region is required"),
     vendorType: Yup.string().required("Vendor type is required"),
   });
@@ -272,7 +280,13 @@ const VendorAdd = () => {
                   handleSubmit,
                   isSubmitting,
                   setFieldValue,
-                }) => (
+                }) => {
+                  // Debug Yup validation errors
+                  console.log('Formik Validation Errors:', errors);
+                  console.log('Formik Touched Fields:', touched);
+                  console.log('Formik Values:', values);
+                  
+                  return (
                   <Form id="vendor-info-form" onSubmit={handleSubmit}>
                     <ServerErrorHandler />
 
@@ -711,7 +725,8 @@ const VendorAdd = () => {
                       </Col>
                     </Row>
                   </Form>
-                )}
+                  );
+                }}
               </Formik>
             </CardBody>
           </Card>

@@ -694,5 +694,15 @@
   "Please wait while we add the vendor.": "يرجى الانتظار بينما نقوم بإضافة البائع.",
   "Failed to add vendor. Please try again.": "فشل في إضافة البائع. يرجى المحاولة مرة أخرى.",
   "Advertisements by Banner": "الإعلانات حسب اللافتة",
-  "Banner:": "اللافتة:"
+  "Banner:": "اللافتة:",
+  "Do you want to share this vendor's location?": "هل تريد مشاركة موقع هذا البائع؟",
+  "Yes, Share": "نعم، شارك",
+  "Do you want to change this vendor's status?": "هل تريد تغيير حالة هذا البائع؟",
+  "Yes, Change Status": "نعم، غير الحالة",
+  "Please wait while we update the vendor status.": "يرجى الانتظار بينما نقوم بتحديث حالة البائع.",
+  "Are you sure you want to delete this vendor?": "هل أنت متأكد من أنك تريد حذف هذا البائع؟",
+  "Yes, Delete": "نعم، احذف",
+  "Deleting...": "جاري الحذف...",
+  "Please wait while we delete the vendor.": "يرجى الانتظار بينما نقوم بحذف البائع.",
+  "An error occurred while loading vendors.": "حدث خطأ أثناء تحميل البائعين."
 }
