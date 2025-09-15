@@ -10,11 +10,6 @@ const Widgets = ({ details }: { details: any }) => {
   const suffixTag = (item: number) =>
     item > 999 && item < 1000000 ? "K" : item > 99999 ? "M" : "";
 
-  const inProcessOrders =
-    details?.orders?.filter(
-      (item: any) => item.status === "WAITING" || item.status === "PROCESSING"
-    )?.length ?? 0;
-
   const getBadgeProps = (value: number | any) => {
     let cleanedValue = String(value)
       .replace(/,/g, "")
@@ -87,26 +82,12 @@ const Widgets = ({ details }: { details: any }) => {
       prefix: "",
       suffix: suffixTag(details?.newCustomers?.value ?? 0),
     },
-    {
-      id: 4,
-      cardColor: "info",
-      label: t("In Process Orders"),
-      badge: null,
-      badgeClass: null,
-      percentage: null,
-      counter: details?.inProcessOrders?.value ?? 0,
-      link: t("Withdraw money"),
-      bgcolor: "primary",
-      icon: "bx bx-receipt", // Changed to represent orders
-      decimals: 0,
-      prefix: "",
-      suffix: suffixTag(details?.inProcessOrders?.value),
-    },
   ];
+
   return (
     <React.Fragment>
       {ecomWidgets.map((item, key) => (
-        <Col xl={3} md={6} key={key}>
+        <Col xl={4} md={6} key={key}>
           <Card className="card-animate">
             <CardBody>
               <div className="d-flex align-items-center">

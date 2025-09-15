@@ -9,6 +9,7 @@ import DailyIncome from "./DailyIncom";
 import { useDispatch, useSelector } from "react-redux";
 import { createSelector } from "reselect";
 import { adminHomeDetails } from "slices/thunks";
+import OrdersWidgets from "./OrdersWidgets";
 
 const Dashboard = () => {
   const dispatch: any = useDispatch();
@@ -55,6 +56,9 @@ const Dashboard = () => {
                 <Section rightClickBtn={toggleRightColumn} />
                 <Row>
                   <Widget details={homeDetailsSuccess ?? {}} />
+                </Row>
+                <Row>
+                  <OrdersWidgets details={homeDetailsSuccess ?? {}} />
                 </Row>
                 <Row>
                   <Col xl={8}>

@@ -673,5 +673,10 @@
   "Approval Status": "حالة الموافقة",
   "Select Approval Status": "اختر حالة الموافقة",
   "Select Publish Status": "اختر حالة النشر",
-  "Change Status": "تغيير حالة الطلب"
+  "Change Status": "تغيير حالة الطلب",
+  "Processing": "قيد المعالجة",
+  "Waiting": "في الانتظار",
+  "Delivered": "تم التسليم",
+  "Canceled": "ملغى",
+  "Confirmed": "مؤكد"
 }
