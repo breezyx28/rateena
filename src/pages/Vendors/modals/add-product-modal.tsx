@@ -16,6 +16,7 @@ import {
 import Swal from "sweetalert2";
 import { addVendorProductMutation } from "slices/thunks";
 import { useDispatch, useSelector } from "react-redux";
+import { clearVendorSuccess, clearVendorError } from "slices/vendors/reducer";
 import { useParams } from "react-router-dom";
 import { createSelector } from "reselect";
 import {
@@ -141,6 +142,8 @@ const AddProductModal = ({
                     icon: "success",
                     timer: 2000,
                     showConfirmButton: false
+                  }).then(() => {
+                    dispatch(clearVendorSuccess());
                   })}
                   <Alert color="success">
                     {t("Product has been added successfully")}
@@ -154,6 +157,8 @@ const AddProductModal = ({
                     icon: "error",
                     timer: 2000,
                     showConfirmButton: false
+                  }).then(() => {
+                    dispatch(clearVendorSuccess());
                   })}
                   <Alert color="danger">{vendorError?.message}</Alert>
                 </>

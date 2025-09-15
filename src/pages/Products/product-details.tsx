@@ -30,7 +30,9 @@ import {
   deleteProductMutation,
   getProductQuery,
   toggleProductPublishQuery,
+  toggleProductApproveQuery,
 } from "slices/thunks";
+import Swal from "sweetalert2";
 
 const VendorProductDetails = () => {
   const { productId } = useParams<{ productId: string }>();
@@ -87,9 +89,68 @@ const VendorProductDetails = () => {
   const toggleEditModal = () => setShowEditModal(!showEditModal);
   const toggleDeleteModal = () => setShowDeleteModal(!showDeleteModal);
 
-  const handleTogglePublish = () => {
-    console.log("Toggle publish status");
-    dispatch(toggleProductPublishQuery(productId));
+  const handleTogglePublish = async () => {
+    const result = await Swal.fire({
+      title: t("Are you sure?"),
+      text: t(`Do you want to ${selectedProduct?.published ? 'unpublish' : 'publish'} this product?`),
+      icon: "question",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: t("Yes, Update Status"),
+      cancelButtonText: t("Cancel"),
+    });
+
+    if (result.isConfirmed) {
+      try {
+        dispatch(toggleProductPublishQuery(productId));
+        Swal.fire({
+          icon: "success",
+          title: t("Success!"),
+          text: t("Product status updated successfully!"),
+          confirmButtonText: t("OK"),
+        });
+      } catch (error) {
+        Swal.fire({
+          icon: "error",
+          title: t("Error!"),
+          text: t("Failed to update product status"),
+          confirmButtonText: t("OK"),
+        });
+      }
+    }
+  };
+
+  const handleToggleApprove = async () => {
+    const result = await Swal.fire({
+      title: t("Are you sure?"),
+      text: t(`Do you want to ${selectedProduct?.is_approved ? 'disapprove' : 'approve'} this product?`),
+      icon: "question",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: t("Yes, Update Status"),
+      cancelButtonText: t("Cancel"),
+    });
+
+    if (result.isConfirmed) {
+      try {
+        dispatch(toggleProductApproveQuery(productId));
+        Swal.fire({
+          icon: "success",
+          title: t("Success!"),
+          text: t("Product approval status updated successfully!"),
+          confirmButtonText: t("OK"),
+        });
+      } catch (error) {
+        Swal.fire({
+          icon: "error",
+          title: t("Error!"),
+          text: t("Failed to update product approval status"),
+          confirmButtonText: t("OK"),
+        });
+      }
+    }
   };
 
   // const handleDeleteProduct = () => {
@@ -179,14 +240,14 @@ const VendorProductDetails = () => {
 
           <ToastContainer />
 
-          {selectedProduct ? (
+          {selectedProduct && Object.keys(selectedProduct).length > 0 ? (
             <div className="d-flex flex-column gap-4">
               {/* Alerts */}
               <div className="d-flex flex-wrap gap-3">
                 {selectedProduct.quantity <= 5 && (
                   <Alert color="warning" className="d-flex align-items-center">
                     <i className="ri-alert-line me-2"></i>
-                    {t("Low quantity alert! Only")} {selectedProduct?.quantity} {t("items left.")}
+                    {t("Low quantity alert! Please update the quantity.")}
                     <Button
                       color="link"
                       className="p-0 ms-2 text-decoration-underline"
@@ -194,15 +255,6 @@ const VendorProductDetails = () => {
                     >
                       {t("Update")}
                     </Button>
-                    {selectedProduct?.published && (
-                      <Button
-                        color="link"
-                        className="p-0 ms-2 text-decoration-underline"
-                        onClick={handleTogglePublish}
-                      >
-                        {t("Unpublish")}
-                      </Button>
-                    )}
                   </Alert>
                 )}
                 {!selectedProduct?.published && (
@@ -225,9 +277,28 @@ const VendorProductDetails = () => {
                   <Badge color="info" className="fs-6">
                     {t("Company Profit:")} {selectedProduct?.companyProfit}%
                   </Badge>
-                  {/* <Button color="danger" size="sm" onClick={toggleDeleteModal}>
-                    <i className="ri-delete-bin-line"></i>
-                  </Button> */}
+                  <Badge color={selectedProduct?.quantity <= 5 ? "danger" : "secondary"} className="fs-6">
+                    {t("Quantity")}: <span className="quantity-text fw-bold text-white bg-dark px-2 py-1 rounded">{selectedProduct?.quantity || 0}</span>
+                  </Badge>
+                  <Badge color="warning" className="fs-6">
+                    {selectedProduct?.duration}
+                  </Badge>
+                  <Button 
+                    color={selectedProduct?.is_approved ? "success" : "outline-success"} 
+                    size="sm" 
+                    onClick={handleToggleApprove}
+                  >
+                    <i className={selectedProduct?.is_approved ? "ri-check-line" : "ri-close-line"}></i>
+                    {selectedProduct?.is_approved ? t("Approved") : t("Not Approved")}
+                  </Button>
+                  <Button 
+                    color={selectedProduct?.published ? "primary" : "outline-primary"} 
+                    size="sm" 
+                    onClick={handleTogglePublish}
+                  >
+                    <i className={selectedProduct?.published ? "ri-eye-line" : "ri-eye-off-line"}></i>
+                    {selectedProduct?.published ? t("Published") : t("Unpublished")}
+                  </Button>
                   <Button color="primary" size="sm" onClick={toggleEditModal}>
                     <i className="ri-edit-line"></i>
                   </Button>
@@ -257,24 +328,97 @@ const VendorProductDetails = () => {
                       </CardBody>
                     </Card>
 
-                    {/* Product Characteristics */}
+                    {/* Product Options */}
                     <Card>
                       <CardBody>
-                        <h5 className="card-title">{t("Product Characteristics")}</h5>
-                        {optionGroups.map((group: string) => (
-                          <div
-                            key={group}
-                            className="border border-dashed rounded p-3 mb-3"
-                          >
-                            <div className="d-flex flex-wrap align-items-center gap-2">
-                              <p className="text-muted text-capitalize mb-2 w-100">
-                                {group}
-                              </p>
+                        <h5 className="card-title">{t("Product Options")}</h5>
+                        
+                        {/* Groups */}
+                        {optionGroups.length > 0 && (
+                          <div className="mb-4">
+                            <h6 className="text-muted mb-3">{t("Product Characteristics")}</h6>
+                            {optionGroups.map((group: string) => (
+                              <div
+                                key={group}
+                                className="border border-dashed rounded p-3 mb-3"
+                              >
+                                <div className="d-flex flex-wrap align-items-center gap-2">
+                                  <p className="text-muted text-capitalize mb-2 w-100">
+                                    {group}
+                                  </p>
+                                  {selectedProduct?.options
+                                    ?.filter(
+                                      (op: any) =>
+                                        op.group_flag === group &&
+                                        (op.fee == null || op.fee == 0)
+                                    )
+                                    ?.map((option: any) => (
+                                      <div
+                                        key={option.option_id}
+                                        className="d-flex align-items-center"
+                                      >
+                                        <Badge
+                                          color="secondary"
+                                          className="d-flex align-items-center gap-1"
+                                        >
+                                          <span>{option.name}</span>
+                                          <i
+                                            className="ri-close-circle-line cursor-pointer"
+                                            onClick={() =>
+                                              handleDeleteOption(option.option_id)
+                                            }
+                                          ></i>
+                                        </Badge>
+                                      </div>
+                                    ))}
+                                  <Button
+                                    color="success"
+                                    outline
+                                    size="sm"
+                                    onClick={() =>
+                                      setActiveOptionGroup(
+                                        activeOptionGroup === group ? null : group
+                                      )
+                                    }
+                                  >
+                                    <i className="ri-add-line"></i>
+                                  </Button>
+                                </div>
+                                {activeOptionGroup === group && (
+                                  <Form
+                                    onSubmit={handleAddOptionGroup}
+                                    className="d-flex align-items-end gap-2 mt-3"
+                                  >
+                                    <div className="flex-grow-1">
+                                      <Input
+                                        type="text"
+                                        placeholder={t("Eg: Large")}
+                                        value={newOptionName}
+                                        onChange={(e) =>
+                                          setNewOptionName(e.target.value)
+                                        }
+                                        required
+                                      />
+                                    </div>
+                                    <Button type="submit" color="primary" size="sm">
+                                      {t("Add")}
+                                    </Button>
+                                  </Form>
+                                )}
+                              </div>
+                            ))}
+                          </div>
+                        )}
+
+                        {/* Addons */}
+                        <div className="mb-4">
+                          <h6 className="text-muted mb-3">{t("Product Addons")}</h6>
+                          <div className="border border-dashed rounded p-3">
+                            <div className="d-flex flex-wrap align-items-start gap-2 mb-3">
                               {selectedProduct?.options
                                 ?.filter(
-                                  (op: any) =>
-                                    op.group_flag === group &&
-                                    (op.fee == null || op.fee == 0)
+                                  (option: any) =>
+                                    option.group_flag == null && option.fee > 0
                                 )
                                 ?.map((option: any) => (
                                   <div
@@ -286,6 +430,9 @@ const VendorProductDetails = () => {
                                       className="d-flex align-items-center gap-1"
                                     >
                                       <span>{option.name}</span>
+                                      <Badge color="light" className="text-dark">
+                                        {option.fee} AED
+                                      </Badge>
                                       <i
                                         className="ri-close-circle-line cursor-pointer"
                                         onClick={() =>
@@ -301,25 +448,39 @@ const VendorProductDetails = () => {
                                 size="sm"
                                 onClick={() =>
                                   setActiveOptionGroup(
-                                    activeOptionGroup === group ? null : group
+                                    activeOptionGroup === "addons"
+                                      ? null
+                                      : "addons"
                                   )
                                 }
                               >
                                 <i className="ri-add-line"></i>
                               </Button>
                             </div>
-                            {activeOptionGroup === group && (
+
+                            {activeOptionGroup === "addons" && (
                               <Form
-                                onSubmit={handleAddOptionGroup}
-                                className="d-flex align-items-end gap-2 mt-3"
+                                onSubmit={handleAddOptionAddon}
+                                className="d-flex align-items-end gap-2"
                               >
                                 <div className="flex-grow-1">
                                   <Input
                                     type="text"
-                                    placeholder={t("Eg: Large")}
+                                    placeholder={t("Addon name")}
                                     value={newOptionName}
                                     onChange={(e) =>
                                       setNewOptionName(e.target.value)
+                                    }
+                                    required
+                                  />
+                                </div>
+                                <div className="flex-grow-1">
+                                  <Input
+                                    type="number"
+                                    placeholder={t("Fee")}
+                                    value={newOptionFee}
+                                    onChange={(e) =>
+                                      setNewOptionFee(e.target.value)
                                     }
                                     required
                                   />
@@ -330,8 +491,9 @@ const VendorProductDetails = () => {
                               </Form>
                             )}
                           </div>
-                        ))}
+                        </div>
 
+                        {/* Add New Group Form */}
                         {showNewGroupForm && (
                           <Form
                             onSubmit={handleAddOptionGroup}
@@ -373,91 +535,6 @@ const VendorProductDetails = () => {
                         >
                           {t("New Group")}
                         </Button>
-                      </CardBody>
-                    </Card>
-
-                    {/* Product Addons */}
-                    <Card>
-                      <CardBody>
-                        <h5 className="card-title">{t("Product Addons")}</h5>
-                        <div className="border border-dashed rounded p-3">
-                          <div className="d-flex flex-wrap align-items-start gap-2 mb-3">
-                            {selectedProduct?.options
-                              ?.filter(
-                                (option: any) =>
-                                  option.group_flag == null && option.fee > 0
-                              )
-                              ?.map((option: any) => (
-                                <div
-                                  key={option.option_id}
-                                  className="d-flex align-items-center"
-                                >
-                                  <Badge
-                                    color="secondary"
-                                    className="d-flex align-items-center gap-1"
-                                  >
-                                    <span>{option.name}</span>
-                                    <Badge color="light" className="text-dark">
-                                      {option.fee} AED
-                                    </Badge>
-                                    <i
-                                      className="ri-close-circle-line cursor-pointer"
-                                      onClick={() =>
-                                        handleDeleteOption(option.option_id)
-                                      }
-                                    ></i>
-                                  </Badge>
-                                </div>
-                              ))}
-                            <Button
-                              color="success"
-                              outline
-                              size="sm"
-                              onClick={() =>
-                                setActiveOptionGroup(
-                                  activeOptionGroup === "addons"
-                                    ? null
-                                    : "addons"
-                                )
-                              }
-                            >
-                              <i className="ri-add-line"></i>
-                            </Button>
-                          </div>
-
-                          {activeOptionGroup === "addons" && (
-                            <Form
-                              onSubmit={handleAddOptionAddon}
-                              className="d-flex align-items-end gap-2"
-                            >
-                              <div className="flex-grow-1">
-                                <Input
-                                  type="text"
-                                  placeholder={t("Addon name")}
-                                  value={newOptionName}
-                                  onChange={(e) =>
-                                    setNewOptionName(e.target.value)
-                                  }
-                                  required
-                                />
-                              </div>
-                              <div className="flex-grow-1">
-                                <Input
-                                  type="number"
-                                  placeholder={t("Fee")}
-                                  value={newOptionFee}
-                                  onChange={(e) =>
-                                    setNewOptionFee(e.target.value)
-                                  }
-                                  required
-                                />
-                              </div>
-                              <Button type="submit" color="primary" size="sm">
-                                {t("Add")}
-                              </Button>
-                            </Form>
-                          )}
-                        </div>
                       </CardBody>
                     </Card>
                   </div>

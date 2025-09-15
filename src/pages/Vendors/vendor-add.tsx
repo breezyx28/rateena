@@ -17,7 +17,7 @@ import * as Yup from "yup";
 import Flatpickr from "react-flatpickr";
 import { useDispatch, useSelector } from "react-redux";
 import { addVendorMutation } from "slices/thunks";
-import { clearVendorError } from "slices/vendors/reducer";
+import { clearVendorError, clearVendorSuccess } from "slices/vendors/reducer";
 import Swal from "sweetalert2";
 import { createSelector } from "reselect";
 import VendorMap from "./vendor-map";
@@ -70,6 +70,7 @@ const VendorAdd = () => {
           confirmButtonText: t("OK"),
         }).then(() => {
           alertShownRef.current.success = false;
+          dispatch(clearVendorSuccess());
         });
         dispatch(clearVendorError());
         errorToastManager.clearLastError();
@@ -85,6 +86,7 @@ const VendorAdd = () => {
           confirmButtonText: t("OK"),
         }).then(() => {
           alertShownRef.current.error = false;
+          dispatch(clearVendorError());
         });
       }
     }

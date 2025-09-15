@@ -259,15 +259,20 @@ const Advertisements = () => {
                   <CardHeader className="p-0 border-0 bg-light-subtle">
                     <Row className="g-0 text-center">
                       {adsData?.data?.availableBanners &&
-                        Object.keys(adsData.data.availableBanners).map(
-                          (key) => (
-                            <Col xs={6} sm={3} key={key}>
+                        adsData.data.availableBanners.map(
+                          (
+                            { ar, en }: { ar: string; en: string },
+                            index: number
+                          ) => (
+                            <Col xs={6} sm={3} key={index}>
                               <div className="p-3">
                                 <h5 className="mb-1">
-                                  <span className={""}>{Number(key) + 1}</span>
+                                  <span className={""}>
+                                    {Number(index) + 1}
+                                  </span>
                                 </h5>
                                 <p className="text-muted mb-0">
-                                  {adsData.data.availableBanners[key] ?? "---"}
+                                  {i18n.dir() === "rtl" ? ar : en ?? "---"}
                                 </p>
                               </div>
                             </Col>

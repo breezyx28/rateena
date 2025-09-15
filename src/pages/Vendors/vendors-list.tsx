@@ -20,6 +20,7 @@ import {
   toggleVendorStateQuery,
   deleteVendorMutation,
 } from "slices/thunks";
+import { clearVendorSuccess, clearVendorError } from "slices/vendors/reducer";
 import { useTranslation } from "react-i18next";
 import { imgURL } from "services/api-handles";
 import DeleteConfirmationModal from "./vendors-modals/delete-confirmation-modal";
@@ -229,6 +230,8 @@ const VendorsList = () => {
           title: t("Success!"),
           text: t("Vendor status updated successfully!"),
           confirmButtonText: t("OK"),
+        }).then(() => {
+          dispatch(clearVendorSuccess());
         });
       }, 1000);
     }
@@ -275,6 +278,8 @@ const VendorsList = () => {
             i18n.dir() === "ltr" ? vendor.fullName : vendor.arFullName
           } ${t("deleted successfully!")}`,
           confirmButtonText: t("OK"),
+        }).then(() => {
+          dispatch(clearVendorSuccess());
         });
       }, 1000);
     }
@@ -312,6 +317,8 @@ const VendorsList = () => {
         title: t("Error!"),
         text: vendorsListError?.message || t("An error occurred while loading vendors."),
         confirmButtonText: t("OK"),
+      }).then(() => {
+        dispatch(clearVendorSuccess());
       });
       setVendorState({
         currentState: null,

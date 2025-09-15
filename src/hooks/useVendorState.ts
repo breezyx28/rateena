@@ -7,8 +7,9 @@ import {
   toggleVendorStateQuery,
 } from "slices/thunks";
 import { clearVendorError } from "slices/vendors/reducer";
-import { toast } from "react-toastify";
+import Swal from "sweetalert2";
 import { formatErrorMessage, errorToastManager } from "helpers/error-helper";
+import { useTranslation } from "react-i18next";
 
 interface UseVendorStateProps {
   vendorId: string;
@@ -25,6 +26,7 @@ export const useVendorState = ({
   initialVendorInfo = {},
 }: UseVendorStateProps) => {
   const dispatch: any = useDispatch();
+  const { t } = useTranslation();
 
   // Vendor state management
   const [vendorInfo, setVendorInfo] = useState(initialVendorInfo);
@@ -65,77 +67,145 @@ export const useVendorState = ({
   // Handle vendor errors
   useEffect(() => {
     if (vendorError) {
-      // Use error toast manager to prevent duplicate toasts
-      errorToastManager.showError(vendorError, toast.error);
+      Swal.fire({
+        icon: "error",
+        title: t("Error!"),
+        text: vendorError?.message || t("An error occurred"),
+        confirmButtonText: t("OK"),
+      });
       setVendorState({
         currentState: null,
         vendorId: null,
       });
     }
-  }, [vendorError]);
+  }, [vendorError, t]);
 
   // Toggle vendor working status
-  const toggleVendorStatus = (vendorId: string, currentStatus: boolean) => {
-    dispatch(toggleVendorStateQuery(vendorId));
-    setVendorState({
-      vendorId,
-      currentState: !currentStatus,
+  const toggleVendorStatus = async (vendorId: string, currentStatus: boolean) => {
+    const result = await Swal.fire({
+      title: t("Are you sure?"),
+      text: t(`Do you want to ${currentStatus ? 'deactivate' : 'activate'} this vendor?`),
+      icon: "question",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: t("Yes, Update Status"),
+      cancelButtonText: t("Cancel"),
     });
-    toast.success(`Vendor status updated successfully!`, {
-      position: "top-right",
-      autoClose: 2000,
-    });
+
+    if (result.isConfirmed) {
+      try {
+        dispatch(toggleVendorStateQuery(vendorId));
+        setVendorState({
+          vendorId,
+          currentState: !currentStatus,
+        });
+        Swal.fire({
+          icon: "success",
+          title: t("Success!"),
+          text: t("Vendor status updated successfully!"),
+          confirmButtonText: t("OK"),
+        });
+      } catch (error) {
+        Swal.fire({
+          icon: "error",
+          title: t("Error!"),
+          text: t("Failed to update vendor status"),
+          confirmButtonText: t("OK"),
+        });
+      }
+    }
   };
 
   // Handle profile image upload
-  const handleProfileImageUpload = (event: any, userId: any) => {
+  const handleProfileImageUpload = async (event: any, userId: any) => {
     const file = event.target?.files[0];
     if (file) {
-      console.log("file: ", file);
+      const result = await Swal.fire({
+        title: t("Are you sure?"),
+        text: t("Do you want to update the profile image?"),
+        icon: "question",
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: t("Yes, Update Image"),
+        cancelButtonText: t("Cancel"),
+      });
 
-      const formData = new FormData();
-      formData.append("profileImage", file);
+      if (result.isConfirmed) {
+        try {
+          const formData = new FormData();
+          formData.append("profileImage", file);
 
-      // Create VendorPayload object with correct field mapping
-      const vendorPayload: any = {
-        vendorId: vendorId ?? null,
-        userId: userId ?? null,
-      };
+          const vendorPayload: any = {
+            vendorId: vendorId ?? null,
+            userId: userId ?? null,
+          };
 
-      // Add VendorPayload as JSON string
-      formData.append("VendorPayload", JSON.stringify(vendorPayload));
+          formData.append("VendorPayload", JSON.stringify(vendorPayload));
+          dispatch(addVendorMutation(formData));
 
-      dispatch(addVendorMutation(formData));
-
-      // toast.success("Profile image updated successfully!", {
-      //   position: "top-right",
-      //   autoClose: 2000,
-      // });
+          Swal.fire({
+            icon: "success",
+            title: t("Success!"),
+            text: t("Profile image updated successfully!"),
+            confirmButtonText: t("OK"),
+          });
+        } catch (error) {
+          Swal.fire({
+            icon: "error",
+            title: t("Error!"),
+            text: t("Failed to update profile image"),
+            confirmButtonText: t("OK"),
+          });
+        }
+      }
     }
   };
 
   // Handle cover image upload
-  const handleCoverImageUpload = (event: any, userId: any) => {
+  const handleCoverImageUpload = async (event: any, userId: any) => {
     const file = event.target.files[0];
     if (file) {
-      const formData = new FormData();
-      formData.append("coverImage", file);
-
-      // Create VendorPayload object with correct field mapping
-      const vendorPayload: any = {
-        vendorId: vendorId ?? null,
-        userId: userId ?? null,
-      };
-
-      // Add VendorPayload as JSON string
-      formData.append("VendorPayload", JSON.stringify(vendorPayload));
-
-      dispatch(addVendorMutation(formData));
-
-      toast.success("Cover image updated successfully!", {
-        position: "top-right",
-        autoClose: 2000,
+      const result = await Swal.fire({
+        title: t("Are you sure?"),
+        text: t("Do you want to update the cover image?"),
+        icon: "question",
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: t("Yes, Update Image"),
+        cancelButtonText: t("Cancel"),
       });
+
+      if (result.isConfirmed) {
+        try {
+          const formData = new FormData();
+          formData.append("coverImage", file);
+
+          const vendorPayload: any = {
+            vendorId: vendorId ?? null,
+            userId: userId ?? null,
+          };
+
+          formData.append("VendorPayload", JSON.stringify(vendorPayload));
+          dispatch(addVendorMutation(formData));
+
+          Swal.fire({
+            icon: "success",
+            title: t("Success!"),
+            text: t("Cover image updated successfully!"),
+            confirmButtonText: t("OK"),
+          });
+        } catch (error) {
+          Swal.fire({
+            icon: "error",
+            title: t("Error!"),
+            text: t("Failed to update cover image"),
+            confirmButtonText: t("OK"),
+          });
+        }
+      }
     }
   };
 

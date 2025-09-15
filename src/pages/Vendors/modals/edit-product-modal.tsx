@@ -13,8 +13,9 @@ import {
   ModalHeader,
   Row,
 } from "reactstrap";
-import { toast } from "react-toastify";
+import Swal from "sweetalert2";
 import { useDispatch, useSelector } from "react-redux";
+import { clearVendorSuccess, clearVendorError } from "slices/vendors/reducer";
 import { useParams } from "react-router-dom";
 import { createSelector } from "reselect";
 import { UpdateVendorProductvalidationSchema } from "../validation/product-validation";
@@ -72,20 +73,26 @@ const EditProductModal = ({
   React.useEffect(() => {
     if (vendorProductSuccess) {
       console.log("vendorProductSuccess: ", vendorProductSuccess);
-      toast("Product Updated Successfully...", {
-        position: "top-right",
-        hideProgressBar: false,
-        className: "bg-success text-white",
+      Swal.fire({
+        icon: "success",
+        title: t("Success!"),
+        text: t("Product has been updated successfully"),
+        confirmButtonText: t("OK"),
+      }).then(() => {
+        dispatch(clearVendorSuccess());
       });
       dispatch(getProductQuery(productData.productId));
       tog_standard();
     }
     if (vendorError?.errors) {
       console.log("vendorError: ", vendorError);
-      toast("Error updating product", {
-        position: "top-right",
-        hideProgressBar: false,
-        className: "bg-danger text-white",
+      Swal.fire({
+        icon: "error",
+        title: t("Error!"),
+        text: t("Error updating product"),
+        confirmButtonText: t("OK"),
+      }).then(() => {
+        dispatch(clearVendorSuccess());
       });
       validation.setErrors(vendorError);
     }

@@ -18,6 +18,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { createSelector } from "reselect";
 import { toast, ToastContainer } from "react-toastify";
 import { useTranslation } from "react-i18next";
+import Swal from "sweetalert2";
 import BreadCrumb from "../../Components/Common/BreadCrumb";
 import EditProductModal from "./modals/edit-product-modal";
 import DeleteConfirmationModal from "./modals/delete-confirmation-modal";
@@ -27,7 +28,6 @@ import {
   addProductImageMutation,
   deleteOptionMutation,
   deleteProductImageMutation,
-  deleteProductMutation,
   getProductQuery,
   toggleProductPublishQuery,
 } from "slices/thunks";
@@ -71,85 +71,292 @@ const VendorProductDetails = () => {
     if (productData) {
       console.log("productData: ", productData);
       setSelectedProduct(productData?.product);
+
+      // Comprehensive analysis of all incoming options
+      if (
+        productData?.product?.options &&
+        productData.product.options.length > 0
+      ) {
+        console.log("=== OPTIONS ANALYSIS ===");
+        console.log(
+          "Total options received:",
+          productData.product.options.length
+        );
+
+        // Analyze each option individually
+        productData.product.options.forEach((option: any, index: number) => {
+          console.log(`Option ${index + 1}:`, {
+            id: option.option_id,
+            name: option.name,
+            group_flag: option.group_flag,
+            fee: option.fee,
+            type: categorizeOption(option),
+          });
+        });
+
+        // Categorize all options
+        const categorizedOptions = categorizeAllOptions(
+          productData.product.options
+        );
+        console.log("Categorized options:", categorizedOptions);
+        console.log("=== END ANALYSIS ===");
+      }
+
+      setNewOptionName("");
+      setNewOptionFee("");
+      setNewOptionGroup("");
+      setActiveOptionGroup(null);
+      setShowNewGroupForm(false);
     }
   }, [productData]);
 
-  const optionGroups: string[] = Array.from(
-    new Set(
-      selectedProduct?.options
-        ?.filter(
-          (op: any) => op.group_flag != null && (op.fee == null || op.fee == 0)
-        )
-        ?.map((op: any) => op.group_flag) || []
-    )
-  ) as string[];
+  // Handle success/error responses for option mutations
+  React.useEffect(() => {
+    if (productUpdatedSuccess) {
+      Swal.fire({
+        title: "Success!",
+        text: "Operation completed successfully",
+        icon: "success",
+        confirmButtonText: "OK",
+      });
+    }
+  }, [productUpdatedSuccess]);
+
+  React.useEffect(() => {
+    if (productError) {
+      Swal.fire({
+        title: "Error!",
+        text: productError || "Something went wrong",
+        icon: "error",
+        confirmButtonText: "OK",
+      });
+    }
+  }, [productError]);
+
+  // Function to categorize a single option
+  const categorizeOption = (option: any): string => {
+    if (
+      option.group_flag != null &&
+      option.group_flag !== "" &&
+      option.group_flag !== "null"
+    ) {
+      if (option.fee == null || option.fee == 0) {
+        return "GROUP_OPTION";
+      } else {
+        return "GROUP_WITH_FEE"; // Edge case: group with fee
+      }
+    } else if (option.fee > 0) {
+      return "ADDON";
+    } else {
+      return "UNCATEGORIZED"; // Edge case: no group, no fee
+    }
+  };
+
+  // Function to categorize all options comprehensively
+  const categorizeAllOptions = (options: any[]) => {
+    const categorized = {
+      groups: new Map<string, any[]>(),
+      addons: [] as any[],
+      groupWithFee: [] as any[],
+      uncategorized: [] as any[],
+    };
+
+    options.forEach((option: any) => {
+      const type = categorizeOption(option);
+
+      switch (type) {
+        case "GROUP_OPTION":
+          if (!categorized.groups.has(option.group_flag)) {
+            categorized.groups.set(option.group_flag, []);
+          }
+          categorized.groups.get(option.group_flag)!.push(option);
+          break;
+        case "ADDON":
+          categorized.addons.push(option);
+          break;
+        case "GROUP_WITH_FEE":
+          categorized.groupWithFee.push(option);
+          break;
+        case "UNCATEGORIZED":
+          categorized.uncategorized.push(option);
+          break;
+      }
+    });
+
+    return categorized;
+  };
+
+  // Get categorized options for display
+  const categorizedOptions = selectedProduct?.options
+    ? categorizeAllOptions(selectedProduct.options)
+    : {
+        groups: new Map<string, any[]>(),
+        addons: [],
+        groupWithFee: [],
+        uncategorized: [],
+      };
+
+  // Extract group names for display
+  const optionGroups: string[] = Array.from(categorizedOptions.groups.keys());
+
+  // Get all group options (for display in groups section)
+  const groupOptions = Array.from(categorizedOptions.groups.values()).flat();
+
+  // Get all addon options (for display in addons section)
+  const addonOptions = categorizedOptions.addons;
+
+  // Get edge case options (group with fee - treat as addons)
+  const groupWithFeeOptions = categorizedOptions.groupWithFee;
+
+  // Get uncategorized options (display as addons with 0 fee)
+  const uncategorizedOptions = categorizedOptions.uncategorized;
 
   const toggleEditModal = () => setShowEditModal(!showEditModal);
   const toggleDeleteModal = () => setShowDeleteModal(!showDeleteModal);
 
   const handleTogglePublish = () => {
-    console.log("Toggle publish status");
-    dispatch(toggleProductPublishQuery(productId));
-  };
+    const action = selectedProduct?.published ? "unpublish" : "publish";
+    const actionCapitalized = selectedProduct?.published
+      ? "Unpublish"
+      : "Publish";
 
-  // const handleDeleteProduct = () => {
-  //   console.log("Delete product");
-  //   dispatch(deleteProductMutation(productId));
-  //   toggleDeleteModal();
-  //   navigate(-1);
-  // };
+    Swal.fire({
+      title: t(`${actionCapitalized} Product`),
+      text: t(`Are you sure you want to ${action} this product?`),
+      icon: "question",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: t("Yes, do it!"),
+      cancelButtonText: t("Cancel"),
+    }).then((result) => {
+      if (result.isConfirmed) {
+        // Show loading
+        Swal.fire({
+          title: t(`${actionCapitalized}...`),
+          text: t(`Please wait while we ${action} the product`),
+          allowOutsideClick: false,
+          didOpen: () => {
+            Swal.showLoading();
+          },
+        });
+
+        dispatch(toggleProductPublishQuery(productId));
+      }
+    });
+  };
 
   const handleAddOptionGroup = (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Add option Group:", {
-      name: newOptionName,
-      groupFlag: newOptionGroup || activeOptionGroup,
-      fee: null,
-      productId,
+
+    Swal.fire({
+      title: t("Add Option"),
+      text: t("Are you sure you want to add this option to the group?"),
+      icon: "question",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: t("Yes, add it!"),
+      cancelButtonText: t("Cancel"),
+    }).then((result) => {
+      if (result.isConfirmed) {
+        // Show loading
+        Swal.fire({
+          title: t("Adding..."),
+          text: t("Please wait while we add the option"),
+          allowOutsideClick: false,
+          didOpen: () => {
+            Swal.showLoading();
+          },
+        });
+
+        dispatch(
+          addOptionMutation({
+            name: newOptionName,
+            groupFlag: newOptionGroup || activeOptionGroup,
+            fee: 0,
+            productId,
+          })
+        );
+
+        // Reset form
+        setNewOptionName("");
+        setNewOptionFee("");
+        setNewOptionGroup("");
+        setActiveOptionGroup(null);
+        setShowNewGroupForm(false);
+      }
     });
-    // Reset form
-    setNewOptionName("");
-    setNewOptionFee("");
-    setNewOptionGroup("");
-    setActiveOptionGroup(null);
-    setShowNewGroupForm(false);
-    dispatch(
-      addOptionMutation({
-        name: newOptionName,
-        groupFlag: newOptionGroup || activeOptionGroup,
-        fee: 0,
-        productId,
-      })
-    );
   };
 
   const handleAddOptionAddon = (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Add option Addon:", {
-      name: newOptionName,
-      fee: newOptionFee,
-      groupFlag: null,
-      productId,
+
+    Swal.fire({
+      title: t("Add Addon"),
+      text: t("Are you sure you want to add this addon?"),
+      icon: "question",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: t("Yes, add it!"),
+      cancelButtonText: t("Cancel"),
+    }).then((result) => {
+      if (result.isConfirmed) {
+        // Show loading
+        Swal.fire({
+          title: t("Adding..."),
+          text: t("Please wait while we add the addon"),
+          allowOutsideClick: false,
+          didOpen: () => {
+            Swal.showLoading();
+          },
+        });
+
+        dispatch(
+          addOptionMutation({
+            name: newOptionName,
+            fee: newOptionFee,
+            groupFlag: null,
+            productId,
+          })
+        );
+
+        // Reset form
+        setNewOptionName("");
+        setNewOptionFee("");
+        setNewOptionGroup("");
+        setActiveOptionGroup(null);
+        setShowNewGroupForm(false);
+      }
     });
-    // Reset form
-    setNewOptionName("");
-    setNewOptionFee("");
-    setNewOptionGroup("");
-    setActiveOptionGroup(null);
-    setShowNewGroupForm(false);
-    dispatch(
-      addOptionMutation({
-        name: newOptionName,
-        fee: newOptionFee,
-        groupFlag: null,
-        productId,
-      })
-    );
   };
 
   const handleDeleteOption = (optionId: number) => {
-    console.log("Delete option:", optionId);
-    dispatch(deleteOptionMutation(optionId, productId));
+    Swal.fire({
+      title: t("Are you sure?"),
+      text: t("You won't be able to revert this!"),
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#d33",
+      cancelButtonColor: "#3085d6",
+      confirmButtonText: t("Yes, delete it!"),
+      cancelButtonText: t("Cancel"),
+    }).then((result) => {
+      if (result.isConfirmed) {
+        // Show loading
+        Swal.fire({
+          title: t("Deleting..."),
+          text: t("Please wait while we delete the option"),
+          allowOutsideClick: false,
+          didOpen: () => {
+            Swal.showLoading();
+          },
+        });
+
+        dispatch(deleteOptionMutation(optionId, productId));
+      }
+    });
   };
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -157,18 +364,63 @@ const VendorProductDetails = () => {
       setSelectedFiles(Array.from(e.target.files));
     }
 
-    const formData = new FormData();
+    Swal.fire({
+      title: t("Upload Image"),
+      text: t("Are you sure you want to upload this image?"),
+      icon: "question",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: t("Yes, upload it!"),
+      cancelButtonText: t("Cancel"),
+    }).then((result) => {
+      if (result.isConfirmed) {
+        // Show loading
+        Swal.fire({
+          title: t("Uploading..."),
+          text: t("Please wait while we upload the image"),
+          allowOutsideClick: false,
+          didOpen: () => {
+            Swal.showLoading();
+          },
+        });
 
-    if (e.target.files) {
-      formData.append("image", e.target.files[0]);
-    }
+        const formData = new FormData();
 
-    dispatch(addProductImageMutation(formData, productId));
+        if (e.target.files) {
+          formData.append("image", e.target.files[0]);
+        }
+
+        dispatch(addProductImageMutation(formData, productId));
+      }
+    });
   };
 
   const handleRemoveImage = (imagePath: string) => {
-    console.log("Remove image:", imagePath);
-    dispatch(deleteProductImageMutation(productId, imagePath));
+    Swal.fire({
+      title: t("Remove Image"),
+      text: t("Are you sure you want to remove this image?"),
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#d33",
+      cancelButtonColor: "#3085d6",
+      confirmButtonText: t("Yes, remove it!"),
+      cancelButtonText: t("Cancel"),
+    }).then((result) => {
+      if (result.isConfirmed) {
+        // Show loading
+        Swal.fire({
+          title: t("Removing..."),
+          text: t("Please wait while we remove the image"),
+          allowOutsideClick: false,
+          didOpen: () => {
+            Swal.showLoading();
+          },
+        });
+
+        dispatch(deleteProductImageMutation(productId, imagePath));
+      }
+    });
   };
 
   return (
@@ -183,10 +435,11 @@ const VendorProductDetails = () => {
             <div className="d-flex flex-column gap-4">
               {/* Alerts */}
               <div className="d-flex flex-wrap gap-3">
-                {selectedProduct.quantity <= 5 && (
+                {selectedProduct?.quantity <= 5 ? (
                   <Alert color="warning" className="d-flex align-items-center">
                     <i className="ri-alert-line me-2"></i>
-                    {t("Low quantity alert! Only")} {selectedProduct?.quantity} {t("items left.")}
+                    {t("Low quantity alert! Only")} {selectedProduct?.quantity}{" "}
+                    {t("items left.")}
                     <Button
                       color="link"
                       className="p-0 ms-2 text-decoration-underline"
@@ -204,6 +457,10 @@ const VendorProductDetails = () => {
                       </Button>
                     )}
                   </Alert>
+                ) : (
+                  <span className="quantity-text fw-bold text-white bg-dark px-2 py-1 rounded">
+                    {t("Quantity") + " : " + selectedProduct?.quantity}
+                  </span>
                 )}
                 {!selectedProduct?.published && (
                   <Alert color="info" className="d-flex align-items-center">
@@ -260,77 +517,89 @@ const VendorProductDetails = () => {
                     {/* Product Characteristics */}
                     <Card>
                       <CardBody>
-                        <h5 className="card-title">{t("Product Characteristics")}</h5>
-                        {optionGroups.map((group: string) => (
-                          <div
-                            key={group}
-                            className="border border-dashed rounded p-3 mb-3"
-                          >
-                            <div className="d-flex flex-wrap align-items-center gap-2">
-                              <p className="text-muted text-capitalize mb-2 w-100">
-                                {group}
-                              </p>
-                              {selectedProduct?.options
-                                ?.filter(
-                                  (op: any) =>
-                                    op.group_flag === group &&
-                                    (op.fee == null || op.fee == 0)
-                                )
-                                ?.map((option: any) => (
-                                  <div
-                                    key={option.option_id}
-                                    className="d-flex align-items-center"
-                                  >
-                                    <Badge
-                                      color="secondary"
-                                      className="d-flex align-items-center gap-1"
+                        <h5 className="card-title">
+                          {t("Product Characteristics")}
+                        </h5>
+                        {optionGroups.length > 0 ? (
+                          optionGroups.map((group: string) => {
+                            const groupOptionsList =
+                              categorizedOptions.groups.get(group) || [];
+                            return (
+                              <div
+                                key={group}
+                                className="border border-dashed rounded p-3 mb-3"
+                              >
+                                <div className="d-flex flex-wrap align-items-center gap-2">
+                                  <p className="text-muted text-capitalize mb-2 w-100">
+                                    {group} ({groupOptionsList.length} options)
+                                  </p>
+                                  {groupOptionsList.map((option: any) => (
+                                    <div
+                                      key={option.option_id}
+                                      className="d-flex align-items-center"
                                     >
-                                      <span>{option.name}</span>
-                                      <i
-                                        className="ri-close-circle-line cursor-pointer"
-                                        onClick={() =>
-                                          handleDeleteOption(option.option_id)
-                                        }
-                                      ></i>
-                                    </Badge>
-                                  </div>
-                                ))}
-                              <Button
-                                color="success"
-                                outline
-                                size="sm"
-                                onClick={() =>
-                                  setActiveOptionGroup(
-                                    activeOptionGroup === group ? null : group
-                                  )
-                                }
-                              >
-                                <i className="ri-add-line"></i>
-                              </Button>
-                            </div>
-                            {activeOptionGroup === group && (
-                              <Form
-                                onSubmit={handleAddOptionGroup}
-                                className="d-flex align-items-end gap-2 mt-3"
-                              >
-                                <div className="flex-grow-1">
-                                  <Input
-                                    type="text"
-                                    placeholder={t("Eg: Large")}
-                                    value={newOptionName}
-                                    onChange={(e) =>
-                                      setNewOptionName(e.target.value)
+                                      <Badge
+                                        color="secondary"
+                                        className="d-flex align-items-center gap-1"
+                                      >
+                                        <span>{option.name}</span>
+                                        <i
+                                          className="ri-close-circle-line cursor-pointer"
+                                          onClick={() =>
+                                            handleDeleteOption(option.option_id)
+                                          }
+                                        ></i>
+                                      </Badge>
+                                    </div>
+                                  ))}
+                                  <Button
+                                    color="success"
+                                    outline
+                                    size="sm"
+                                    onClick={() =>
+                                      setActiveOptionGroup(
+                                        activeOptionGroup === group
+                                          ? null
+                                          : group
+                                      )
                                     }
-                                    required
-                                  />
+                                  >
+                                    <i className="ri-add-line"></i>
+                                  </Button>
                                 </div>
-                                <Button type="submit" color="primary" size="sm">
-                                  {t("Add")}
-                                </Button>
-                              </Form>
-                            )}
+                                {activeOptionGroup === group && (
+                                  <Form
+                                    onSubmit={handleAddOptionGroup}
+                                    className="d-flex align-items-end gap-2 mt-3"
+                                  >
+                                    <div className="flex-grow-1">
+                                      <Input
+                                        type="text"
+                                        placeholder={t("Eg: Large")}
+                                        value={newOptionName}
+                                        onChange={(e) =>
+                                          setNewOptionName(e.target.value)
+                                        }
+                                        required
+                                      />
+                                    </div>
+                                    <Button
+                                      type="submit"
+                                      color="primary"
+                                      size="sm"
+                                    >
+                                      {t("Add")}
+                                    </Button>
+                                  </Form>
+                                )}
+                              </div>
+                            );
+                          })
+                        ) : (
+                          <div className="text-muted text-center py-3">
+                            {t("No product characteristics defined yet")}
                           </div>
-                        ))}
+                        )}
 
                         {showNewGroupForm && (
                           <Form
@@ -381,34 +650,121 @@ const VendorProductDetails = () => {
                       <CardBody>
                         <h5 className="card-title">{t("Product Addons")}</h5>
                         <div className="border border-dashed rounded p-3">
-                          <div className="d-flex flex-wrap align-items-start gap-2 mb-3">
-                            {selectedProduct?.options
-                              ?.filter(
-                                (option: any) =>
-                                  option.group_flag == null && option.fee > 0
-                              )
-                              ?.map((option: any) => (
-                                <div
-                                  key={option.option_id}
-                                  className="d-flex align-items-center"
-                                >
-                                  <Badge
-                                    color="secondary"
-                                    className="d-flex align-items-center gap-1"
+                          {/* Regular Addons */}
+                          {addonOptions.length > 0 && (
+                            <div className="mb-3">
+                              <h6 className="text-muted mb-2">
+                                Regular Addons ({addonOptions.length})
+                              </h6>
+                              <div className="d-flex flex-wrap align-items-start gap-2">
+                                {addonOptions.map((option: any) => (
+                                  <div
+                                    key={option.option_id}
+                                    className="d-flex align-items-center"
                                   >
-                                    <span>{option.name}</span>
-                                    <Badge color="light" className="text-dark">
-                                      {option.fee} AED
+                                    <Badge
+                                      color="secondary"
+                                      className="d-flex align-items-center gap-1"
+                                    >
+                                      <span>{option.name}</span>
+                                      <Badge
+                                        color="light"
+                                        className="text-dark"
+                                      >
+                                        {option.fee} AED
+                                      </Badge>
+                                      <i
+                                        className="ri-close-circle-line cursor-pointer"
+                                        onClick={() =>
+                                          handleDeleteOption(option.option_id)
+                                        }
+                                      ></i>
                                     </Badge>
-                                    <i
-                                      className="ri-close-circle-line cursor-pointer"
-                                      onClick={() =>
-                                        handleDeleteOption(option.option_id)
-                                      }
-                                    ></i>
-                                  </Badge>
-                                </div>
-                              ))}
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          )}
+
+                          {/* Group Options with Fee (Edge Case) */}
+                          {groupWithFeeOptions.length > 0 && (
+                            <div className="mb-3">
+                              <h6 className="text-muted mb-2">
+                                Group Options with Fee (
+                                {groupWithFeeOptions.length})
+                              </h6>
+                              <div className="d-flex flex-wrap align-items-start gap-2">
+                                {groupWithFeeOptions.map((option: any) => (
+                                  <div
+                                    key={option.option_id}
+                                    className="d-flex align-items-center"
+                                  >
+                                    <Badge
+                                      color="warning"
+                                      className="d-flex align-items-center gap-1"
+                                    >
+                                      <span>{option.name}</span>
+                                      <Badge
+                                        color="light"
+                                        className="text-dark"
+                                      >
+                                        {option.fee} AED
+                                      </Badge>
+                                      <small className="text-muted">
+                                        ({option.group_flag})
+                                      </small>
+                                      <i
+                                        className="ri-close-circle-line cursor-pointer"
+                                        onClick={() =>
+                                          handleDeleteOption(option.option_id)
+                                        }
+                                      ></i>
+                                    </Badge>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          )}
+
+                          {/* Uncategoryized Options (Edge Case) */}
+                          {uncategorizedOptions.length > 0 && (
+                            <div className="mb-3">
+                              <h6 className="text-muted mb-2">
+                                Uncategorized Options (
+                                {uncategorizedOptions.length})
+                              </h6>
+                              <div className="d-flex flex-wrap align-items-start gap-2">
+                                {uncategorizedOptions.map((option: any) => (
+                                  <div
+                                    key={option.option_id}
+                                    className="d-flex align-items-center"
+                                  >
+                                    <Badge
+                                      color="info"
+                                      className="d-flex align-items-center gap-1"
+                                    >
+                                      <span>{option.name}</span>
+                                      <Badge
+                                        color="light"
+                                        className="text-dark"
+                                      >
+                                        {option.fee || 0} AED
+                                      </Badge>
+                                      <i
+                                        className="ri-close-circle-line cursor-pointer"
+                                        onClick={() =>
+                                          handleDeleteOption(option.option_id)
+                                        }
+                                      ></i>
+                                    </Badge>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          )}
+
+                          {/* Add New Addon Button */}
+                          <div className="d-flex flex-wrap align-items-start gap-2 mb-3">
                             <Button
                               color="success"
                               outline
@@ -421,7 +777,8 @@ const VendorProductDetails = () => {
                                 )
                               }
                             >
-                              <i className="ri-add-line"></i>
+                              <i className="ri-add-line"></i>{" "}
+                              {t("Add New Addon")}
                             </Button>
                           </div>
 
