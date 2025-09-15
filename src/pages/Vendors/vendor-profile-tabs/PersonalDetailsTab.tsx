@@ -4,7 +4,7 @@ import Flatpickr from "react-flatpickr";
 import { Formik, ErrorMessage, useFormikContext } from "formik";
 import * as Yup from "yup";
 import { useDispatch } from "react-redux";
-import { toast } from "react-toastify";
+import Swal from "sweetalert2";
 import { useTranslation } from "react-i18next";
 import { addVendorMutation } from "slices/thunks";
 import { mapServerErrorsToFormik } from "../../../helpers/error-helper";
@@ -42,6 +42,8 @@ const PersonalDetailsTab: React.FC<PersonalDetailsTabProps> = ({
     vendorId: vendorId || "",
     initialVendorInfo: {},
   });
+
+  const alertShownRef = React.useRef({ success: false, error: false });
 
   // Helper to format time to H:i:s
   const formatTimeToHis = (time: string) => {
@@ -108,55 +110,82 @@ const PersonalDetailsTab: React.FC<PersonalDetailsTabProps> = ({
   });
 
   // Handle vendor info form submission with Formik
-  const handleVendorInfoSubmit = (values: any, { setSubmitting }: any) => {
-    const formData = new FormData();
+  const handleVendorInfoSubmit = async (
+    values: any,
+    { setSubmitting }: any
+  ) => {
+    const result = await Swal.fire({
+      title: t("Are you sure?"),
+      text: t("Do you want to update the vendor information?"),
+      icon: "question",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: t("Yes, Update"),
+      cancelButtonText: t("Cancel"),
+    });
 
-    // Create VendorPayload object with correct field mapping
-    const vendorPayload: any = {
-      vendorId: vendorId ?? null,
-      userId: vendorInfo?.userId ?? null,
-      fullName: values.fullName,
-      arFullName: values.arFullName,
-      phone: values.userPhone, // Map userPhone to phone
-      email: values.userEmail, // Map userEmail to email
-      maxKilometerDelivery: parseInt(values.maxKilometerDelivery),
-      openingTime: values.openingTime, // Map fOpeningTime to openingTime
-      closingTime: values.closingTime, // Map fClosingTime to closingTime
-      always_open: values.always_open || false, // Map fClosingTime to closingTime
-      region: values.region,
-      vendorType: values.vendorType,
-      minChargeLongDistance: parseInt(values.minChargeLongDistance),
-    };
+    if (result.isConfirmed) {
+      Swal.fire({
+        title: t("Updating..."),
+        text: t("Please wait while we update the vendor information."),
+        allowOutsideClick: false,
+        allowEscapeKey: false,
+        showConfirmButton: false,
+        didOpen: () => {
+          Swal.showLoading();
+        },
+      });
 
-    // Add coordinates if selected
-    if (
-      selectedCoords &&
-      typeof selectedCoords === "object" &&
-      "lat" in selectedCoords &&
-      "lng" in selectedCoords
-    ) {
-      vendorPayload.lat = selectedCoords.lat;
-      vendorPayload.lng = selectedCoords.lng;
-    }
+      const formData = new FormData();
 
-    // Add VendorPayload as JSON string
-    formData.append("VendorPayload", JSON.stringify(vendorPayload));
+      // Create VendorPayload object with correct field mapping
+      const vendorPayload: any = {
+        vendorId: vendorId ?? null,
+        userId: vendorInfo?.userId ?? null,
+        fullName: values.fullName,
+        arFullName: values.arFullName,
+        phone: values.userPhone, // Map userPhone to phone
+        email: values.userEmail, // Map userEmail to email
+        maxKilometerDelivery: parseInt(values.maxKilometerDelivery),
+        openingTime: values.openingTime, // Map fOpeningTime to openingTime
+        closingTime: values.closingTime, // Map fClosingTime to closingTime
+        always_open: values.always_open || false, // Map fClosingTime to closingTime
+        region: values.region,
+        vendorType: values.vendorType,
+        minChargeLongDistance: parseInt(values.minChargeLongDistance),
+      };
 
-    // Add files if uploaded
-    if (files.licenseImageFile) {
-      formData.append("licenseImage", files.licenseImageFile);
-    }
-    if (files.identityImageFile) {
-      formData.append("identityImage", files.identityImageFile);
-    }
-    if (files.profileImageFile) {
-      formData.append("profileImage", files.profileImageFile);
-    }
-    if (files.coverImageFile) {
-      formData.append("coverImage", files.coverImageFile);
-    }
+      // Add coordinates if selected
+      if (
+        selectedCoords &&
+        typeof selectedCoords === "object" &&
+        "lat" in selectedCoords &&
+        "lng" in selectedCoords
+      ) {
+        vendorPayload.lat = selectedCoords.lat;
+        vendorPayload.lng = selectedCoords.lng;
+      }
 
-    dispatch(addVendorMutation(formData));
+      // Add VendorPayload as JSON string
+      formData.append("VendorPayload", JSON.stringify(vendorPayload));
+
+      // Add files if uploaded
+      if (files.licenseImageFile) {
+        formData.append("licenseImage", files.licenseImageFile);
+      }
+      if (files.identityImageFile) {
+        formData.append("identityImage", files.identityImageFile);
+      }
+      if (files.profileImageFile) {
+        formData.append("profileImage", files.profileImageFile);
+      }
+      if (files.coverImageFile) {
+        formData.append("coverImage", files.coverImageFile);
+      }
+
+      dispatch(addVendorMutation(formData));
+    }
     setSubmitting(false);
   };
 
@@ -166,26 +195,40 @@ const PersonalDetailsTab: React.FC<PersonalDetailsTabProps> = ({
 
     React.useEffect(() => {
       if (vendorError?.message || vendorError?.errors) {
-        const fieldMapping = {
-          identityImage: "identityImageFile",
-          licenseImage: "licenseImageFile",
-          profileImage: "profileImageFile",
-          coverImage: "coverImageFile",
-        };
-        mapServerErrorsToFormik(vendorError, setErrors, fieldMapping);
-        toast.error("Failed to update vendor information. Please try again.", {
-          position: "top-right",
-          autoClose: 3000,
-        });
+        if (!alertShownRef.current.error) {
+          alertShownRef.current.error = true;
+          const fieldMapping = {
+            identityImage: "identityImageFile",
+            licenseImage: "licenseImageFile",
+            profileImage: "profileImageFile",
+            coverImage: "coverImageFile",
+          };
+          mapServerErrorsToFormik(vendorError, setErrors, fieldMapping);
+          Swal.fire({
+            icon: "error",
+            title: t("Error!"),
+            text: t("Failed to update vendor information. Please try again."),
+            confirmButtonText: t("OK"),
+          }).then(() => {
+            alertShownRef.current.error = false;
+          });
+        }
       }
     }, [vendorError, setErrors]);
 
     React.useEffect(() => {
       if (vendorUpdatedSuccess) {
-        toast.success("Vendor information updated successfully!", {
-          position: "top-right",
-          autoClose: 2000,
-        });
+        if (!alertShownRef.current.success) {
+          alertShownRef.current.success = true;
+          Swal.fire({
+            icon: "success",
+            title: t("Success!"),
+            text: t("Vendor information updated successfully!"),
+            confirmButtonText: t("OK"),
+          }).then(() => {
+            alertShownRef.current.success = false;
+          });
+        }
       }
     }, [vendorUpdatedSuccess]);
 
@@ -566,6 +609,13 @@ const PersonalDetailsTab: React.FC<PersonalDetailsTabProps> = ({
                   className="btn btn-primary"
                   disabled={isSubmitting}
                 >
+                  {isSubmitting && (
+                    <span
+                      className="spinner-border spinner-border-sm me-2"
+                      role="status"
+                      aria-hidden="true"
+                    ></span>
+                  )}
                   {isSubmitting ? t("Updating...") : t("Update Vendor Info")}
                 </button>
                 <button type="button" className="btn btn-soft-success">

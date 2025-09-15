@@ -9,8 +9,6 @@ const OrdersWidgets = ({ details }: { details: any }) => {
 
   const status = details.ordersByStatus;
 
-  console.log("status: ", status);
-
   const ordersStatus = [
     {
       id: 1,
@@ -88,9 +86,10 @@ const OrdersWidgets = ({ details }: { details: any }) => {
       suffix: "",
     },
   ];
+
   return (
     <React.Fragment>
-      {ordersStatus.map((item, key) => (
+      {ordersStatus?.map((item, key) => (
         <Col xl={3} md={6} key={key}>
           <Card className="card-animate">
             <CardBody>

@@ -678,5 +678,21 @@
   "Waiting": "في الانتظار",
   "Delivered": "تم التسليم",
   "Canceled": "ملغى",
-  "Confirmed": "مؤكد"
+  "Confirmed": "مؤكد",
+  "Are you sure?": "هل أنت متأكد؟",
+  "Do you want to update the vendor information?": "هل تريد تحديث معلومات البائع؟",
+  "Yes, Update": "نعم، حدث",
+  "Please wait while we update the vendor information.": "يرجى الانتظار بينما نقوم بتحديث معلومات البائع.",
+  "Error!": "خطأ!",
+  "Failed to update vendor information. Please try again.": "فشل في تحديث معلومات البائع. يرجى المحاولة مرة أخرى.",
+  "OK": "موافق",
+  "Success!": "نجح!",
+  "Vendor information updated successfully!": "تم تحديث معلومات البائع بنجاح!",
+  "Do you want to add this vendor?": "هل تريد إضافة هذا البائع؟",
+  "Yes, Add Vendor": "نعم، أضف البائع",
+  "Adding...": "جاري الإضافة...",
+  "Please wait while we add the vendor.": "يرجى الانتظار بينما نقوم بإضافة البائع.",
+  "Failed to add vendor. Please try again.": "فشل في إضافة البائع. يرجى المحاولة مرة أخرى.",
+  "Advertisements by Banner": "الإعلانات حسب اللافتة",
+  "Banner:": "اللافتة:"
 }

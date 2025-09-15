@@ -136,13 +136,13 @@ const AdvertisementsList = ({
 
     const sorted = filteredData.sort((a, b) => a.priority - b.priority);
     return sorted.reduce((groups, item) => {
-      const priority = item.priority;
-      if (!groups[priority]) {
-        groups[priority] = [];
+      const banner = item.banner || "External Advertisements";
+      if (!groups[banner]) {
+        groups[banner] = [];
       }
-      groups[priority].push(item);
+      groups[banner].push(item);
       return groups;
-    }, {} as Record<number, any[]>);
+    }, {} as Record<string, any[]>);
   }, [data, searchTerm, statusFilter]);
 
   const getAdvertisementType = (banner: string) => {
@@ -402,7 +402,7 @@ const AdvertisementsList = ({
     <React.Fragment>
       <Card>
         <CardHeader>
-          <h4 className="card-title mb-0">{t("Advertisements by Priority")}</h4>
+          <h4 className="card-title mb-0">{t("Advertisements by Banner")}</h4>
         </CardHeader>
         <CardBody>
           {/* Search and Filter Section */}
@@ -458,7 +458,7 @@ const AdvertisementsList = ({
                 <i className="ri-information-line me-1"></i>
                 {t("Showing")}{" "}
                 {Object.values(
-                  groupedAdvertisements as Record<number, any[]>
+                  groupedAdvertisements as Record<string, any[]>
                 ).reduce(
                   (total: number, ads: any[]) => total + ads.length,
                   0
@@ -502,14 +502,14 @@ const AdvertisementsList = ({
                   </tr>
                 </thead>
                 <tbody>
-                  {Object.keys(groupedAdvertisements).map((priority) => {
-                    const ads = groupedAdvertisements[parseInt(priority)];
+                  {Object.keys(groupedAdvertisements).map((banner) => {
+                    const ads = groupedAdvertisements[banner];
                     return (
-                      <React.Fragment key={priority}>
+                      <React.Fragment key={banner}>
                         <tr className="table-primary">
                           <td colSpan={14} className="fw-bold text-center">
                             <i className="ri-star-fill me-2"></i>
-                            {t("Advertisement:")}: {priority}
+                            {t("Banner:")}: {t(banner)}
                             <span className="badge bg-light text-dark ms-2">
                               {ads.length}{" "}
                               {ads.length === 1
@@ -519,7 +519,7 @@ const AdvertisementsList = ({
                           </td>
                         </tr>
                         {ads.map((ad: any, index: number) => (
-                          <tr key={`${priority}-${index}`}>
+                          <tr key={`${banner}-${index}`}>
                             <td>
                               <span className="fw-medium">
                                 {i18n.dir() === "rtl" ? ad.arTitle : ad.title}

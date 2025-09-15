@@ -18,7 +18,7 @@ import Flatpickr from "react-flatpickr";
 import { useDispatch, useSelector } from "react-redux";
 import { addVendorMutation } from "slices/thunks";
 import { clearVendorError } from "slices/vendors/reducer";
-import { toast } from "react-toastify";
+import Swal from "sweetalert2";
 import { createSelector } from "reselect";
 import VendorMap from "./vendor-map";
 import VendorUploadFiles from "./vendor-upload-files";
@@ -57,14 +57,36 @@ const VendorAdd = () => {
     selectLayoutProperties
   );
 
+  const alertShownRef = React.useRef({ success: false, error: false });
+
   React.useEffect(() => {
     if (vendorUpdatedSuccess) {
-      toast.success(t("Vendor added successfully"), { position: "top-right" });
-      dispatch(clearVendorError());
-      errorToastManager.clearLastError();
+      if (!alertShownRef.current.success) {
+        alertShownRef.current.success = true;
+        Swal.fire({
+          icon: "success",
+          title: t("Success!"),
+          text: t("Vendor added successfully"),
+          confirmButtonText: t("OK"),
+        }).then(() => {
+          alertShownRef.current.success = false;
+        });
+        dispatch(clearVendorError());
+        errorToastManager.clearLastError();
+      }
     }
     if (vendorError) {
-      errorToastManager.showError(vendorError, toast.error);
+      if (!alertShownRef.current.error) {
+        alertShownRef.current.error = true;
+        Swal.fire({
+          icon: "error",
+          title: t("Error!"),
+          text: vendorError?.message || t("Failed to add vendor. Please try again."),
+          confirmButtonText: t("OK"),
+        }).then(() => {
+          alertShownRef.current.error = false;
+        });
+      }
     }
   }, [vendorUpdatedSuccess, vendorError, dispatch]);
 
@@ -148,61 +170,85 @@ const VendorAdd = () => {
     return null;
   };
 
-  const handleSubmit = (values: any, { setSubmitting, resetForm }: any) => {
-    dispatch(clearVendorError());
-    errorToastManager.clearLastError();
-
-    const vendorPayload: any = {
-      fullName: values.fullName,
-      arFullName: values.arFullName,
-      phone: values.userPhone,
-      email: values.userEmail,
-      password: values.password,
-      maxKilometerDelivery: parseInt(values.maxKilometerDelivery),
-      openingTime: values.openingTime,
-      closingTime: values.closingTime,
-      region: values.region,
-      vendorType: values.vendorType,
-      always_open: values.always_open,
-      minChargeLongDistance: parseInt(values.minChargeLongDistance),
-    };
-
-    if (
-      selectedCoords &&
-      typeof selectedCoords === "object" &&
-      "lat" in selectedCoords &&
-      "lng" in selectedCoords
-    ) {
-      vendorPayload.lat = selectedCoords.lat;
-      vendorPayload.lng = selectedCoords.lng;
-    }
-
-    const formData = new FormData();
-    formData.append("VendorPayload", JSON.stringify(vendorPayload));
-
-    if (files.licenseImageFile) {
-      formData.append("licenseImage", files.licenseImageFile);
-    }
-    if (files.identityImageFile) {
-      formData.append("identityImage", files.identityImageFile);
-    }
-    if (files.profileImageFile) {
-      formData.append("profileImage", files.profileImageFile);
-    }
-    if (files.coverImageFile) {
-      formData.append("coverImage", files.coverImageFile);
-    }
-
-    dispatch(addVendorMutation(formData));
-    setSubmitting(false);
-    resetForm();
-    setFiles({
-      licenseImageFile: null,
-      identityImageFile: null,
-      profileImageFile: null,
-      coverImageFile: null,
+  const handleSubmit = async (values: any, { setSubmitting, resetForm }: any) => {
+    const result = await Swal.fire({
+      title: t("Are you sure?"),
+      text: t("Do you want to add this vendor?"),
+      icon: "question",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: t("Yes, Add Vendor"),
+      cancelButtonText: t("Cancel"),
     });
-    setSelectedCoords(undefined);
+
+    if (result.isConfirmed) {
+      Swal.fire({
+        title: t("Adding..."),
+        text: t("Please wait while we add the vendor."),
+        allowOutsideClick: false,
+        allowEscapeKey: false,
+        showConfirmButton: false,
+        didOpen: () => {
+          Swal.showLoading();
+        },
+      });
+
+      dispatch(clearVendorError());
+      errorToastManager.clearLastError();
+
+      const vendorPayload: any = {
+        fullName: values.fullName,
+        arFullName: values.arFullName,
+        phone: values.userPhone,
+        email: values.userEmail,
+        password: values.password,
+        maxKilometerDelivery: parseInt(values.maxKilometerDelivery),
+        openingTime: values.openingTime,
+        closingTime: values.closingTime,
+        region: values.region,
+        vendorType: values.vendorType,
+        always_open: values.always_open,
+        minChargeLongDistance: parseInt(values.minChargeLongDistance),
+      };
+
+      if (
+        selectedCoords &&
+        typeof selectedCoords === "object" &&
+        "lat" in selectedCoords &&
+        "lng" in selectedCoords
+      ) {
+        vendorPayload.lat = selectedCoords.lat;
+        vendorPayload.lng = selectedCoords.lng;
+      }
+
+      const formData = new FormData();
+      formData.append("VendorPayload", JSON.stringify(vendorPayload));
+
+      if (files.licenseImageFile) {
+        formData.append("licenseImage", files.licenseImageFile);
+      }
+      if (files.identityImageFile) {
+        formData.append("identityImage", files.identityImageFile);
+      }
+      if (files.profileImageFile) {
+        formData.append("profileImage", files.profileImageFile);
+      }
+      if (files.coverImageFile) {
+        formData.append("coverImage", files.coverImageFile);
+      }
+
+      dispatch(addVendorMutation(formData));
+      resetForm();
+      setFiles({
+        licenseImageFile: null,
+        identityImageFile: null,
+        profileImageFile: null,
+        coverImageFile: null,
+      });
+      setSelectedCoords(undefined);
+    }
+    setSubmitting(false);
   };
 
   return (
@@ -229,32 +275,7 @@ const VendorAdd = () => {
                 }) => (
                   <Form id="vendor-info-form" onSubmit={handleSubmit}>
                     <ServerErrorHandler />
-                    {vendorUpdatedSuccess && !vendorError?.message ? (
-                      <>
-                        {toast("Your Redirect To Login Page...", {
-                          position: "top-right",
-                          hideProgressBar: false,
-                          className: "bg-success text-white",
-                          progress: undefined,
-                          toastId: "",
-                        })}
-                        <Alert color="success">
-                          Product has been added successfully
-                        </Alert>
-                      </>
-                    ) : null}
-                    {vendorError?.message && !vendorUpdatedSuccess ? (
-                      <>
-                        {toast("Error Adding Product", {
-                          position: "top-right",
-                          hideProgressBar: false,
-                          className: "bg-danger text-white",
-                          progress: undefined,
-                          toastId: "",
-                        })}
-                        <Alert color="danger">{vendorError?.message}</Alert>
-                      </>
-                    ) : null}
+
                     <Row>
                       <Col lg={6}>
                         <div className="mb-3">
@@ -672,6 +693,9 @@ const VendorAdd = () => {
                             color="primary"
                             disabled={isSubmitting || isLoading}
                           >
+                            {(isSubmitting || isLoading) && (
+                              <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                            )}
                             {isSubmitting || isLoading
                               ? t("Submitting...")
                               : t("Add Vendor")}
