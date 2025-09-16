@@ -12,8 +12,7 @@ import {
 } from "reactstrap";
 import * as Yup from "yup";
 import { useFormik } from "formik";
-import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import Swal from "sweetalert2";
 import { useTranslation } from "react-i18next";
 import {
   resetUserPassword,
@@ -69,22 +68,30 @@ const ChangePasswordTab: React.FC<any> = ({
 
   useEffect(() => {
     if (adminUserUpdated) {
-      toast.success(t("Password changed successfully!"), {
-        position: "top-right",
-        autoClose: 2000,
+      Swal.fire({
+        icon: "success",
+        title: t("Success!"),
+        text: t("Password changed successfully!"),
+        confirmButtonText: t("OK"),
       });
       validation.resetForm();
       setLoader(false);
     }
 
     if (adminUserError) {
+      Swal.fire({
+        icon: "error",
+        title: t("Error!"),
+        text: adminUserError?.message || t("An error occurred"),
+        confirmButtonText: t("OK"),
+      });
       setLoader(false);
     }
 
     setTimeout(() => {
       dispatch(resetRestPasswordFlag());
     }, 3000);
-  }, [dispatch, adminUserUpdated, error, adminUserError]);
+  }, [dispatch, adminUserUpdated, error, adminUserError, t]);
 
   return (
     <FormikErrorProvider formik={validation} serverError={adminUserError}>

@@ -33,8 +33,7 @@ import { useSelector, useDispatch } from "react-redux";
 
 import Loader from "../../Components/Common/Loader";
 
-import { toast, ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import Swal from "sweetalert2";
 import { createSelector } from "reselect";
 
 const InvoiceList = () => {
@@ -126,16 +125,33 @@ const InvoiceList = () => {
   const [isMultiDeleteButton, setIsMultiDeleteButton] =
     useState<boolean>(false);
 
-  const deleteMultiple = () => {
-    const checkall: any = document.getElementById("checkBoxAll");
-    selectedCheckBoxDelete.forEach((element: any) => {
-      dispatch(onDeleteInvoice(element.value));
-      setTimeout(() => {
-        toast.clearWaitingQueue();
-      }, 3000);
+  const deleteMultiple = async () => {
+    const result = await Swal.fire({
+      title: "Are you sure?",
+      text: "Do you want to delete selected invoices?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, Delete",
+      cancelButtonText: "Cancel",
     });
-    setIsMultiDeleteButton(false);
-    checkall.checked = false;
+
+    if (result.isConfirmed) {
+      const checkall: any = document.getElementById("checkBoxAll");
+      selectedCheckBoxDelete.forEach((element: any) => {
+        dispatch(onDeleteInvoice(element.value));
+      });
+      setIsMultiDeleteButton(false);
+      checkall.checked = false;
+      
+      Swal.fire({
+        icon: "success",
+        title: "Success!",
+        text: "Selected invoices deleted successfully!",
+        confirmButtonText: "OK",
+      });
+    }
   };
 
   const deleteCheckbox = () => {
@@ -457,7 +473,7 @@ const InvoiceList = () => {
                     ) : (
                       <Loader error={error} />
                     )}
-                    <ToastContainer closeButton={false} limit={1} />
+
                   </div>
                 </CardBody>
               </Card>

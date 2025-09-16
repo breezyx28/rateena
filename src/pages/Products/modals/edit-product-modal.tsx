@@ -13,7 +13,7 @@ import {
   ModalHeader,
   Row,
 } from "reactstrap";
-import { toast } from "react-toastify";
+import Swal from "sweetalert2";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 import { createSelector } from "reselect";
@@ -71,24 +71,26 @@ const EditProductModal = ({
   React.useEffect(() => {
     if (productsListSuccess) {
       console.log("productsListSuccess: ", productsListSuccess);
-      toast("Product Updated Successfully...", {
-        position: "top-right",
-        hideProgressBar: false,
-        className: "bg-success text-white",
+      Swal.fire({
+        icon: "success",
+        title: t("Success!"),
+        text: t("Product has been updated successfully"),
+        confirmButtonText: t("OK"),
       });
       dispatch(getProductQuery(productData.productId));
       tog_standard();
     }
     if (ProductsError?.errors) {
       console.log("ProductsError: ", ProductsError);
-      toast("Error updating product", {
-        position: "top-right",
-        hideProgressBar: false,
-        className: "bg-danger text-white",
+      Swal.fire({
+        icon: "error",
+        title: t("Error!"),
+        text: t("Error updating product"),
+        confirmButtonText: t("OK"),
       });
       validation.setErrors(ProductsError);
     }
-  }, [ProductsError, productsListSuccess]);
+  }, [ProductsError, productsListSuccess, t]);
 
   const validation: any = useFormik({
     enableReinitialize: true,

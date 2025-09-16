@@ -19,8 +19,7 @@ import { useTranslation } from "react-i18next";
 import * as Yup from "yup";
 import { useFormik } from "formik";
 
-import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import Swal from "sweetalert2";
 
 // action
 import { resetUserPassword, resetRestPasswordFlag } from "../../slices/thunks";
@@ -140,14 +139,12 @@ const ResetPassword = () => {
                       >
                         {success && success ? (
                           <>
-                            {toast(t("Your Redirect To Login Page..."), {
-                              position: "top-right",
-                              hideProgressBar: false,
-                              className: "bg-success text-white",
-                              progress: undefined,
-                              toastId: "",
+                            {Swal.fire({
+                              icon: "success",
+                              title: t("Success!"),
+                              text: t("Register User Successfully and Your Redirect To Login Page..."),
+                              confirmButtonText: t("OK"),
                             })}
-                            <ToastContainer autoClose={2000} limit={1} />
                             <Alert color="success">
                               {t("Register User Successfully and Your Redirect To Login Page...")}
                             </Alert>

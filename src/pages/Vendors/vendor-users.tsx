@@ -29,7 +29,7 @@ import {
 import { clearVendorSuccess } from "slices/vendors/reducer";
 import * as Yup from "yup";
 import { useFormik } from "formik";
-import { toast } from "react-toastify";
+import Swal from "sweetalert2";
 import { errorToastManager } from "helpers/error-helper";
 import { useTranslation } from "react-i18next";
 
@@ -88,21 +88,26 @@ const VendorUsers = () => {
   React.useEffect(() => {
     if (vendorError?.message || vendorError?.error) {
       console.log("vendorError: ", vendorError);
-      // Use error toast manager to prevent duplicate toasts
-      errorToastManager.showError(vendorError, toast.error);
+      Swal.fire({
+        icon: "error",
+        title: t("Error!"),
+        text: vendorError?.message || t("An error occurred"),
+        confirmButtonText: t("OK"),
+      });
 
       // If there was a deleted user and an error occurred, restore the user
       if (deletedUser) {
         setVendorUsersData((prevData) => [...prevData, deletedUser]);
         setDeletedUser(null);
-        // Show specific delete failure toast
-        toast.error(t("Failed to delete vendor user. Please try again."), {
-          position: "top-right",
-          autoClose: 3000,
+        Swal.fire({
+          icon: "error",
+          title: t("Error!"),
+          text: t("Failed to delete vendor user. Please try again."),
+          confirmButtonText: t("OK"),
         });
       }
     }
-  }, [vendorError, deletedUser]);
+  }, [vendorError, deletedUser, t]);
 
   const validation: any = useFormik({
     // enableReinitialize : use this flag when initial values needs to be changed
@@ -180,10 +185,11 @@ const VendorUsers = () => {
       // Clear the deleted user state on successful operation
       if (deletedUser) {
         setDeletedUser(null);
-        // Show delete success toast
-        toast.success(t("Vendor user deleted successfully!"), {
-          position: "top-right",
-          autoClose: 3000,
+        Swal.fire({
+          icon: "success",
+          title: t("Success!"),
+          text: t("Vendor user deleted successfully!"),
+          confirmButtonText: t("OK"),
         });
       }
 

@@ -6,7 +6,7 @@ import { createSelector } from "reselect";
 import { addVendorUserMutation } from "slices/thunks";
 import * as Yup from "yup";
 import { useFormik } from "formik";
-import { toast } from "react-toastify";
+import Swal from "sweetalert2";
 import {
   formatErrorMessage,
   logError,
@@ -42,14 +42,24 @@ const AddModal: React.FC<AddModalProps> = ({
   React.useEffect(() => {
     if (vendorUserAddedSuccess) {
       console.log("vendorUserAddedSuccess: ", vendorUserAddedSuccess);
+      Swal.fire({
+        icon: "success",
+        title: t("Success!"),
+        text: t("Vendor User Successfully Added"),
+        confirmButtonText: t("OK"),
+      });
       tog_standard();
     }
     if (vendorError) {
-      // Use error toast manager to prevent duplicate toasts
-      errorToastManager.showError(vendorError, toast.error);
+      Swal.fire({
+        icon: "error",
+        title: t("Error!"),
+        text: vendorError?.message || t("An error occurred"),
+        confirmButtonText: t("OK"),
+      });
       logError(vendorError, "Add Vendor User");
     }
-  }, [vendorUsers, vendorError, vendorUserAddedSuccess]);
+  }, [vendorUsers, vendorError, vendorUserAddedSuccess, t]);
 
   const validation: any = useFormik({
     enableReinitialize: true,
@@ -97,16 +107,7 @@ const AddModal: React.FC<AddModalProps> = ({
             id="add-vendor-user-form"
           >
             {vendorUsers?.list && vendorUserAddedSuccess ? (
-              <>
-                {toast("Your Redirect To Login Page...", {
-                  position: "top-right",
-                  hideProgressBar: false,
-                  className: "bg-success text-white",
-                  progress: undefined,
-                  toastId: "",
-                })}
-                <Alert color="success">{vendorUsers?.list}</Alert>
-              </>
+              <Alert color="success">{t("Vendor User Successfully Added")}</Alert>
             ) : null}
             <Row className="gy-4">
               <Col xxl={12} md={12}>

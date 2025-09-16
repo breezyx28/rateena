@@ -11,7 +11,6 @@ import {
   TabContent,
   TabPane,
 } from "reactstrap";
-import { Link } from "react-router-dom";
 import classnames from "classnames";
 import { useTranslation } from "react-i18next";
 
@@ -29,8 +28,12 @@ import i18n from "i18n";
 
 const NotificationDropdown = () => {
   const { t } = useTranslation();
-  const { notificationState, notificationInfo, toggleNotificationReadStatus } =
-    useNotificationsState();
+  const {
+    notificationState,
+    notificationInfo,
+    toggleNotificationReadStatus,
+    notificationReaded,
+  } = useNotificationsState();
 
   //Dropdown Toggle
   const [isNotificationDropdown, setIsNotificationDropdown] =
@@ -46,6 +49,19 @@ const NotificationDropdown = () => {
       setActiveTab(tab);
     }
   };
+
+  // Track checkbox states
+  const [checkedNotifications, setCheckedNotifications] = useState<Set<string>>(
+    new Set()
+  );
+
+  // Listen for notification read success and uncheck the checkbox
+  React.useEffect(() => {
+    if (notificationReaded) {
+      // Clear all checked notifications when any notification is successfully read
+      setCheckedNotifications(new Set());
+    }
+  }, [notificationReaded]);
 
   console.log("notificationInfo: ", notificationInfo);
 
@@ -114,24 +130,24 @@ const NotificationDropdown = () => {
                           </span>
                         </div>
                         <div className="flex-grow-1">
-                          <Link
-                            to={
+                          <a
+                            href={
                               noti?.resource === "product"
                                 ? `/dashboard/vendors/${noti?.vendor_id}/product/${noti?.resource_id}`
                                 : "#"
                             }
                             className="stretched-link"
+                            onClick={(e) => {
+                              if (noti?.resource === "product") {
+                                e.preventDefault();
+                                window.location.href = `/dashboard/vendors/${noti?.vendor_id}/product/${noti?.resource_id}`;
+                              }
+                            }}
                           >
                             <h6 className="mt-0 mb-2 lh-base">
                               {noti?.[i18n.language]}
                             </h6>
-                          </Link>
-                          {/* <p className="mb-0 fs-11 fw-medium text-uppercase text-muted">
-                            <span>
-                              <i className="mdi mdi-clock-outline"></i>{" "}
-                              {t("Just 30 sec ago")}
-                            </span>
-                          </p> */}
+                          </a>
                         </div>
                         <div className="px-2 fs-15">
                           <div className="form-check notification-check">
@@ -139,30 +155,25 @@ const NotificationDropdown = () => {
                               className="form-check-input"
                               type="checkbox"
                               value=""
-                              id="all-notification-check01"
-                              onChange={() =>
-                                toggleNotificationReadStatus(noti.id)
-                              }
+                              id={`notification-check-${noti.id}`}
+                              checked={checkedNotifications.has(noti.id)}
+                              onChange={() => {
+                                // Add to checked set
+                                setCheckedNotifications((prev) =>
+                                  new Set(prev).add(noti.id)
+                                );
+                                // Toggle notification read status
+                                toggleNotificationReadStatus(noti.id);
+                              }}
                             />
                             <label
                               className="form-check-label"
-                              htmlFor="all-notification-check01"
+                              htmlFor={`notification-check-${noti.id}`}
                             ></label>
                           </div>
-                          {/* <input className="form-check-input" type="checkbox" /> */}
                         </div>
                       </div>
                     </div>
-
-                    {/* <div className="my-3 text-center">
-                      <button
-                        type="button"
-                        className="btn btn-soft-success waves-effect waves-light"
-                      >
-                        {t("View All Notifications")}{" "}
-                        <i className="ri-arrow-right-line align-middle"></i>
-                      </button>
-                    </div> */}
                   </SimpleBar>
                 ))
               ) : (

@@ -153,22 +153,22 @@ export const getUserFriendlyMessage = (error: ApiError | any): string => {
 };
 
 /**
- * Error toast manager to prevent duplicate error toasts
+ * Error alert manager to prevent duplicate error alerts
  */
-class ErrorToastManager {
-  private static instance: ErrorToastManager;
+class ErrorAlertManager {
+  private static instance: ErrorAlertManager;
   private lastError: string | null = null;
   private lastErrorTime: number = 0;
   private readonly DEBOUNCE_TIME = 2000; // 2 seconds
 
-  static getInstance(): ErrorToastManager {
-    if (!ErrorToastManager.instance) {
-      ErrorToastManager.instance = new ErrorToastManager();
+  static getInstance(): ErrorAlertManager {
+    if (!ErrorAlertManager.instance) {
+      ErrorAlertManager.instance = new ErrorAlertManager();
     }
-    return ErrorToastManager.instance;
+    return ErrorAlertManager.instance;
   }
 
-  showError(error: ApiError | any, toastFunction: any): void {
+  showError(error: ApiError | any, alertFunction?: any): void {
     const errorMessage = formatErrorMessage(error);
     const currentTime = Date.now();
 
@@ -184,8 +184,19 @@ class ErrorToastManager {
     this.lastError = errorMessage;
     this.lastErrorTime = currentTime;
 
-    // Show the error toast
-    toastFunction(errorMessage);
+    // Show the error alert using SweetAlert2
+    if (alertFunction) {
+      alertFunction(errorMessage);
+    } else {
+      // Default SweetAlert2 error display
+      const Swal = require("sweetalert2");
+      Swal.fire({
+        icon: "error",
+        title: "Error!",
+        text: errorMessage,
+        confirmButtonText: "OK",
+      });
+    }
   }
 
   clearLastError(): void {
@@ -194,7 +205,8 @@ class ErrorToastManager {
   }
 }
 
-export const errorToastManager = ErrorToastManager.getInstance();
+export const errorAlertManager = ErrorAlertManager.getInstance();
+export const errorToastManager = errorAlertManager; // Keep backward compatibility
 
 /**
  * Maps server errors to Formik field errors

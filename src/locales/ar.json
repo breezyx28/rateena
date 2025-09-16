@@ -757,5 +757,16 @@
   "Unpublish...": "جاري إلغاء النشر...",
   "Publish...": "جاري النشر...",
   "Please wait while we unpublish the product": "يرجى الانتظار بينما نقوم بإلغاء نشر المنتج",
-  "Please wait while we publish the product": "يرجى الانتظار بينما نقوم بنشر المنتج"
+  "Please wait while we publish the product": "يرجى الانتظار بينما نقوم بنشر المنتج",
+  "Yes, do it!": "نعم",
+  "Disapprove Product": "رفض المنتج",
+  "Approve Product": "الموافقة على المنتج",
+  "Are you sure you want to disapprove this product?": "هل أنت متأكد من رفض هذا المنتج؟",
+  "Are you sure you want to approve this product?": "هل أنت متأكد من الموافقة على هذا المنتج؟",
+  "Disapprove...": "جاري الرفض...",
+  "Approve...": "جاري الموافقة...",
+  "Please wait while we disapprove the product": "يرجى الانتظار بينما نرفض المنتج",
+  "Please wait while we approve the product": "يرجى الانتظار بينما نوافق على المنتج",
+  "Go to Vendors List": "الذهاب إلى قائمة البائعين",
+  "Stay Here": "البقاء هنا"
 }

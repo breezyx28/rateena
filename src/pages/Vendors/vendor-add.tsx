@@ -16,6 +16,7 @@ import { Formik, ErrorMessage, useFormikContext } from "formik";
 import * as Yup from "yup";
 import Flatpickr from "react-flatpickr";
 import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import { addVendorMutation } from "slices/thunks";
 import { clearVendorError, clearVendorSuccess } from "slices/vendors/reducer";
 import Swal from "sweetalert2";
@@ -37,6 +38,7 @@ const VendorAdd = () => {
   document.title = "Add Vendor | Rateena - E-Shop Admin Panel";
 
   const dispatch: any = useDispatch();
+  const navigate = useNavigate();
 
   const [files, setFiles] = React.useState<any>({
     licenseImageFile: null,
@@ -67,10 +69,17 @@ const VendorAdd = () => {
           icon: "success",
           title: t("Success!"),
           text: t("Vendor added successfully"),
-          confirmButtonText: t("OK"),
-        }).then(() => {
+          showCancelButton: true,
+          confirmButtonText: t("Go to Vendors List"),
+          cancelButtonText: t("Stay Here"),
+          confirmButtonColor: "#3085d6",
+          cancelButtonColor: "#6c757d",
+        }).then((result) => {
           alertShownRef.current.success = false;
           dispatch(clearVendorSuccess());
+          if (result.isConfirmed) {
+            navigate("/dashboard/vendors");
+          }
         });
         dispatch(clearVendorError());
         errorToastManager.clearLastError();
@@ -82,7 +91,9 @@ const VendorAdd = () => {
         Swal.fire({
           icon: "error",
           title: t("Error!"),
-          text: vendorError?.message || t("Failed to add vendor. Please try again."),
+          text:
+            vendorError?.message ||
+            t("Failed to add vendor. Please try again."),
           confirmButtonText: t("OK"),
         }).then(() => {
           alertShownRef.current.error = false;
@@ -180,7 +191,10 @@ const VendorAdd = () => {
     return null;
   };
 
-  const handleSubmit = async (values: any, { setSubmitting, resetForm }: any) => {
+  const handleSubmit = async (
+    values: any,
+    { setSubmitting, resetForm }: any
+  ) => {
     const result = await Swal.fire({
       title: t("Are you sure?"),
       text: t("Do you want to add this vendor?"),
@@ -284,449 +298,458 @@ const VendorAdd = () => {
                   setFieldValue,
                 }) => {
                   // Debug Yup validation errors
-                  console.log('Formik Validation Errors:', errors);
-                  console.log('Formik Touched Fields:', touched);
-                  console.log('Formik Values:', values);
-                  
+                  console.log("Formik Validation Errors:", errors);
+                  console.log("Formik Touched Fields:", touched);
+                  console.log("Formik Values:", values);
+
                   return (
-                  <Form id="vendor-info-form" onSubmit={handleSubmit}>
-                    <ServerErrorHandler />
+                    <Form id="vendor-info-form" onSubmit={handleSubmit}>
+                      <ServerErrorHandler />
 
-                    <Row>
-                      <Col lg={6}>
-                        <div className="mb-3">
-                          <Label
-                            htmlFor="englishfullnameInput"
-                            className="form-label"
-                          >
-                            {t("English Name")}
-                          </Label>
-                          <Input
-                            type="text"
-                            className={`form-control ${
-                              errors.fullName && touched.fullName
-                                ? "is-invalid"
-                                : ""
-                            }`}
-                            id="englishfullnameInput"
-                            placeholder={t("Enter English Full Name")}
-                            name="fullName"
-                            value={values.fullName}
-                            onChange={handleChange}
-                            onBlur={handleBlur}
-                          />
-                          <ErrorMessage
-                            name="fullName"
-                            component="div"
-                            className="invalid-feedback"
-                          />
-                        </div>
-                      </Col>
-                      <Col lg={6}>
-                        <div className="mb-3">
-                          <Label
-                            htmlFor="arabicfullnameInput"
-                            className="form-label"
-                          >
-                            {t("Arabic Name")}
-                          </Label>
-                          <Input
-                            type="text"
-                            className={`form-control ${
-                              errors.arFullName && touched.arFullName
-                                ? "is-invalid"
-                                : ""
-                            }`}
-                            id="arabicfullnameInput"
-                            placeholder={t("Enter Arabic Full Name")}
-                            name="arFullName"
-                            value={values.arFullName}
-                            onChange={handleChange}
-                            onBlur={handleBlur}
-                          />
-                          <ErrorMessage
-                            name="arFullName"
-                            component="div"
-                            className="invalid-feedback"
-                          />
-                        </div>
-                      </Col>
-                      <Col lg={6}>
-                        <div className="mb-3">
-                          <Label
-                            htmlFor="phonenumberInput"
-                            className="form-label"
-                          >
-                            {t("Phone Number")}
-                          </Label>
-                          <Input
-                            type="text"
-                            className={`form-control ${
-                              errors.userPhone && touched.userPhone
-                                ? "is-invalid"
-                                : ""
-                            }`}
-                            id="phonenumberInput"
-                            placeholder={t("Enter your phone number")}
-                            name="userPhone"
-                            value={values.userPhone}
-                            onChange={handleChange}
-                            onBlur={handleBlur}
-                          />
-                          <ErrorMessage
-                            name="userPhone"
-                            component="div"
-                            className="invalid-feedback"
-                          />
-                        </div>
-                      </Col>
-                      <Col lg={6}>
-                        <div className="mb-3">
-                          <Label htmlFor="emailInput" className="form-label">
-                            {t("Email Address")}
-                          </Label>
-                          <Input
-                            type="email"
-                            className={`form-control ${
-                              errors.userEmail && touched.userEmail
-                                ? "is-invalid"
-                                : ""
-                            }`}
-                            id="emailInput"
-                            placeholder={t("Enter your email")}
-                            name="userEmail"
-                            value={values.userEmail}
-                            onChange={handleChange}
-                            onBlur={handleBlur}
-                          />
-                          <ErrorMessage
-                            name="userEmail"
-                            component="div"
-                            className="invalid-feedback"
-                          />
-                        </div>
-                      </Col>
-
-                      <Col lg={12}>
-                        <div className="mb-3">
-                          <Label htmlFor="passwordinput" className="form-label">
-                            {t("Password")}
-                          </Label>
-                          <Input
-                            type="password"
-                            className={`form-control ${
-                              errors.password && touched.password
-                                ? "is-invalid"
-                                : ""
-                            }`}
-                            id="passwordinput"
-                            placeholder={t("Enter your password")}
-                            name="password"
-                            onChange={handleChange}
-                            onBlur={handleBlur}
-                          />
-                          <ErrorMessage
-                            name="password"
-                            component="div"
-                            className="invalid-feedback"
-                          />
-                        </div>
-                      </Col>
-
-                      <Col lg={6}>
-                        <div className="mb-3">
-                          <Label
-                            htmlFor="maxkilometerdelivery"
-                            className="form-label"
-                          >
-                            {t("Max Kilometer Delivery")}
-                          </Label>
-                          <Input
-                            type="number"
-                            className={`form-control ${
-                              errors.maxKilometerDelivery &&
-                              touched.maxKilometerDelivery
-                                ? "is-invalid"
-                                : ""
-                            }`}
-                            id="maxkilometerdelivery"
-                            name="maxKilometerDelivery"
-                            placeholder={t("Enter max Kilometer Delivery")}
-                            value={values.maxKilometerDelivery}
-                            onChange={handleChange}
-                            onBlur={handleBlur}
-                          />
-                          <ErrorMessage
-                            name="maxKilometerDelivery"
-                            component="div"
-                            className="invalid-feedback"
-                          />
-                        </div>
-                      </Col>
-
-                      <Col lg={6}>
-                        <div className="mb-3">
-                          <Label
-                            htmlFor="minchargeforlongdistance"
-                            className="form-label"
-                          >
-                            {t("Min Charge For Long Distances")}
-                          </Label>
-                          <Input
-                            type="number"
-                            className={`form-control ${
-                              errors.minChargeLongDistance &&
-                              touched.minChargeLongDistance
-                                ? "is-invalid"
-                                : ""
-                            }`}
-                            id="minchargeforlongdistance"
-                            name="minChargeLongDistance"
-                            placeholder={t(
-                              "Enter min Charge for Long Distance"
-                            )}
-                            value={values.minChargeLongDistance}
-                            onChange={handleChange}
-                            onBlur={handleBlur}
-                          />
-                          <ErrorMessage
-                            name="minChargeLongDistance"
-                            component="div"
-                            className="invalid-feedback"
-                          />
-                        </div>
-                      </Col>
-
-                      <Col lg={12}>
-                        <div className="mb-3 mt-3">
-                          <div className="form-check form-switch">
+                      <Row>
+                        <Col lg={6}>
+                          <div className="mb-3">
+                            <Label
+                              htmlFor="englishfullnameInput"
+                              className="form-label"
+                            >
+                              {t("English Name")}
+                            </Label>
                             <Input
-                              className="form-check-input"
-                              type="checkbox"
-                              role="switch"
-                              id="alwaysOpenToggle"
-                              name="always_open"
-                              checked={values.always_open}
-                              onChange={(e) => {
-                                handleChange(e);
-                                if (e.target.checked) {
-                                  setFieldValue("openingTime", "");
-                                  setFieldValue("closingTime", "");
-                                }
-                              }}
+                              type="text"
+                              className={`form-control ${
+                                errors.fullName && touched.fullName
+                                  ? "is-invalid"
+                                  : ""
+                              }`}
+                              id="englishfullnameInput"
+                              placeholder={t("Enter English Full Name")}
+                              name="fullName"
+                              value={values.fullName}
+                              onChange={handleChange}
                               onBlur={handleBlur}
                             />
-                            <Label
-                              className="form-check-label"
-                              htmlFor="alwaysOpenToggle"
-                            >
-                              {t("Always Open")}
-                            </Label>
+                            <ErrorMessage
+                              name="fullName"
+                              component="div"
+                              className="invalid-feedback"
+                            />
                           </div>
-                          <ErrorMessage
-                            name="always_open"
-                            component="div"
-                            className="invalid-feedback"
-                          />
-                        </div>
-                      </Col>
+                        </Col>
+                        <Col lg={6}>
+                          <div className="mb-3">
+                            <Label
+                              htmlFor="arabicfullnameInput"
+                              className="form-label"
+                            >
+                              {t("Arabic Name")}
+                            </Label>
+                            <Input
+                              type="text"
+                              className={`form-control ${
+                                errors.arFullName && touched.arFullName
+                                  ? "is-invalid"
+                                  : ""
+                              }`}
+                              id="arabicfullnameInput"
+                              placeholder={t("Enter Arabic Full Name")}
+                              name="arFullName"
+                              value={values.arFullName}
+                              onChange={handleChange}
+                              onBlur={handleBlur}
+                            />
+                            <ErrorMessage
+                              name="arFullName"
+                              component="div"
+                              className="invalid-feedback"
+                            />
+                          </div>
+                        </Col>
+                        <Col lg={6}>
+                          <div className="mb-3">
+                            <Label
+                              htmlFor="phonenumberInput"
+                              className="form-label"
+                            >
+                              {t("Phone Number")}
+                            </Label>
+                            <Input
+                              type="text"
+                              className={`form-control ${
+                                errors.userPhone && touched.userPhone
+                                  ? "is-invalid"
+                                  : ""
+                              }`}
+                              id="phonenumberInput"
+                              placeholder={t("Enter your phone number")}
+                              name="userPhone"
+                              value={values.userPhone}
+                              onChange={handleChange}
+                              onBlur={handleBlur}
+                            />
+                            <ErrorMessage
+                              name="userPhone"
+                              component="div"
+                              className="invalid-feedback"
+                            />
+                          </div>
+                        </Col>
+                        <Col lg={6}>
+                          <div className="mb-3">
+                            <Label htmlFor="emailInput" className="form-label">
+                              {t("Email Address")}
+                            </Label>
+                            <Input
+                              type="email"
+                              className={`form-control ${
+                                errors.userEmail && touched.userEmail
+                                  ? "is-invalid"
+                                  : ""
+                              }`}
+                              id="emailInput"
+                              placeholder={t("Enter your email")}
+                              name="userEmail"
+                              value={values.userEmail}
+                              onChange={handleChange}
+                              onBlur={handleBlur}
+                            />
+                            <ErrorMessage
+                              name="userEmail"
+                              component="div"
+                              className="invalid-feedback"
+                            />
+                          </div>
+                        </Col>
 
-                      {!values.always_open && (
-                        <>
-                          <Col lg={6}>
-                            <div className="mb-3">
-                              <Label
-                                htmlFor="openingtimeinput"
-                                className="form-label"
-                              >
-                                {t("Opening Time")}
-                              </Label>
-                              <Flatpickr
-                                className={`form-control ${
-                                  errors.openingTime && touched.openingTime
-                                    ? "is-invalid"
-                                    : ""
-                                }`}
-                                type="time"
-                                value={values.openingTime}
-                                onChange={(date) =>
-                                  setFieldValue(
-                                    "openingTime",
-                                    date[0]
-                                      ? date[0].toTimeString().slice(0, 8)
-                                      : ""
-                                  )
-                                }
-                                onBlur={() =>
-                                  handleBlur({
-                                    target: { name: "openingTime" },
-                                  } as any)
-                                }
-                                options={{
-                                  enableTime: true,
-                                  noCalendar: true,
-                                  dateFormat: "H:i:s",
-                                  time_24hr: true,
+                        <Col lg={12}>
+                          <div className="mb-3">
+                            <Label
+                              htmlFor="passwordinput"
+                              className="form-label"
+                            >
+                              {t("Password")}
+                            </Label>
+                            <Input
+                              type="password"
+                              className={`form-control ${
+                                errors.password && touched.password
+                                  ? "is-invalid"
+                                  : ""
+                              }`}
+                              id="passwordinput"
+                              placeholder={t("Enter your password")}
+                              name="password"
+                              onChange={handleChange}
+                              onBlur={handleBlur}
+                            />
+                            <ErrorMessage
+                              name="password"
+                              component="div"
+                              className="invalid-feedback"
+                            />
+                          </div>
+                        </Col>
+
+                        <Col lg={6}>
+                          <div className="mb-3">
+                            <Label
+                              htmlFor="maxkilometerdelivery"
+                              className="form-label"
+                            >
+                              {t("Max Kilometer Delivery")}
+                            </Label>
+                            <Input
+                              type="number"
+                              className={`form-control ${
+                                errors.maxKilometerDelivery &&
+                                touched.maxKilometerDelivery
+                                  ? "is-invalid"
+                                  : ""
+                              }`}
+                              id="maxkilometerdelivery"
+                              name="maxKilometerDelivery"
+                              placeholder={t("Enter max Kilometer Delivery")}
+                              value={values.maxKilometerDelivery}
+                              onChange={handleChange}
+                              onBlur={handleBlur}
+                            />
+                            <ErrorMessage
+                              name="maxKilometerDelivery"
+                              component="div"
+                              className="invalid-feedback"
+                            />
+                          </div>
+                        </Col>
+
+                        <Col lg={6}>
+                          <div className="mb-3">
+                            <Label
+                              htmlFor="minchargeforlongdistance"
+                              className="form-label"
+                            >
+                              {t("Min Charge For Long Distances")}
+                            </Label>
+                            <Input
+                              type="number"
+                              className={`form-control ${
+                                errors.minChargeLongDistance &&
+                                touched.minChargeLongDistance
+                                  ? "is-invalid"
+                                  : ""
+                              }`}
+                              id="minchargeforlongdistance"
+                              name="minChargeLongDistance"
+                              placeholder={t(
+                                "Enter min Charge for Long Distance"
+                              )}
+                              value={values.minChargeLongDistance}
+                              onChange={handleChange}
+                              onBlur={handleBlur}
+                            />
+                            <ErrorMessage
+                              name="minChargeLongDistance"
+                              component="div"
+                              className="invalid-feedback"
+                            />
+                          </div>
+                        </Col>
+
+                        <Col lg={12}>
+                          <div className="mb-3 mt-3">
+                            <div className="form-check form-switch">
+                              <Input
+                                className="form-check-input"
+                                type="checkbox"
+                                role="switch"
+                                id="alwaysOpenToggle"
+                                name="always_open"
+                                checked={values.always_open}
+                                onChange={(e) => {
+                                  handleChange(e);
+                                  if (e.target.checked) {
+                                    setFieldValue("openingTime", "");
+                                    setFieldValue("closingTime", "");
+                                  }
                                 }}
+                                onBlur={handleBlur}
                               />
-                              <ErrorMessage
-                                name="openingTime"
-                                component="div"
-                                className="invalid-feedback"
-                              />
-                            </div>
-                          </Col>
-                          <Col lg={6}>
-                            <div className="mb-6">
                               <Label
-                                htmlFor="closingtimeinput"
-                                className="form-label"
+                                className="form-check-label"
+                                htmlFor="alwaysOpenToggle"
                               >
-                                {t("Closing Time")}
+                                {t("Always Open")}
                               </Label>
-                              <Flatpickr
-                                className={`form-control ${
-                                  errors.closingTime && touched.closingTime
-                                    ? "is-invalid"
-                                    : ""
-                                }`}
-                                type="time"
-                                value={values.closingTime}
-                                onChange={(date) =>
-                                  setFieldValue(
-                                    "closingTime",
-                                    date[0]
-                                      ? date[0].toTimeString().slice(0, 8)
-                                      : ""
-                                  )
-                                }
-                                onBlur={() =>
-                                  handleBlur({
-                                    target: { name: "closingTime" },
-                                  } as any)
-                                }
-                                options={{
-                                  enableTime: true,
-                                  noCalendar: true,
-                                  dateFormat: "H:i:s",
-                                  time_24hr: true,
-                                }}
-                              />
-                              <ErrorMessage
-                                name="closingTime"
-                                component="div"
-                                className="invalid-feedback"
-                              />
                             </div>
-                          </Col>
-                        </>
-                      )}
+                            <ErrorMessage
+                              name="always_open"
+                              component="div"
+                              className="invalid-feedback"
+                            />
+                          </div>
+                        </Col>
 
-                      <Col lg={12}>
-                        <div className="mb-3">
-                          <Label htmlFor="regionInput" className="form-label">
-                            {t("Region")}
-                          </Label>
-                          <select
-                            className={`form-select ${
-                              errors.region && touched.region
-                                ? "is-invalid"
-                                : ""
-                            }`}
-                            name="region"
-                            value={values.region}
-                            onChange={handleChange}
-                            onBlur={handleBlur}
-                          >
-                            <option value="">{t("Select Region")}</option>
-                            {supportedRegions.map((region) => (
-                              <option key={region.id} value={region.value}>
-                                {region.name}
+                        {!values.always_open && (
+                          <>
+                            <Col lg={6}>
+                              <div className="mb-3">
+                                <Label
+                                  htmlFor="openingtimeinput"
+                                  className="form-label"
+                                >
+                                  {t("Opening Time")}
+                                </Label>
+                                <Flatpickr
+                                  className={`form-control ${
+                                    errors.openingTime && touched.openingTime
+                                      ? "is-invalid"
+                                      : ""
+                                  }`}
+                                  type="time"
+                                  value={values.openingTime}
+                                  onChange={(date) =>
+                                    setFieldValue(
+                                      "openingTime",
+                                      date[0]
+                                        ? date[0].toTimeString().slice(0, 8)
+                                        : ""
+                                    )
+                                  }
+                                  onBlur={() =>
+                                    handleBlur({
+                                      target: { name: "openingTime" },
+                                    } as any)
+                                  }
+                                  options={{
+                                    enableTime: true,
+                                    noCalendar: true,
+                                    dateFormat: "H:i:s",
+                                    time_24hr: true,
+                                  }}
+                                />
+                                <ErrorMessage
+                                  name="openingTime"
+                                  component="div"
+                                  className="invalid-feedback"
+                                />
+                              </div>
+                            </Col>
+                            <Col lg={6}>
+                              <div className="mb-6">
+                                <Label
+                                  htmlFor="closingtimeinput"
+                                  className="form-label"
+                                >
+                                  {t("Closing Time")}
+                                </Label>
+                                <Flatpickr
+                                  className={`form-control ${
+                                    errors.closingTime && touched.closingTime
+                                      ? "is-invalid"
+                                      : ""
+                                  }`}
+                                  type="time"
+                                  value={values.closingTime}
+                                  onChange={(date) =>
+                                    setFieldValue(
+                                      "closingTime",
+                                      date[0]
+                                        ? date[0].toTimeString().slice(0, 8)
+                                        : ""
+                                    )
+                                  }
+                                  onBlur={() =>
+                                    handleBlur({
+                                      target: { name: "closingTime" },
+                                    } as any)
+                                  }
+                                  options={{
+                                    enableTime: true,
+                                    noCalendar: true,
+                                    dateFormat: "H:i:s",
+                                    time_24hr: true,
+                                  }}
+                                />
+                                <ErrorMessage
+                                  name="closingTime"
+                                  component="div"
+                                  className="invalid-feedback"
+                                />
+                              </div>
+                            </Col>
+                          </>
+                        )}
+
+                        <Col lg={12}>
+                          <div className="mb-3">
+                            <Label htmlFor="regionInput" className="form-label">
+                              {t("Region")}
+                            </Label>
+                            <select
+                              className={`form-select ${
+                                errors.region && touched.region
+                                  ? "is-invalid"
+                                  : ""
+                              }`}
+                              name="region"
+                              value={values.region}
+                              onChange={handleChange}
+                              onBlur={handleBlur}
+                            >
+                              <option value="">{t("Select Region")}</option>
+                              {supportedRegions.map((region) => (
+                                <option key={region.id} value={region.value}>
+                                  {region.name}
+                                </option>
+                              ))}
+                            </select>
+                            <ErrorMessage
+                              name="region"
+                              component="div"
+                              className="invalid-feedback"
+                            />
+                          </div>
+                        </Col>
+                        <Col lg={12}>
+                          <div className="mb-3">
+                            <Label
+                              htmlFor="vendorTypeInput"
+                              className="form-label"
+                            >
+                              {t("Vendor Type")}
+                            </Label>
+                            <select
+                              className={`form-select ${
+                                errors.vendorType && touched.vendorType
+                                  ? "is-invalid"
+                                  : ""
+                              }`}
+                              name="vendorType"
+                              value={values.vendorType}
+                              onChange={handleChange}
+                              onBlur={handleBlur}
+                            >
+                              <option value="">
+                                {t("Select Vendor Type")}
                               </option>
-                            ))}
-                          </select>
-                          <ErrorMessage
-                            name="region"
-                            component="div"
-                            className="invalid-feedback"
-                          />
-                        </div>
-                      </Col>
-                      <Col lg={12}>
-                        <div className="mb-3">
-                          <Label
-                            htmlFor="vendorTypeInput"
-                            className="form-label"
-                          >
-                            {t("Vendor Type")}
-                          </Label>
-                          <select
-                            className={`form-select ${
-                              errors.vendorType && touched.vendorType
-                                ? "is-invalid"
-                                : ""
-                            }`}
-                            name="vendorType"
-                            value={values.vendorType}
-                            onChange={handleChange}
-                            onBlur={handleBlur}
-                          >
-                            <option value="">{t("Select Vendor Type")}</option>
-                            {supportedVendorType.map((type) => (
-                              <option key={type.id} value={type.value}>
-                                {type.name}
-                              </option>
-                            ))}
-                          </select>
-                          <ErrorMessage
-                            name="vendorType"
-                            component="div"
-                            className="invalid-feedback"
-                          />
-                        </div>
-                      </Col>
+                              {supportedVendorType.map((type) => (
+                                <option key={type.id} value={type.value}>
+                                  {type.name}
+                                </option>
+                              ))}
+                            </select>
+                            <ErrorMessage
+                              name="vendorType"
+                              component="div"
+                              className="invalid-feedback"
+                            />
+                          </div>
+                        </Col>
 
-                      <VendorUploadFiles
-                        files={files}
-                        uploadedFiles={setFiles}
-                        defaultValues={{
-                          license: null,
-                          identity: null,
-                          profile: null,
-                          cover: null,
-                        }}
-                      />
+                        <VendorUploadFiles
+                          files={files}
+                          uploadedFiles={setFiles}
+                          defaultValues={{
+                            license: null,
+                            identity: null,
+                            profile: null,
+                            cover: null,
+                          }}
+                        />
 
-                      <VendorMap
-                        selectedCoords={setSelectedCoords}
-                        currentCoords={selectedCoords}
-                      />
+                        <VendorMap
+                          selectedCoords={setSelectedCoords}
+                          currentCoords={selectedCoords}
+                        />
 
-                      <Col lg={12}>
-                        <div className="hstack gap-2 justify-content-end">
-                          <Button
-                            type="submit"
-                            color="primary"
-                            disabled={isSubmitting || isLoading}
-                          >
-                            {(isSubmitting || isLoading) && (
-                              <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
-                            )}
-                            {isSubmitting || isLoading
-                              ? t("Submitting...")
-                              : t("Add Vendor")}
-                          </Button>
-                          <Button
-                            type="button"
-                            color="light"
-                            onClick={() => window.history.back()}
-                          >
-                            {t("Cancel")}
-                          </Button>
-                        </div>
-                      </Col>
-                    </Row>
-                  </Form>
+                        <Col lg={12}>
+                          <div className="hstack gap-2 justify-content-end">
+                            <Button
+                              type="submit"
+                              color="primary"
+                              disabled={isSubmitting || isLoading}
+                            >
+                              {(isSubmitting || isLoading) && (
+                                <span
+                                  className="spinner-border spinner-border-sm me-2"
+                                  role="status"
+                                  aria-hidden="true"
+                                ></span>
+                              )}
+                              {isSubmitting || isLoading
+                                ? t("Submitting...")
+                                : t("Add Vendor")}
+                            </Button>
+                            <Button
+                              type="button"
+                              color="light"
+                              onClick={() => window.history.back()}
+                            >
+                              {t("Cancel")}
+                            </Button>
+                          </div>
+                        </Col>
+                      </Row>
+                    </Form>
                   );
                 }}
               </Formik>

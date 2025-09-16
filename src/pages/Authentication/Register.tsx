@@ -18,8 +18,7 @@ import {
 import * as Yup from "yup";
 import { useFormik } from "formik";
 
-import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import Swal from "sweetalert2";
 
 // action
 import { registerUser, resetRegisterFlag } from "../../slices/thunks";
@@ -125,17 +124,14 @@ const Register = () => {
                       >
                         {success && success ? (
                           <>
-                            {toast("Your Redirect To Login Page...", {
-                              position: "top-right",
-                              hideProgressBar: false,
-                              className: "bg-success text-white",
-                              progress: undefined,
-                              toastId: "",
+                            {Swal.fire({
+                              icon: "success",
+                              title: t("Success!"),
+                              text: t("Register User Successfully and Your Redirect To Login Page..."),
+                              confirmButtonText: t("OK"),
                             })}
-                            <ToastContainer autoClose={2000} limit={1} />
                             <Alert color="success">
-                              Register User Successfully and Your Redirect To
-                              Login Page...
+                              {t("Register User Successfully and Your Redirect To Login Page...")}
                             </Alert>
                           </>
                         ) : null}

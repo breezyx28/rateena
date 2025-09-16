@@ -13,8 +13,7 @@ import {
 import ParticlesAuth from "../AuthenticationInner/ParticlesAuth";
 import { useTranslation } from "react-i18next";
 
-import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import Swal from "sweetalert2";
 
 //import images
 import logoLight from "../../assets/images/Logo.png";
@@ -144,15 +143,13 @@ const VerifyUser = () => {
                         <form onSubmit={handleOTPverification}>
                           {error && error ? (
                             <>
-                              {toast(t("Some errors happened"), {
-                                position: "top-right",
-                                hideProgressBar: false,
-                                className: "bg-error text-white",
-                                progress: undefined,
-                                toastId: "",
+                              {Swal.fire({
+                                icon: "error",
+                                title: t("Error!"),
+                                text: t("Some errors happened"),
+                                confirmButtonText: t("OK"),
                               })}
-                              <ToastContainer autoClose={2000} limit={1} />
-                              <Alert color="error">{t("Some errors happened")}</Alert>
+                              <Alert color="danger">{t("Some errors happened")}</Alert>
                             </>
                           ) : null}
                           <Row>

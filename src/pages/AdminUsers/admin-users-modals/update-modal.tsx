@@ -6,7 +6,7 @@ import { createSelector } from "reselect";
 import { addOrUpdateUserMutation } from "slices/thunks";
 import * as Yup from "yup";
 import { useFormik } from "formik";
-import { toast, ToastContainer } from "react-toastify";
+import Swal from "sweetalert2";
 import { useTranslation } from "react-i18next";
 
 interface AddModalProps {
@@ -30,7 +30,7 @@ const UpdateModal: React.FC<AddModalProps> = ({
     error: state.error,
   }));
 
-  const { adminUsersError, error, adminUserUpdated } = useSelector(
+  const { adminUsersError, adminUserUpdated } = useSelector(
     selectLayoutProperties
   );
 
@@ -56,7 +56,6 @@ const UpdateModal: React.FC<AddModalProps> = ({
       // password: Yup.string().required("Please Enter Your Password"),
     }),
     onSubmit: (values) => {
-      console.log("form-values: ", values);
       dispatch(addOrUpdateUserMutation({ ...values }));
     },
   });
@@ -90,14 +89,12 @@ const UpdateModal: React.FC<AddModalProps> = ({
           >
             {adminUserUpdated ? (
               <>
-                {toast(t("Your Redirect To Login Page..."), {
-                  position: "top-right",
-                  hideProgressBar: false,
-                  className: "bg-success text-white",
-                  progress: undefined,
-                  toastId: "",
+                {Swal.fire({
+                  icon: "success",
+                  title: t("Success!"),
+                  text: t("Data Added Successfully"),
+                  confirmButtonText: t("OK"),
                 })}
-                <ToastContainer autoClose={2000} limit={1} />
                 <Alert color="success">{t("Data Added Successfully")}</Alert>
               </>
             ) : null}

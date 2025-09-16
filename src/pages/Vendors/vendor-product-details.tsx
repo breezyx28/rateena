@@ -16,7 +16,6 @@ import {
 } from "reactstrap";
 import { useDispatch, useSelector } from "react-redux";
 import { createSelector } from "reselect";
-import { toast, ToastContainer } from "react-toastify";
 import { useTranslation } from "react-i18next";
 import Swal from "sweetalert2";
 import BreadCrumb from "../../Components/Common/BreadCrumb";
@@ -29,6 +28,7 @@ import {
   deleteOptionMutation,
   deleteProductImageMutation,
   getProductQuery,
+  toggleProductApproveQuery,
   toggleProductPublishQuery,
 } from "slices/thunks";
 
@@ -126,7 +126,7 @@ const VendorProductDetails = () => {
     if (productError) {
       Swal.fire({
         title: "Error!",
-        text: productError || "Something went wrong",
+        text: productError?.message || "Something went wrong",
         icon: "error",
         confirmButtonText: "OK",
       });
@@ -212,7 +212,6 @@ const VendorProductDetails = () => {
   const uncategorizedOptions = categorizedOptions.uncategorized;
 
   const toggleEditModal = () => setShowEditModal(!showEditModal);
-  const toggleDeleteModal = () => setShowDeleteModal(!showDeleteModal);
 
   const handleTogglePublish = () => {
     const action = selectedProduct?.published ? "unpublish" : "publish";
@@ -242,6 +241,38 @@ const VendorProductDetails = () => {
         });
 
         dispatch(toggleProductPublishQuery(productId));
+      }
+    });
+  };
+
+  const handleToggleApprove = () => {
+    const action = selectedProduct?.is_approved ? "disapprove" : "approve";
+    const actionCapitalized = selectedProduct?.is_approved
+      ? "Disapprove"
+      : "Approve";
+
+    Swal.fire({
+      title: t(`${actionCapitalized} Product`),
+      text: t(`Are you sure you want to ${action} this product?`),
+      icon: "question",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: t("Yes, do it!"),
+      cancelButtonText: t("Cancel"),
+    }).then((result) => {
+      if (result.isConfirmed) {
+        // Show loading
+        Swal.fire({
+          title: t(`${actionCapitalized}...`),
+          text: t(`Please wait while we ${action} the product`),
+          allowOutsideClick: false,
+          didOpen: () => {
+            Swal.showLoading();
+          },
+        });
+
+        dispatch(toggleProductApproveQuery(productId));
       }
     });
   };
@@ -428,9 +459,6 @@ const VendorProductDetails = () => {
       <div className="page-content">
         <Container fluid>
           <BreadCrumb title={t("Product Details")} pageTitle={t("Vendors")} />
-
-          <ToastContainer />
-
           {selectedProduct ? (
             <div className="d-flex flex-column gap-4">
               {/* Alerts */}
@@ -482,6 +510,24 @@ const VendorProductDetails = () => {
                   <Badge color="info" className="fs-6">
                     {t("Company Profit:")} {selectedProduct?.companyProfit}%
                   </Badge>
+                  {/* Approval Status Toggle */}
+                  <FormGroup switch className="mb-0">
+                    <Input
+                      type="switch"
+                      checked={selectedProduct?.is_approved || false}
+                      onChange={handleToggleApprove}
+                      title={
+                        selectedProduct?.is_approved
+                          ? t("Approved")
+                          : t("Not Approved")
+                      }
+                    />
+                    <Label check>
+                      {selectedProduct?.is_approved
+                        ? t("Approved")
+                        : t("Not Approved")}
+                    </Label>
+                  </FormGroup>
                   {/* <Button color="danger" size="sm" onClick={toggleDeleteModal}>
                     <i className="ri-delete-bin-line"></i>
                   </Button> */}

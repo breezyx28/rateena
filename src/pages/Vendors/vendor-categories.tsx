@@ -31,8 +31,7 @@ import {
 import { clearVendorSuccess } from "slices/vendors/reducer";
 import * as Yup from "yup";
 import { useFormik } from "formik";
-import { toast } from "react-toastify";
-import { errorToastManager } from "helpers/error-helper";
+import Swal from "sweetalert2";
 import { useTranslation } from "react-i18next";
 
 const VendorCategories = () => {
@@ -93,21 +92,26 @@ const VendorCategories = () => {
   React.useEffect(() => {
     if (vendorError?.message || vendorError?.errors) {
       console.log("vendorError: ", vendorError);
-      // Use error toast manager to prevent duplicate toasts
-      errorToastManager.showError(vendorError, toast.error);
+      Swal.fire({
+        icon: "error",
+        title: t("Error!"),
+        text: vendorError?.message || t("An error occurred"),
+        confirmButtonText: t("OK"),
+      });
 
       // If there was a deleted category and an error occurred, restore the category
       if (deletedCategory) {
         setVendorCategoriesData((prevData) => [...prevData, deletedCategory]);
         setDeletedCategory(null);
-        // Show specific delete failure toast
-        toast.error(t("Failed to delete vendor category. Please try again."), {
-          position: "top-right",
-          autoClose: 3000,
+        Swal.fire({
+          icon: "error",
+          title: t("Error!"),
+          text: t("Failed to delete vendor category. Please try again."),
+          confirmButtonText: t("OK"),
         });
       }
     }
-  }, [vendorError, deletedCategory]);
+  }, [vendorError, deletedCategory, t]);
 
   const validation: any = useFormik({
     // enableReinitialize : use this flag when initial values needs to be changed
@@ -220,10 +224,11 @@ const VendorCategories = () => {
       // Clear the deleted category state on successful operation
       if (deletedCategory) {
         setDeletedCategory(null);
-        // Show delete success toast
-        toast.success(t("Vendor category deleted successfully!"), {
-          position: "top-right",
-          autoClose: 3000,
+        Swal.fire({
+          icon: "success",
+          title: t("Success!"),
+          text: t("Vendor category deleted successfully!"),
+          confirmButtonText: t("OK"),
         });
       }
 
@@ -256,7 +261,9 @@ const VendorCategories = () => {
         <Col lg={12}>
           <div className="d-flex justify-content-between align-items-center mb-3">
             <div className="d-flex align-items-center gap-3">
-              <Label className="form-label mb-0">{t("Filter by Status:")}</Label>
+              <Label className="form-label mb-0">
+                {t("Filter by Status:")}
+              </Label>
               <select
                 className="form-select"
                 style={{ width: "auto" }}
@@ -620,7 +627,9 @@ const VendorCategories = () => {
         </ModalHeader>
         <ModalBody>
           <p>
-            {t("Are you sure you want to delete this vendor category? This action cannot be undone.")}
+            {t(
+              "Are you sure you want to delete this vendor category? This action cannot be undone."
+            )}
           </p>
         </ModalBody>
         <div className="modal-footer">

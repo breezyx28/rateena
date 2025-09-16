@@ -16,7 +16,7 @@ import {
 } from "reactstrap";
 import { useDispatch, useSelector } from "react-redux";
 import { createSelector } from "reselect";
-import { toast, ToastContainer } from "react-toastify";
+
 import { useTranslation } from "react-i18next";
 import BreadCrumb from "../../Components/Common/BreadCrumb";
 import EditProductModal from "./modals/edit-product-modal";
@@ -238,7 +238,7 @@ const VendorProductDetails = () => {
         <Container fluid>
           <BreadCrumb title={t("Product Details")} pageTitle={t("Vendors")} />
 
-          <ToastContainer />
+
 
           {selectedProduct && Object.keys(selectedProduct).length > 0 ? (
             <div className="d-flex flex-column gap-4">

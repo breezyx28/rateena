@@ -6,7 +6,7 @@ import {
   getNotificationsQuery,
   readNotificationQuery,
 } from "slices/thunks";
-import { toast } from "react-toastify";
+import Swal from "sweetalert2";
 import { errorToastManager } from "helpers/error-helper";
 
 interface NotificationState {
@@ -79,8 +79,15 @@ export const useNotificationsState = () => {
   // Handle notifications errors
   useEffect(() => {
     if (notificationError) {
-      // Use error toast manager to prevent duplicate toasts
-      errorToastManager.showError(notificationError, toast.error);
+      // Use SweetAlert2 to show error
+      Swal.fire({
+        icon: "error",
+        title: "Error!",
+        text:
+          notificationError?.message ||
+          "Failed to process notification. Please try again.",
+        confirmButtonText: "OK",
+      });
       setNotificationState({
         currentState: null,
         count: 0,
