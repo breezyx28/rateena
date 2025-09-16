@@ -5,11 +5,10 @@ import LayoutReducer from "./layouts/reducer";
 
 // Authentication
 import LoginReducer from "./auth/login/reducer";
-import AccountReducer from "./auth/register/reducer";
+
 import ForgetPasswordReducer from "./auth/forgetpwd/reducer";
 import ResetPasswordReducer from "./auth/reset-password/reducer";
 import VerifyOtpReducer from "./auth/verifyOtp/reducer";
-import ProfileReducer from "./auth/profile/reducer";
 
 import LoadingReducer from "./loadingSlice";
 
@@ -37,18 +36,13 @@ import ProductsReducer from "./products/reducer";
 // Advertisement
 import AdvertisementsReducer from "./advertisements/reducer";
 
-//Invoice
-import InvoiceReducer from "./invoice/reducer";
-
 const rootReducer = combineReducers({
   Loading: LoadingReducer,
   Layout: LayoutReducer,
   Login: LoginReducer,
-  Account: AccountReducer,
   VerifyOtp: VerifyOtpReducer,
   ForgetPassword: ForgetPasswordReducer,
   ResetPassword: ResetPasswordReducer,
-  Profile: ProfileReducer,
   Products: ProductsReducer,
   HomeDetails: HomeDetailsReducer,
   Vendors: VendorsReducer,
@@ -57,7 +51,6 @@ const rootReducer = combineReducers({
   Customers: CustomersReducer,
   Advertisements: AdvertisementsReducer,
   Notifications: NotificationsReducer,
-  Invoice: InvoiceReducer,
 });
 
 export default rootReducer;

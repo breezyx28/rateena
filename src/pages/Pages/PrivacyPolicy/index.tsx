@@ -4,7 +4,7 @@ import { Card, CardBody, Col, Container, Row } from "reactstrap";
 import BreadCrumb from "../../../Components/Common/BreadCrumb";
 
 const PrivacyPolicy = () => {
-  document.title = "Privacy Policy | Rateena - E-Shop Admin Panel";
+  document.title = "Privacy Policy | Rateena - E-Shop Vendor Panel";
   return (
     <React.Fragment>
       <div className="page-content">
