@@ -230,16 +230,6 @@ const VendorProductDetails = () => {
       cancelButtonText: t("Cancel"),
     }).then((result) => {
       if (result.isConfirmed) {
-        // Show loading
-        Swal.fire({
-          title: t(`${actionCapitalized}...`),
-          text: t(`Please wait while we ${action} the product`),
-          allowOutsideClick: false,
-          didOpen: () => {
-            Swal.showLoading();
-          },
-        });
-
         dispatch(toggleProductPublishQuery(productId));
       }
     });
@@ -262,16 +252,6 @@ const VendorProductDetails = () => {
       cancelButtonText: t("Cancel"),
     }).then((result) => {
       if (result.isConfirmed) {
-        // Show loading
-        Swal.fire({
-          title: t(`${actionCapitalized}...`),
-          text: t(`Please wait while we ${action} the product`),
-          allowOutsideClick: false,
-          didOpen: () => {
-            Swal.showLoading();
-          },
-        });
-
         dispatch(toggleProductApproveQuery(productId));
       }
     });

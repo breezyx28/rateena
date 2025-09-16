@@ -27,7 +27,6 @@ import {
   addProductImageMutation,
   deleteOptionMutation,
   deleteProductImageMutation,
-  deleteProductMutation,
   getProductQuery,
   toggleProductPublishQuery,
   toggleProductApproveQuery,
@@ -36,7 +35,6 @@ import Swal from "sweetalert2";
 
 const VendorProductDetails = () => {
   const { productId } = useParams<{ productId: string }>();
-  const navigate = useNavigate();
   const dispatch: any = useDispatch();
   const { t, i18n } = useTranslation();
 
@@ -76,6 +74,25 @@ const VendorProductDetails = () => {
     }
   }, [productData]);
 
+  React.useEffect(() => {
+    if (productUpdatedSuccess) {
+      Swal.fire({
+        icon: "success",
+        title: t("Success!"),
+        text: t("Product approval status updated successfully!"),
+        confirmButtonText: t("OK"),
+      });
+    }
+    if (productError) {
+      Swal.fire({
+        icon: "error",
+        title: t("Error!"),
+        text: t("Failed to update product approval status"),
+        confirmButtonText: t("OK"),
+      });
+    }
+  }, [productUpdatedSuccess, productError, t]);
+
   const optionGroups: string[] = Array.from(
     new Set(
       selectedProduct?.options
@@ -92,7 +109,11 @@ const VendorProductDetails = () => {
   const handleTogglePublish = async () => {
     const result = await Swal.fire({
       title: t("Are you sure?"),
-      text: t(`Do you want to ${selectedProduct?.published ? 'unpublish' : 'publish'} this product?`),
+      text: t(
+        `Do you want to ${
+          selectedProduct?.published ? "unpublish" : "publish"
+        } this product?`
+      ),
       icon: "question",
       showCancelButton: true,
       confirmButtonColor: "#3085d6",
@@ -124,7 +145,11 @@ const VendorProductDetails = () => {
   const handleToggleApprove = async () => {
     const result = await Swal.fire({
       title: t("Are you sure?"),
-      text: t(`Do you want to ${selectedProduct?.is_approved ? 'disapprove' : 'approve'} this product?`),
+      text: t(
+        `Do you want to ${
+          selectedProduct?.is_approved ? "disapprove" : "approve"
+        } this product?`
+      ),
       icon: "question",
       showCancelButton: true,
       confirmButtonColor: "#3085d6",
@@ -238,8 +263,6 @@ const VendorProductDetails = () => {
         <Container fluid>
           <BreadCrumb title={t("Product Details")} pageTitle={t("Vendors")} />
 
-
-
           {selectedProduct && Object.keys(selectedProduct).length > 0 ? (
             <div className="d-flex flex-column gap-4">
               {/* Alerts */}
@@ -277,27 +300,57 @@ const VendorProductDetails = () => {
                   <Badge color="info" className="fs-6">
                     {t("Company Profit:")} {selectedProduct?.companyProfit}%
                   </Badge>
-                  <Badge color={selectedProduct?.quantity <= 5 ? "danger" : "secondary"} className="fs-6">
-                    {t("Quantity")}: <span className="quantity-text fw-bold text-white bg-dark px-2 py-1 rounded">{selectedProduct?.quantity || 0}</span>
+                  <Badge
+                    color={
+                      selectedProduct?.quantity <= 5 ? "danger" : "secondary"
+                    }
+                    className="fs-6"
+                  >
+                    {t("Quantity")}:{" "}
+                    <span className="quantity-text fw-bold text-white bg-dark px-2 py-1 rounded">
+                      {selectedProduct?.quantity || 0}
+                    </span>
                   </Badge>
                   <Badge color="warning" className="fs-6">
                     {selectedProduct?.duration}
                   </Badge>
-                  <Button 
-                    color={selectedProduct?.is_approved ? "success" : "outline-success"} 
-                    size="sm" 
+                  <Button
+                    color={
+                      selectedProduct?.is_approved
+                        ? "success"
+                        : "outline-success"
+                    }
+                    size="sm"
                     onClick={handleToggleApprove}
                   >
-                    <i className={selectedProduct?.is_approved ? "ri-check-line" : "ri-close-line"}></i>
-                    {selectedProduct?.is_approved ? t("Approved") : t("Not Approved")}
+                    <i
+                      className={
+                        selectedProduct?.is_approved
+                          ? "ri-check-line"
+                          : "ri-close-line"
+                      }
+                    ></i>
+                    {selectedProduct?.is_approved
+                      ? t("Approved")
+                      : t("Not Approved")}
                   </Button>
-                  <Button 
-                    color={selectedProduct?.published ? "primary" : "outline-primary"} 
-                    size="sm" 
+                  <Button
+                    color={
+                      selectedProduct?.published ? "primary" : "outline-primary"
+                    }
+                    size="sm"
                     onClick={handleTogglePublish}
                   >
-                    <i className={selectedProduct?.published ? "ri-eye-line" : "ri-eye-off-line"}></i>
-                    {selectedProduct?.published ? t("Published") : t("Unpublished")}
+                    <i
+                      className={
+                        selectedProduct?.published
+                          ? "ri-eye-line"
+                          : "ri-eye-off-line"
+                      }
+                    ></i>
+                    {selectedProduct?.published
+                      ? t("Published")
+                      : t("Unpublished")}
                   </Button>
                   <Button color="primary" size="sm" onClick={toggleEditModal}>
                     <i className="ri-edit-line"></i>
@@ -332,11 +385,13 @@ const VendorProductDetails = () => {
                     <Card>
                       <CardBody>
                         <h5 className="card-title">{t("Product Options")}</h5>
-                        
+
                         {/* Groups */}
                         {optionGroups.length > 0 && (
                           <div className="mb-4">
-                            <h6 className="text-muted mb-3">{t("Product Characteristics")}</h6>
+                            <h6 className="text-muted mb-3">
+                              {t("Product Characteristics")}
+                            </h6>
                             {optionGroups.map((group: string) => (
                               <div
                                 key={group}
@@ -365,7 +420,9 @@ const VendorProductDetails = () => {
                                           <i
                                             className="ri-close-circle-line cursor-pointer"
                                             onClick={() =>
-                                              handleDeleteOption(option.option_id)
+                                              handleDeleteOption(
+                                                option.option_id
+                                              )
                                             }
                                           ></i>
                                         </Badge>
@@ -377,7 +434,9 @@ const VendorProductDetails = () => {
                                     size="sm"
                                     onClick={() =>
                                       setActiveOptionGroup(
-                                        activeOptionGroup === group ? null : group
+                                        activeOptionGroup === group
+                                          ? null
+                                          : group
                                       )
                                     }
                                   >
@@ -400,7 +459,11 @@ const VendorProductDetails = () => {
                                         required
                                       />
                                     </div>
-                                    <Button type="submit" color="primary" size="sm">
+                                    <Button
+                                      type="submit"
+                                      color="primary"
+                                      size="sm"
+                                    >
                                       {t("Add")}
                                     </Button>
                                   </Form>
@@ -412,7 +475,9 @@ const VendorProductDetails = () => {
 
                         {/* Addons */}
                         <div className="mb-4">
-                          <h6 className="text-muted mb-3">{t("Product Addons")}</h6>
+                          <h6 className="text-muted mb-3">
+                            {t("Product Addons")}
+                          </h6>
                           <div className="border border-dashed rounded p-3">
                             <div className="d-flex flex-wrap align-items-start gap-2 mb-3">
                               {selectedProduct?.options
@@ -430,7 +495,10 @@ const VendorProductDetails = () => {
                                       className="d-flex align-items-center gap-1"
                                     >
                                       <span>{option.name}</span>
-                                      <Badge color="light" className="text-dark">
+                                      <Badge
+                                        color="light"
+                                        className="text-dark"
+                                      >
                                         {option.fee} AED
                                       </Badge>
                                       <i
