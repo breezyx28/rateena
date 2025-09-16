@@ -6,7 +6,7 @@ export * from "./layouts/thunk";
 export * from "./auth/login/thunk";
 
 export * from "./auth/forgetpwd/thunk";
-
+export * from "./auth/profile/thunk";
 export * from "./auth/reset-password/thunk";
 export * from "./auth/verifyOtp/thunk";
 

@@ -9,6 +9,7 @@ import LoginReducer from "./auth/login/reducer";
 import ForgetPasswordReducer from "./auth/forgetpwd/reducer";
 import ResetPasswordReducer from "./auth/reset-password/reducer";
 import VerifyOtpReducer from "./auth/verifyOtp/reducer";
+import ProfileReducer from "./auth/profile/reducer";
 
 import LoadingReducer from "./loadingSlice";
 
@@ -43,6 +44,7 @@ const rootReducer = combineReducers({
   VerifyOtp: VerifyOtpReducer,
   ForgetPassword: ForgetPasswordReducer,
   ResetPassword: ResetPasswordReducer,
+  Profile: ProfileReducer,
   Products: ProductsReducer,
   HomeDetails: HomeDetailsReducer,
   Vendors: VendorsReducer,

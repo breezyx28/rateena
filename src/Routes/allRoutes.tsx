@@ -6,6 +6,9 @@ import Login from "../pages/Authentication/Login";
 import ForgetPasswordPage from "../pages/Authentication/ForgetPassword";
 import Logout from "../pages/Authentication/Logout";
 
+// // User Profile
+import UserProfile from "../pages/Authentication/user-profile";
+
 import ResetPassword from "pages/Authentication/ResetPassword";
 import VerifyUser from "pages/Authentication/VerifyUser";
 import Alt401 from "pages/AuthenticationInner/Errors/Alt401";
@@ -42,6 +45,9 @@ const authProtectedRoutes = [
   },
   { path: "/dashboard/advertisements", component: <Advertisements /> },
   { path: "/index", component: <Dashboard /> },
+
+  //User Profile
+  { path: "/profile", component: <UserProfile /> },
 
   // this route should be at the end of all other routes
   // eslint-disable-next-line react/display-name
