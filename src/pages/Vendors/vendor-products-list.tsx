@@ -5,18 +5,19 @@ import { useTranslation } from "react-i18next";
 import TableContainer from "../../Components/Common/TableContainerReactTable";
 import { imgURL } from "services/api-handles";
 import EditProductModal from "./modals/edit-product-modal";
-import DeleteConfirmationModal from "./modals/delete-confirmation-modal";
+
 import {
+  deleteVendorProductMutation,
   toggleProductApproveQuery,
   toggleProductPublishQuery,
 } from "slices/thunks";
 import { useDispatch } from "react-redux";
+import Swal from "sweetalert2";
 
 const VendorProductsList = ({ data }: { data: any[] }) => {
   const { t } = useTranslation();
   const [filter, setFilter] = useState<any[]>([]);
   const [editModal, setEditModal] = useState(false);
-  const [deleteModal, setDeleteModal] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<any>({});
   const [approvalFilter, setApprovalFilter] = useState("all");
   const [publishFilter, setPublishFilter] = useState("all");
@@ -49,7 +50,6 @@ const VendorProductsList = ({ data }: { data: any[] }) => {
   }, [data, approvalFilter, publishFilter]);
 
   const toggleEditModal = () => setEditModal(!editModal);
-  const toggleDeleteModal = () => setDeleteModal(!deleteModal);
 
   const handleEdit = (product: any) => {
     setSelectedProduct(product);
@@ -57,12 +57,50 @@ const VendorProductsList = ({ data }: { data: any[] }) => {
   };
 
   const handleDelete = (product: any) => {
-    setSelectedProduct(product);
-    toggleDeleteModal();
-  };
+    Swal.fire({
+      title: t("Are you sure?"),
+      text: t("You won't be able to revert this!"),
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#d33",
+      cancelButtonColor: "#3085d6",
+      confirmButtonText: t("Yes, delete it!"),
+      cancelButtonText: t("Cancel"),
+    }).then((result) => {
+      if (result.isConfirmed) {
+        Swal.fire({
+          title: t("Deleting..."),
+          text: t("Please wait while we delete the product"),
+          allowOutsideClick: false,
+          didOpen: () => {
+            Swal.showLoading();
+          },
+        });
 
-  const confirmDelete = () => {
-    toggleDeleteModal();
+        dispatch(
+          deleteVendorProductMutation(
+            product.productId,
+            product.vendor.vendor.vendorId
+          )
+        )
+          .then(() => {
+            Swal.fire({
+              icon: "success",
+              title: t("Deleted!"),
+              text: t("Product has been deleted successfully."),
+              confirmButtonText: t("OK"),
+            });
+          })
+          .catch(() => {
+            Swal.fire({
+              icon: "error",
+              title: t("Error!"),
+              text: t("Failed to delete product"),
+              confirmButtonText: t("OK"),
+            });
+          });
+      }
+    });
   };
 
   const handleTogglePublish = (product: any) => {
@@ -273,15 +311,6 @@ const VendorProductsList = ({ data }: { data: any[] }) => {
           modal_standard={editModal}
           tog_standard={toggleEditModal}
           productData={selectedProduct}
-        />
-      ) : null}
-
-      {data?.length > 0 ? (
-        <DeleteConfirmationModal
-          modal_standard={deleteModal}
-          tog_standard={toggleDeleteModal}
-          onConfirm={confirmDelete}
-          productName={selectedProduct?.name || ""}
         />
       ) : null}
     </React.Fragment>

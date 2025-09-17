@@ -31,6 +31,7 @@ import {
   clearVendorError,
   clearVendorSuccess,
 } from "./reducer";
+import { deleteProduct } from "services/products";
 
 export const vendorsList = () => async (dispatch: any) => {
   try {
@@ -102,7 +103,7 @@ export const getVendorUsers = (vendorId: any) => async (dispatch: any) => {
   } catch (error: any) {
     console.log("errors: ", error);
 
-    dispatch(vendorsError(error));
+    // dispatch(vendorsError(error));
   }
 };
 
@@ -211,9 +212,9 @@ export const getVendorCategoriesQuery =
         dispatch(vendorCategoriesSuccess(data));
       }
     } catch (error: any) {
-      console.log("errors: ", error);
+      console.log("vendor-categories-errors: ", error);
 
-      dispatch(vendorsError(error));
+      // dispatch(vendorsError(error));
     }
   };
 
@@ -318,9 +319,9 @@ export const getVendorProductsQuery =
         dispatch(vendorProductsSuccess(data));
       }
     } catch (error: any) {
-      console.log("getVendorProductsQuery-errors: ", error);
+      console.log("vendor-products-errors: ", error);
 
-      dispatch(vendorsError(error));
+      // dispatch(vendorsError(error));
     }
   };
 
@@ -335,6 +336,25 @@ export const addVendorProductMutation =
 
       if (data) {
         dispatch(vendorProductAdded());
+        dispatch(getVendorProductsQuery(vendorId));
+      }
+    } catch (error: any) {
+      console.log("errors: ", error);
+
+      dispatch(vendorsError(error));
+    }
+  };
+
+export const deleteVendorProductMutation =
+  (productId: any, vendorId: any) => async (dispatch: any) => {
+    try {
+      let response;
+
+      response = deleteProduct(productId);
+
+      const data = await response;
+
+      if (data) {
         dispatch(getVendorProductsQuery(vendorId));
       }
     } catch (error: any) {

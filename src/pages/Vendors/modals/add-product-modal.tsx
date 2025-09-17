@@ -62,10 +62,27 @@ const AddProductModal = ({
   React.useEffect(() => {
     if (vendorProductSuccess) {
       console.log("vendorProductSuccess: ", vendorProductSuccess);
-      tog_standard();
+      Swal.fire({
+        title: "Your Redirect To Products Page...",
+        icon: "success",
+        timer: 2000,
+        showConfirmButton: false,
+      }).then(() => {
+        dispatch(clearVendorSuccess());
+        setSelectedFiles([]);
+        tog_standard();
+      });
     }
     if (vendorError?.message) {
       console.log("vendorError: ", vendorError);
+      Swal.fire({
+        title: t("Error Adding Product"),
+        icon: "error",
+        timer: 2000,
+        showConfirmButton: false,
+      }).then(() => {
+        dispatch(clearVendorError());
+      });
     }
     if (vendorCategories) {
       console.log("vendorCategories: ", vendorCategories);
@@ -136,32 +153,12 @@ const AddProductModal = ({
               id="add-vendor-product-form"
             >
               {vendorProductSuccess && !vendorError?.message ? (
-                <>
-                  {Swal.fire({
-                    title: "Your Redirect To Login Page...",
-                    icon: "success",
-                    timer: 2000,
-                    showConfirmButton: false
-                  }).then(() => {
-                    dispatch(clearVendorSuccess());
-                  })}
-                  <Alert color="success">
-                    {t("Product has been added successfully")}
-                  </Alert>
-                </>
+                <Alert color="success">
+                  {t("Product has been added successfully")}
+                </Alert>
               ) : null}
               {vendorError?.message && !vendorProductSuccess ? (
-                <>
-                  {Swal.fire({
-                    title: t("Error Adding Product"),
-                    icon: "error",
-                    timer: 2000,
-                    showConfirmButton: false
-                  }).then(() => {
-                    dispatch(clearVendorSuccess());
-                  })}
-                  <Alert color="danger">{vendorError?.message}</Alert>
-                </>
+                <Alert color="danger">{vendorError?.message}</Alert>
               ) : null}
               <Row className="gy-4">
                 <Col xxl={4} md={6}>
@@ -318,8 +315,16 @@ const AddProductModal = ({
                         readOnly
                         disabled
                         value={
-                          validation.values.price && validation.values.company_profit
-                            ? (parseFloat(validation.values.price) + (parseFloat(validation.values.price) * parseFloat(validation.values.company_profit) / 100)).toFixed(2)
+                          validation.values.price &&
+                          validation.values.company_profit
+                            ? (
+                                parseFloat(validation.values.price) +
+                                (parseFloat(validation.values.price) *
+                                  parseFloat(
+                                    validation.values.company_profit
+                                  )) /
+                                  100
+                              ).toFixed(2)
                             : validation.values.price || "0.00"
                         }
                       />

@@ -16,6 +16,7 @@ import {
 } from "reactstrap";
 import { useDispatch, useSelector } from "react-redux";
 import { createSelector } from "reselect";
+import { toast, ToastContainer } from "react-toastify";
 import { useTranslation } from "react-i18next";
 import Swal from "sweetalert2";
 import BreadCrumb from "../../Components/Common/BreadCrumb";
@@ -230,6 +231,16 @@ const VendorProductDetails = () => {
       cancelButtonText: t("Cancel"),
     }).then((result) => {
       if (result.isConfirmed) {
+        // Show loading
+        Swal.fire({
+          title: t(`${actionCapitalized}...`),
+          text: t(`Please wait while we ${action} the product`),
+          allowOutsideClick: false,
+          didOpen: () => {
+            Swal.showLoading();
+          },
+        });
+
         dispatch(toggleProductPublishQuery(productId));
       }
     });
@@ -252,6 +263,16 @@ const VendorProductDetails = () => {
       cancelButtonText: t("Cancel"),
     }).then((result) => {
       if (result.isConfirmed) {
+        // Show loading
+        Swal.fire({
+          title: t(`${actionCapitalized}...`),
+          text: t(`Please wait while we ${action} the product`),
+          allowOutsideClick: false,
+          didOpen: () => {
+            Swal.showLoading();
+          },
+        });
+
         dispatch(toggleProductApproveQuery(productId));
       }
     });
@@ -439,6 +460,9 @@ const VendorProductDetails = () => {
       <div className="page-content">
         <Container fluid>
           <BreadCrumb title={t("Product Details")} pageTitle={t("Vendors")} />
+
+          <ToastContainer />
+
           {selectedProduct ? (
             <div className="d-flex flex-column gap-4">
               {/* Alerts */}
