@@ -29,7 +29,7 @@ export const getProductsQuery = () => async (dispatch: any) => {
       dispatch(productsListSuccess(data));
     }
   } catch (error: any) {
-    console.log("errors: ", error);
+    console.log("getProductsQuery-errors: ", error);
 
     dispatch(productsListError(error));
   }
@@ -47,7 +47,7 @@ export const getProductQuery = (productId: any) => async (dispatch: any) => {
       dispatch(productSuccess(data));
     }
   } catch (error: any) {
-    console.log("errors: ", error);
+    console.log("getProductQuery-errors: ", error);
 
     dispatch(productsListError(error));
   }
@@ -64,7 +64,7 @@ export const toggleProductPublishQuery =
         dispatch(getProductQuery(productId));
       }
     } catch (error: any) {
-      console.log("errors: ", error);
+      console.log("toggleProductPublishQuery-errors: ", error);
       dispatch(productsListError(error));
     }
   };
@@ -80,7 +80,7 @@ export const toggleProductApproveQuery =
         dispatch(getProductQuery(productId));
       }
     } catch (error: any) {
-      console.log("errors: ", error);
+      console.log("toggleProductApproveQuery-errors: ", error);
       dispatch(productsListError(error));
     }
   };
@@ -99,7 +99,7 @@ export const addProductImageMutation =
         dispatch(getProductQuery(productId));
       }
     } catch (error: any) {
-      console.log("errors: ", error);
+      console.log("addProductImageMutation-errors: ", error);
 
       dispatch(productsError(error));
     }
@@ -119,7 +119,7 @@ export const deleteProductMutation =
         dispatch(getProductQuery(productId));
       }
     } catch (error: any) {
-      console.log("errors: ", error);
+      console.log("deleteProductMutation-errors: ", error);
 
       dispatch(productsError(error));
     }
@@ -139,7 +139,7 @@ export const deleteProductImageMutation =
         dispatch(getProductQuery(productId));
       }
     } catch (error: any) {
-      console.log("errors: ", error);
+      console.log("deleteProductImageMutation-errors: ", error);
 
       dispatch(productsError(error));
     }
@@ -160,7 +160,7 @@ export const addOptionMutation = (body: any) => async (dispatch: any) => {
       dispatch(getProductQuery(body.productId));
     }
   } catch (error: any) {
-    console.log("errors: ", error);
+    console.log("addOptionMutation-errors: ", error);
 
     dispatch(productsError(error));
   }
@@ -180,7 +180,7 @@ export const deleteOptionMutation =
         dispatch(getProductQuery(productId));
       }
     } catch (error: any) {
-      console.log("errors: ", error);
+      console.log("deleteOptionMutation-errors: ", error);
 
       dispatch(productsError(error));
     }

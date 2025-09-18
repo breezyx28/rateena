@@ -15,7 +15,7 @@ import {
 } from "reactstrap";
 import Swal from "sweetalert2";
 import { useDispatch, useSelector } from "react-redux";
-import { clearVendorSuccess, clearVendorError } from "slices/vendors/reducer";
+import { resetVendorStates, clearVendorError } from "slices/vendors/reducer";
 import { useParams } from "react-router-dom";
 import { createSelector } from "reselect";
 import { UpdateVendorProductvalidationSchema } from "../validation/product-validation";
@@ -61,27 +61,28 @@ const EditProductModal = ({
   const selectLayoutState = (state: any) => state.Vendors;
   const selectLayoutProperties = createSelector(selectLayoutState, (state) => ({
     vendorError: state.vendorError,
-    vendorProductSuccess: state.vendorProductSuccess,
+    vendorProductUpdateSuccess: state.vendorProductUpdateSuccess,
     vendorCategories: state.vendorCategories,
     error: state.error,
   }));
 
-  const { vendorError, vendorProductSuccess, vendorCategories } = useSelector(
-    selectLayoutProperties
-  );
+  const { vendorError, vendorProductUpdateSuccess, vendorCategories } =
+    useSelector(selectLayoutProperties);
 
   React.useEffect(() => {
-    if (vendorProductSuccess) {
-      console.log("vendorProductSuccess: ", vendorProductSuccess);
+    if (vendorProductUpdateSuccess) {
+      console.log("vendorProductUpdateSuccess: ", vendorProductUpdateSuccess);
       Swal.fire({
         icon: "success",
         title: t("Success!"),
         text: t("Product has been updated successfully"),
         confirmButtonText: t("OK"),
       }).then(() => {
-        dispatch(clearVendorSuccess());
+        dispatch(resetVendorStates());
       });
-      dispatch(getProductQuery(productData.productId));
+      if (productData?.productId) {
+        dispatch(getProductQuery(productData.productId));
+      }
       tog_standard();
     }
     if (vendorError?.errors) {
@@ -92,11 +93,11 @@ const EditProductModal = ({
         text: t("Error updating product"),
         confirmButtonText: t("OK"),
       }).then(() => {
-        dispatch(clearVendorSuccess());
+        dispatch(resetVendorStates());
       });
       validation.setErrors(vendorError);
     }
-  }, [vendorError, vendorProductSuccess, vendorCategories]);
+  }, [vendorError, vendorProductUpdateSuccess, vendorCategories]);
 
   const validation: any = useFormik({
     enableReinitialize: true,
@@ -136,7 +137,7 @@ const EditProductModal = ({
         formData.append(`productImages[${index}]`, file);
       });
 
-      dispatch(addVendorProductMutation(formData, vendorId));
+      dispatch(addVendorProductMutation(formData, vendorId, "update"));
     },
   });
 
@@ -170,12 +171,12 @@ const EditProductModal = ({
               }}
               id="edit-vendor-product-form"
             >
-              {vendorProductSuccess && !vendorError?.message && (
+              {vendorProductUpdateSuccess && !vendorError?.message && (
                 <Alert color="success">
                   {t("Product has been updated successfully")}
                 </Alert>
               )}
-              {vendorError?.message && !vendorProductSuccess && (
+              {vendorError?.message && !vendorProductUpdateSuccess && (
                 <Alert color="danger">{vendorError?.message}</Alert>
               )}
               <Row className="gy-3">
@@ -359,8 +360,14 @@ const EditProductModal = ({
                         readOnly
                         disabled
                         value={
-                          validation.values.price && validation.values.companyProfit
-                            ? (parseFloat(validation.values.price) + (parseFloat(validation.values.price) * parseFloat(validation.values.companyProfit) / 100)).toFixed(2)
+                          validation.values.price &&
+                          validation.values.companyProfit
+                            ? (
+                                parseFloat(validation.values.price) +
+                                (parseFloat(validation.values.price) *
+                                  parseFloat(validation.values.companyProfit)) /
+                                  100
+                              ).toFixed(2)
                             : validation.values.price || "0.00"
                         }
                       />

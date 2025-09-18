@@ -25,13 +25,9 @@ const VendorProducts = () => {
   const selectLayoutProperties = createSelector(selectLayoutState, (state) => ({
     vendorError: state.vendorError,
     vendorProducts: state.vendorProducts,
-    vendorProductsSuccess: state.vendorProductsSuccess,
-    error: state.error,
   }));
   // Inside your component
-  const { vendorError, vendorProducts, vendorProductsSuccess } = useSelector(
-    selectLayoutProperties
-  );
+  const { vendorError, vendorProducts } = useSelector(selectLayoutProperties);
 
   React.useEffect(() => {
     if (vendorId) {
@@ -44,14 +40,10 @@ const VendorProducts = () => {
       console.log("vendorProducts: ", vendorProducts.list);
       setVendorProductsData(vendorProducts?.list);
     }
-    if (vendorProductsSuccess) {
-      console.log("vendorProductsSuccess: ", vendorProductsSuccess);
-      tog_standard();
-    }
     if (vendorError?.message || vendorError?.errors) {
       console.log("vendorError: ", vendorError);
     }
-  }, [vendorProducts, vendorError, vendorProductsSuccess]);
+  }, [vendorProducts, vendorError]);
 
   return (
     <React.Fragment>

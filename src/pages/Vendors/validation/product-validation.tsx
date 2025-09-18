@@ -6,7 +6,7 @@ export const vendorProductInitialValues = {
   duration: "",
   company_profit: "",
   description: "",
-  isFood: null,
+  isFood: false,
   ar_description: "",
   quantity: "",
   price: "",

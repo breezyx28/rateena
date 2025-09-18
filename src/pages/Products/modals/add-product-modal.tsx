@@ -101,7 +101,7 @@ const AddProductModal = ({
         formData.append(`productImages[${index}]`, file);
       });
 
-      dispatch(addVendorProductMutation(formData, vendorId));
+      dispatch(addVendorProductMutation(formData, vendorId, "add"));
     },
   });
   return (
@@ -140,7 +140,7 @@ const AddProductModal = ({
                     title: "Your Redirect To Login Page...",
                     icon: "success",
                     timer: 2000,
-                    showConfirmButton: false
+                    showConfirmButton: false,
                   })}
                   <Alert color="success">
                     {t("Product has been added successfully")}
@@ -153,7 +153,7 @@ const AddProductModal = ({
                     title: t("Error Adding Product"),
                     icon: "error",
                     timer: 2000,
-                    showConfirmButton: false
+                    showConfirmButton: false,
                   })}
                   <Alert color="danger">{vendorError?.message}</Alert>
                 </>
@@ -313,8 +313,16 @@ const AddProductModal = ({
                         readOnly
                         disabled
                         value={
-                          validation.values.price && validation.values.company_profit
-                            ? (parseFloat(validation.values.price) + (parseFloat(validation.values.price) * parseFloat(validation.values.company_profit) / 100)).toFixed(2)
+                          validation.values.price &&
+                          validation.values.company_profit
+                            ? (
+                                parseFloat(validation.values.price) +
+                                (parseFloat(validation.values.price) *
+                                  parseFloat(
+                                    validation.values.company_profit
+                                  )) /
+                                  100
+                              ).toFixed(2)
                             : validation.values.price || "0.00"
                         }
                       />

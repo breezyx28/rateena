@@ -29,7 +29,8 @@ import {
   vendorProductAdded,
   vendorUpdatedSuccess,
   clearVendorError,
-  clearVendorSuccess,
+  resetVendorStates,
+  vendorProductUpdated,
 } from "./reducer";
 import { deleteProduct } from "services/products";
 
@@ -326,7 +327,8 @@ export const getVendorProductsQuery =
   };
 
 export const addVendorProductMutation =
-  (body: any, vendorId: any) => async (dispatch: any) => {
+  (body: any, vendorId: any, action: "update" | "add" | null | undefined) =>
+  async (dispatch: any) => {
     try {
       let response;
 
@@ -335,11 +337,15 @@ export const addVendorProductMutation =
       const data = await response;
 
       if (data) {
-        dispatch(vendorProductAdded());
+        if (action === "update") {
+          dispatch(vendorProductUpdated());
+        } else {
+          dispatch(vendorProductAdded());
+        }
         dispatch(getVendorProductsQuery(vendorId));
       }
     } catch (error: any) {
-      console.log("errors: ", error);
+      console.log("addVendorProductMutation-errors: ", error);
 
       dispatch(vendorsError(error));
     }
@@ -358,7 +364,7 @@ export const deleteVendorProductMutation =
         dispatch(getVendorProductsQuery(vendorId));
       }
     } catch (error: any) {
-      console.log("errors: ", error);
+      console.log("deleteVendorProductMutation-errors: ", error);
 
       dispatch(vendorsError(error));
     }

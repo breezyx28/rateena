@@ -18,7 +18,7 @@ import Flatpickr from "react-flatpickr";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { addVendorMutation } from "slices/thunks";
-import { clearVendorError, clearVendorSuccess } from "slices/vendors/reducer";
+import { clearVendorError, resetVendorStates } from "slices/vendors/reducer";
 import Swal from "sweetalert2";
 import { createSelector } from "reselect";
 import VendorMap from "./vendor-map";
@@ -76,7 +76,7 @@ const VendorAdd = () => {
           cancelButtonColor: "#6c757d",
         }).then((result) => {
           alertShownRef.current.success = false;
-          dispatch(clearVendorSuccess());
+          dispatch(resetVendorStates());
           if (result.isConfirmed) {
             navigate("/dashboard/vendors");
           }

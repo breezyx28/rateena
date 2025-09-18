@@ -26,7 +26,7 @@ import {
   deleteVendorUserMutation,
   getVendorUsers,
 } from "slices/thunks";
-import { clearVendorSuccess } from "slices/vendors/reducer";
+import { resetVendorStates } from "slices/vendors/reducer";
 import * as Yup from "yup";
 import { useFormik } from "formik";
 import Swal from "sweetalert2";
@@ -195,7 +195,7 @@ const VendorUsers = () => {
 
       // Clear the success state after handling it
       setTimeout(() => {
-        dispatch(clearVendorSuccess());
+        dispatch(resetVendorStates());
       }, 100);
     }
   }, [
@@ -260,7 +260,9 @@ const VendorUsers = () => {
           >
             {vendorUserAddedSuccess && !vendorError?.message ? (
               <>
-                <Alert color="success">{t("Vendor User Successfully Added")}</Alert>
+                <Alert color="success">
+                  {t("Vendor User Successfully Added")}
+                </Alert>
               </>
             ) : null}
             {vendorError && !vendorUserAddedSuccess ? (
@@ -409,7 +411,9 @@ const VendorUsers = () => {
           >
             {vendorUserAddedSuccess && !vendorError?.message ? (
               <>
-                <Alert color="success">{t("Vendor User Successfully Updated")}</Alert>
+                <Alert color="success">
+                  {t("Vendor User Successfully Updated")}
+                </Alert>
               </>
             ) : null}
             {vendorError && !vendorUserAddedSuccess ? (
@@ -572,7 +576,9 @@ const VendorUsers = () => {
         </ModalHeader>
         <ModalBody>
           <p>
-            {t("Are you sure you want to delete this vendor user? This action cannot be undone.")}
+            {t(
+              "Are you sure you want to delete this vendor user? This action cannot be undone."
+            )}
           </p>
         </ModalBody>
         <div className="modal-footer">

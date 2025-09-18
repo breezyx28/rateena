@@ -20,7 +20,7 @@ import {
   toggleVendorStateQuery,
   deleteVendorMutation,
 } from "slices/thunks";
-import { clearVendorSuccess, clearVendorError } from "slices/vendors/reducer";
+import { resetVendorStates, clearVendorError } from "slices/vendors/reducer";
 import { useTranslation } from "react-i18next";
 import { imgURL } from "services/api-handles";
 import DeleteConfirmationModal from "./vendors-modals/delete-confirmation-modal";
@@ -176,7 +176,9 @@ const VendorsList = () => {
           Swal.fire({
             icon: "success",
             title: t("Success!"),
-            text: `${t("Location for")} ${vendorName} ${t("copied to clipboard!")}`,
+            text: `${t("Location for")} ${vendorName} ${t(
+              "copied to clipboard!"
+            )}`,
             confirmButtonText: t("OK"),
           });
         })
@@ -193,7 +195,10 @@ const VendorsList = () => {
   };
 
   // Toggle vendor working status
-  const toggleVendorStatus = async (vendorId: string, currentStatus: boolean) => {
+  const toggleVendorStatus = async (
+    vendorId: string,
+    currentStatus: boolean
+  ) => {
     const result = await Swal.fire({
       title: t("Are you sure?"),
       text: t("Do you want to change this vendor's status?"),
@@ -231,7 +236,7 @@ const VendorsList = () => {
           text: t("Vendor status updated successfully!"),
           confirmButtonText: t("OK"),
         }).then(() => {
-          dispatch(clearVendorSuccess());
+          dispatch(resetVendorStates());
         });
       }, 1000);
     }
@@ -279,7 +284,7 @@ const VendorsList = () => {
           } ${t("deleted successfully!")}`,
           confirmButtonText: t("OK"),
         }).then(() => {
-          dispatch(clearVendorSuccess());
+          dispatch(resetVendorStates());
         });
       }, 1000);
     }
@@ -315,10 +320,12 @@ const VendorsList = () => {
       Swal.fire({
         icon: "error",
         title: t("Error!"),
-        text: vendorsListError?.message || t("An error occurred while loading vendors."),
+        text:
+          vendorsListError?.message ||
+          t("An error occurred while loading vendors."),
         confirmButtonText: t("OK"),
       }).then(() => {
-        dispatch(clearVendorSuccess());
+        dispatch(resetVendorStates());
       });
       setVendorState({
         currentState: null,

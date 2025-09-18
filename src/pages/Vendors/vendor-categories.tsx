@@ -28,7 +28,7 @@ import {
   toggleVendorCategoryQuery,
   getVendorCategoriesQuery,
 } from "slices/thunks";
-import { clearVendorSuccess } from "slices/vendors/reducer";
+import { resetVendorStates } from "slices/vendors/reducer";
 import * as Yup from "yup";
 import { useFormik } from "formik";
 import Swal from "sweetalert2";
@@ -234,7 +234,7 @@ const VendorCategories = () => {
 
       // Clear the success state after handling it
       setTimeout(() => {
-        dispatch(clearVendorSuccess());
+        dispatch(resetVendorStates());
       }, 100);
     }
   }, [

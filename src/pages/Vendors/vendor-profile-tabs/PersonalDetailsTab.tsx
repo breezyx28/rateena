@@ -8,7 +8,7 @@ import Swal from "sweetalert2";
 import { useTranslation } from "react-i18next";
 import { addVendorMutation } from "slices/thunks";
 import { mapServerErrorsToFormik } from "../../../helpers/error-helper";
-import { clearVendorSuccess, clearVendorError } from "slices/vendors/reducer";
+import { resetVendorStates, clearVendorError } from "slices/vendors/reducer";
 import VendorUploadFiles from "../vendor-upload-files";
 import VendorMap from "../vendor-map";
 import {
@@ -229,7 +229,7 @@ const PersonalDetailsTab: React.FC<PersonalDetailsTabProps> = ({
             confirmButtonText: t("OK"),
           }).then(() => {
             alertShownRef.current.success = false;
-            dispatch(clearVendorSuccess());
+            dispatch(resetVendorStates());
           });
         }
       }

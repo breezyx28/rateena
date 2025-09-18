@@ -130,7 +130,7 @@ const EditProductModal = ({
         formData.append(`productImages[${index}]`, file);
       });
 
-      dispatch(addVendorProductMutation(formData, vendorId));
+      dispatch(addVendorProductMutation(formData, vendorId, "update"));
     },
   });
 
@@ -353,8 +353,14 @@ const EditProductModal = ({
                         readOnly
                         disabled
                         value={
-                          validation.values.price && validation.values.companyProfit
-                            ? (parseFloat(validation.values.price) + (parseFloat(validation.values.price) * parseFloat(validation.values.companyProfit) / 100)).toFixed(2)
+                          validation.values.price &&
+                          validation.values.companyProfit
+                            ? (
+                                parseFloat(validation.values.price) +
+                                (parseFloat(validation.values.price) *
+                                  parseFloat(validation.values.companyProfit)) /
+                                  100
+                              ).toFixed(2)
                             : validation.values.price || "0.00"
                         }
                       />

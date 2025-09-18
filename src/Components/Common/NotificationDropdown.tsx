@@ -63,8 +63,6 @@ const NotificationDropdown = () => {
     }
   }, [notificationReaded]);
 
-  console.log("notificationInfo: ", notificationInfo);
-
   return (
     <React.Fragment>
       <Dropdown

@@ -16,7 +16,7 @@ import {
 import Swal from "sweetalert2";
 import { addVendorProductMutation } from "slices/thunks";
 import { useDispatch, useSelector } from "react-redux";
-import { clearVendorSuccess, clearVendorError } from "slices/vendors/reducer";
+import { clearVendorError } from "slices/vendors/reducer";
 import { useParams } from "react-router-dom";
 import { createSelector } from "reselect";
 import {
@@ -61,20 +61,18 @@ const AddProductModal = ({
 
   React.useEffect(() => {
     if (vendorProductSuccess) {
-      console.log("vendorProductSuccess: ", vendorProductSuccess);
       Swal.fire({
         title: "Your Redirect To Products Page...",
         icon: "success",
         timer: 2000,
         showConfirmButton: false,
       }).then(() => {
-        dispatch(clearVendorSuccess());
         setSelectedFiles([]);
         tog_standard();
+        // dispatch(resetVendorStates());
       });
     }
     if (vendorError?.message) {
-      console.log("vendorError: ", vendorError);
       Swal.fire({
         title: t("Error Adding Product"),
         icon: "error",
@@ -83,9 +81,6 @@ const AddProductModal = ({
       }).then(() => {
         dispatch(clearVendorError());
       });
-    }
-    if (vendorCategories) {
-      console.log("vendorCategories: ", vendorCategories);
     }
   }, [vendorError, vendorProductSuccess, vendorCategories]);
 
@@ -98,8 +93,6 @@ const AddProductModal = ({
     validationSchema: VendorProductvalidationSchema(),
     onSubmit: (values) => {
       const formData = new FormData();
-      console.log("form-values: ", values);
-
       const productPayload = {
         vendor_id: Number(vendorId),
         ...values,
@@ -111,15 +104,13 @@ const AddProductModal = ({
             : values.options,
       };
 
-      console.log("productPayload:  ", productPayload);
-
       formData.append("productPayload", JSON.stringify(productPayload));
 
       selectedFiles.forEach((file: File, index: number) => {
         formData.append(`productImages[${index}]`, file);
       });
 
-      dispatch(addVendorProductMutation(formData, vendorId));
+      dispatch(addVendorProductMutation(formData, vendorId, "add"));
     },
   });
   return (

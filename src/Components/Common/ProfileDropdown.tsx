@@ -30,8 +30,6 @@ const ProfileDropdown = () => {
     const authUSer: any = sessionStorage.getItem("authUser");
     if (authUSer) {
       const obj: any = JSON.parse(authUSer);
-      console.log("user-data: ", obj);
-
       setUserName(obj.user.user.isSuperAdmin ? "Admin" : "Vendor");
     }
   }, [userName, user]);

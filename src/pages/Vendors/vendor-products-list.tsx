@@ -306,7 +306,7 @@ const VendorProductsList = ({ data }: { data: any[] }) => {
         SearchPlaceholder={t("Search...")}
       />
 
-      {data?.length > 0 ? (
+      {editModal ? (
         <EditProductModal
           modal_standard={editModal}
           tog_standard={toggleEditModal}

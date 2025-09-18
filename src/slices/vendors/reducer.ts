@@ -8,6 +8,8 @@ export const initialState = {
   vendorUserAddedSuccess: false,
   vendorCategoriesSuccess: false,
   vendorProductSuccess: false,
+  vendorProductUpdateSuccess: false,
+  vendorProductUpdateError: false,
   vendorsListSuccess: null,
   vendorProducts: null,
   vendorUsers: null,
@@ -45,6 +47,11 @@ const vendorsSlice = createSlice({
       state.success = true;
       state.error = false;
     },
+    vendorProductUpdated(state) {
+      state.vendorProductUpdateSuccess = true;
+      state.success = true;
+      state.error = false;
+    },
     vendorsListSuccess(state, action) {
       state.vendorsListSuccess = action.payload;
       state.success = true;
@@ -79,12 +86,14 @@ const vendorsSlice = createSlice({
       state.vendorError = null;
       state.error = false;
     },
-    clearVendorSuccess(state) {
+    resetVendorStates(state) {
       state.vendorUserAddedSuccess = false;
       state.vendorCategoriesSuccess = false;
       state.vendorProductSuccess = false;
       state.vendorUpdatedSuccess = false;
       state.success = false;
+      state.vendorError = null;
+      state.error = false;
     },
   },
 });
@@ -101,8 +110,9 @@ export const {
   vendorUserAdded,
   vendorCategoryAdded,
   vendorProductAdded,
+  vendorProductUpdated,
   clearVendorError,
-  clearVendorSuccess,
+  resetVendorStates,
 } = vendorsSlice.actions;
 
 export default vendorsSlice.reducer;
