@@ -1,12 +1,14 @@
-import {
-  Autocomplete,
-  GoogleMap,
-  LoadScript,
-  Marker,
-} from "@react-google-maps/api";
-import React, { useState } from "react";
+import { GoogleMap, LoadScript, Marker } from "@react-google-maps/api";
+import React, { useState, useRef, useEffect } from "react";
 import { Card, CardBody, CardHeader } from "reactstrap";
 import { useTranslation } from "react-i18next";
+
+// Extend Window interface to include Google Maps types
+declare global {
+  interface Window {
+    google: typeof google;
+  }
+}
 
 const containerStyle = {
   width: "100%",
@@ -14,6 +16,9 @@ const containerStyle = {
 };
 
 const dubai = { lat: 25.276987, lng: 55.296249 };
+
+// Define libraries array outside component to prevent unnecessary reloads
+const libraries: "places"[] = ["places"];
 
 const VendorMap = ({
   selectedCoords,
@@ -26,9 +31,10 @@ const VendorMap = ({
   const [selected, setSelected] = useState<{ lat: number; lng: number } | null>(
     null
   );
-  const [autocomplete, setAutocomplete] =
-    useState<google.maps.places.Autocomplete | null>(null);
+  const [autocompleteElement, setAutocompleteElement] =
+    useState<google.maps.places.PlaceAutocompleteElement | null>(null);
   const mapRef = React.useRef<google.maps.Map | null>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   const handleMapClick = (event: google.maps.MapMouseEvent) => {
     if (event.latLng) {
@@ -46,6 +52,55 @@ const VendorMap = ({
       setSelected(currentCoords);
     }
   }, [currentCoords, selected]);
+
+  // Initialize PlaceAutocompleteElement when Google Maps is loaded
+  useEffect(() => {
+    if (
+      window.google &&
+      window.google.maps &&
+      window.google.maps.places &&
+      inputRef.current
+    ) {
+      const autocomplete = new google.maps.places.PlaceAutocompleteElement({
+        componentRestrictions: { country: ["ae"] }, // Restrict to UAE
+        types: ["geocode"],
+      });
+
+      // Set up event listener for place selection
+      autocomplete.addEventListener("gmp-placeselect", (event: any) => {
+        const place = event.place;
+        if (place.geometry && place.geometry.location) {
+          const coords = {
+            lat: place.geometry.location.lat(),
+            lng: place.geometry.location.lng(),
+          };
+          setSelected(coords);
+          selectedCoords(coords);
+          if (mapRef.current) {
+            mapRef.current.panTo(coords);
+            mapRef.current.setZoom(15);
+          }
+        }
+      });
+
+      // Append the autocomplete element to the input container
+      if (inputRef.current) {
+        inputRef.current.appendChild(autocomplete);
+        setAutocompleteElement(autocomplete);
+      }
+
+      // Cleanup function
+      return () => {
+        if (
+          autocomplete &&
+          inputRef.current &&
+          inputRef.current.contains(autocomplete)
+        ) {
+          inputRef.current.removeChild(autocomplete);
+        }
+      };
+    }
+  }, [selectedCoords]);
 
   return (
     <Card className="pb-4">
@@ -70,41 +125,20 @@ const VendorMap = ({
         >
           <LoadScript
             googleMapsApiKey={process.env.REACT_APP_GOOGLE_MAPS_API_KEY ?? ""}
-            libraries={["places"]}
+            libraries={libraries}
           >
             <div style={{ marginBottom: 10 }}>
               <div style={{ maxWidth: 420 }}>
-                <Autocomplete
-                  onLoad={(ref) => setAutocomplete(ref)}
-                  onPlaceChanged={() => {
-                    const place = autocomplete?.getPlace();
-                    const loc = place?.geometry?.location;
-                    if (!loc) return;
-                    const coords = { lat: loc.lat(), lng: loc.lng() };
-                    setSelected(coords);
-                    selectedCoords(coords);
-                    if (mapRef.current) {
-                      mapRef.current.panTo(coords);
-                      mapRef.current.setZoom(15);
-                    }
+                <div
+                  ref={inputRef}
+                  style={{
+                    background: "#fff",
+                    border: "1px solid #ced4da",
+                    borderRadius: "0.375rem",
+                    padding: "0.375rem 0.75rem",
+                    minHeight: "38px",
                   }}
-                  options={{
-                    fields: [
-                      "geometry",
-                      "formatted_address",
-                      "name",
-                      "place_id",
-                    ],
-                    types: ["geocode"],
-                  }}
-                >
-                  <input
-                    type="text"
-                    placeholder={t("Search location")}
-                    className="form-control"
-                    style={{ background: "#fff" }}
-                  />
-                </Autocomplete>
+                />
               </div>
             </div>
             <GoogleMap
