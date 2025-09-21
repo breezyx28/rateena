@@ -37,11 +37,11 @@ const createValidationSchema = (isEdit: boolean = false) => {
     replacePriority: Yup.mixed()
       .transform((value, originalValue) => {
         // Handle boolean values - convert true to null, false to null
-        if (typeof originalValue === 'boolean') {
+        if (typeof originalValue === "boolean") {
           return null;
         }
         // Handle empty string
-        if (originalValue === '' || originalValue === undefined) {
+        if (originalValue === "" || originalValue === undefined) {
           return null;
         }
         // Convert to number if it's a valid number
@@ -119,7 +119,7 @@ export const useAdvertisementWithValidation = ({
       console.log("Formik errors:", formik.errors);
       console.log("Formik touched:", formik.touched);
       console.log("Formik isValid:", formik.isValid);
-      
+
       // Clear any previous server error
       formik.setStatus(undefined);
       setServerErrors(null);
@@ -191,7 +191,7 @@ export const useAdvertisementWithValidation = ({
       isValid: formik.isValid,
       isSubmitting: formik.isSubmitting,
     });
-    
+
     // Validate manually to see validation errors
     formik.validateForm().then((errors) => {
       console.log("Manual validation errors:", errors);
@@ -201,7 +201,7 @@ export const useAdvertisementWithValidation = ({
         console.log("Validation passed, form should submit");
       }
     });
-    
+
     formik.handleSubmit();
   }, [formik]);
 

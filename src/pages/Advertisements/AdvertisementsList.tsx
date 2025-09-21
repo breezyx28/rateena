@@ -61,7 +61,11 @@ const AdvertisementsList = ({
     isLoading: isDeleting,
     isSuccess: deleteSuccess,
   } = useDeleteAdvertisement();
-  const { toggleAdvertisement, isLoading: isToggling, isSuccess: toggleSuccess } = useToggleAdvertisement();
+  const {
+    toggleAdvertisement,
+    isLoading: isToggling,
+    isSuccess: toggleSuccess,
+  } = useToggleAdvertisement();
 
   const selectLayoutState = (state: any) => state.Advertisements;
   const selectLayoutProperties = createSelector(selectLayoutState, (state) => ({

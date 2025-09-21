@@ -31,8 +31,7 @@ const VendorMap = ({
   const [selected, setSelected] = useState<{ lat: number; lng: number } | null>(
     null
   );
-  const [autocompleteElement, setAutocompleteElement] =
-    useState<google.maps.places.PlaceAutocompleteElement | null>(null);
+  const [autocomplete, setAutocomplete] = useState<google.maps.places.Autocomplete | null>(null);
   const mapRef = React.useRef<google.maps.Map | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -53,22 +52,25 @@ const VendorMap = ({
     }
   }, [currentCoords, selected]);
 
-  // Initialize PlaceAutocompleteElement when Google Maps is loaded
-  useEffect(() => {
+  // Initialize Autocomplete when Google Maps is loaded
+  const initializeAutocomplete = () => {
     if (
       window.google &&
       window.google.maps &&
       window.google.maps.places &&
-      inputRef.current
+      inputRef.current &&
+      !autocomplete
     ) {
-      const autocomplete = new google.maps.places.PlaceAutocompleteElement({
-        componentRestrictions: { country: ["ae"] }, // Restrict to UAE
-        types: ["geocode"],
-      });
+      const autoCompleteInstance = new window.google.maps.places.Autocomplete(
+        inputRef.current,
+        {
+          componentRestrictions: { country: "ae" },
+          types: ["geocode"],
+        }
+      );
 
-      // Set up event listener for place selection
-      autocomplete.addEventListener("gmp-placeselect", (event: any) => {
-        const place = event.place;
+      autoCompleteInstance.addListener("place_changed", () => {
+        const place = autoCompleteInstance.getPlace();
         if (place.geometry && place.geometry.location) {
           const coords = {
             lat: place.geometry.location.lat(),
@@ -83,24 +85,17 @@ const VendorMap = ({
         }
       });
 
-      // Append the autocomplete element to the input container
-      if (inputRef.current) {
-        inputRef.current.appendChild(autocomplete);
-        setAutocompleteElement(autocomplete);
-      }
-
-      // Cleanup function
-      return () => {
-        if (
-          autocomplete &&
-          inputRef.current &&
-          inputRef.current.contains(autocomplete)
-        ) {
-          inputRef.current.removeChild(autocomplete);
-        }
-      };
+      setAutocomplete(autoCompleteInstance);
     }
-  }, [selectedCoords]);
+  };
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      initializeAutocomplete();
+    }, 1000);
+    
+    return () => clearTimeout(timer);
+  }, [autocomplete]);
 
   return (
     <Card className="pb-4">
@@ -129,15 +124,13 @@ const VendorMap = ({
           >
             <div style={{ marginBottom: 10 }}>
               <div style={{ maxWidth: 420 }}>
-                <div
+                <input
+                  id="map-location-autocomplete"
                   ref={inputRef}
-                  style={{
-                    background: "#fff",
-                    border: "1px solid #ced4da",
-                    borderRadius: "0.375rem",
-                    padding: "0.375rem 0.75rem",
-                    minHeight: "38px",
-                  }}
+                  type="text"
+                  placeholder={t("Search location")}
+                  className="form-control"
+                  style={{ background: "#fff" }}
                 />
               </div>
             </div>
@@ -146,8 +139,20 @@ const VendorMap = ({
               center={selected || currentCoords || dubai}
               zoom={selected ? 14 : 10}
               onClick={handleMapClick}
+              options={{
+                gestureHandling: "greedy",
+                zoomControl: true,
+                mapTypeControl: false,
+                scaleControl: false,
+                streetViewControl: false,
+                rotateControl: false,
+                fullscreenControl: false,
+              }}
               onLoad={(map) => {
                 mapRef.current = map;
+                setTimeout(() => {
+                  initializeAutocomplete();
+                }, 500);
               }}
             >
               {/* Show marker at clicked location */}
