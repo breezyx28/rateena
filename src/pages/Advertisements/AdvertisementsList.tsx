@@ -32,15 +32,18 @@ import { addOrUpdateAdvertisementMutation } from "slices/thunks";
 import { clearAdvertisementError } from "slices/advertisements/reducer";
 import { createSelector } from "reselect";
 import { useDeleteAdvertisement, useToggleAdvertisement } from "hooks";
+import { parseBannerToObject } from "hooks/useAdvertisementWithValidation";
 
 registerPlugin(FilePondPluginImageExifOrientation, FilePondPluginImagePreview);
 
 const AdvertisementsList = ({
   data,
+  availableBanners,
   vendorsListSuccess,
   onRefresh,
 }: {
   data: any[];
+  availableBanners: any[];
   vendorsListSuccess?: any;
   onRefresh?: () => void;
 }) => {
@@ -224,10 +227,10 @@ const AdvertisementsList = ({
   React.useEffect(() => {
     if (!advertisementError) return;
 
-    console.log("Advertisement Error in Edit Component: ", advertisementError);
-    console.log("Error message: ", advertisementError?.message);
-    console.log("Error data: ", advertisementError?.data);
-    console.log("Error errors: ", advertisementError?.errors);
+    // console.log("Advertisement Error in Edit Component: ", advertisementError);
+    // console.log("Error message: ", advertisementError?.message);
+    // console.log("Error data: ", advertisementError?.data);
+    // console.log("Error errors: ", advertisementError?.errors);
 
     const serverMessage = advertisementError?.message;
     const serverErrors = advertisementError?.errors || {};
@@ -292,7 +295,8 @@ const AdvertisementsList = ({
         ),
       vendorId: Yup.string()
         .when("banner", {
-          is: (val: string) => val !== "External Advertisements",
+          is: (val: string) =>
+            val !== `{en:"External Advertisements",ar:"ُاعلانات خارجية"}`,
           then: (schema) => schema.required("Vendor is required"),
           otherwise: (schema) => schema.notRequired(),
         })
@@ -307,6 +311,14 @@ const AdvertisementsList = ({
             return !(hasVendor && hasUrl);
           }
         ),
+      priority: Yup.number()
+        .nullable()
+        .when("banner", {
+          is: (val: string) =>
+            val !== `{en:"External Advertisements",ar:"ُاعلانات خارجية"}`,
+          then: (schema) => schema.required("Priority is required"),
+          otherwise: (schema) => schema.notRequired(),
+        }),
     }),
     onSubmit: (values) => {
       // clear any previous server error
@@ -318,9 +330,11 @@ const AdvertisementsList = ({
         ...values,
         vendorId: values.vendorId || null,
         advertisementId: selectedAd.advertisementId,
+        banner: values.banner ? parseBannerToObject(values.banner) : "",
         startTime: normalizeTimeToHms(values.startTime as any),
         endTime: normalizeTimeToHms(values.endTime as any),
       } as typeof values;
+
       const payload = {
         AdvertisementPayload: normalizedValues,
         adsImage1:
@@ -1006,52 +1020,62 @@ const AdvertisementsList = ({
                     onBlur={editForm.handleBlur}
                   >
                     <option value="">{t("Select banner type")}</option>
-                    <option value="External Advertisements">
-                      {t("External Advertisements")}
-                    </option>
-                    <option value="Resturants">{t("Resturants")}</option>
-                    <option value="Grocery">{t("Grocery")}</option>
-                    <option value="Stores">{t("Stores")}</option>
+                    {availableBanners?.map(
+                      (
+                        { ar, en }: { ar: string; en: string },
+                        index: number
+                      ) => (
+                        <option key={index} value={`{en:"${en}",ar:"${ar}"}`}>
+                          {i18n.dir() === "rtl" ? ar : en}
+                        </option>
+                      )
+                    )}
                   </Input>
                 </div>
               </Col>
 
               {/* Vendor Selection */}
-              <Col xxl={6} md={6}>
-                <div>
-                  <Label htmlFor="vendorId" className="form-label">
-                    {t("Vendor")}
-                  </Label>
-                  <Select
-                    id="vendorId"
-                    name="vendorId"
-                    options={vendorOptions}
-                    value={vendorOptions.find(
-                      (option: any) => option.value === editForm.values.vendorId
+              {editForm.values.banner !==
+              `{en:"External Advertisements",ar:"ُاعلانات خارجية"}` ? (
+                <Col xxl={6} md={6}>
+                  <div>
+                    <Label htmlFor="vendorId" className="form-label">
+                      {t("Vendor")}
+                    </Label>
+                    <Select
+                      id="vendorId"
+                      name="vendorId"
+                      options={vendorOptions}
+                      value={vendorOptions.find(
+                        (option: any) =>
+                          option.value === editForm.values.vendorId
+                      )}
+                      onChange={(selectedOption: any) => {
+                        editForm.setFieldValue(
+                          "vendorId",
+                          selectedOption?.value || null
+                        );
+                      }}
+                      onBlur={() => editForm.setFieldTouched("vendorId", true)}
+                      placeholder={t("Select vendor")}
+                      isClearable
+                      isSearchable
+                      className={
+                        editForm.touched.vendorId && !!editForm.errors.vendorId
+                          ? "is-invalid"
+                          : ""
+                      }
+                    />
+                    {editForm.touched.vendorId && editForm.errors.vendorId && (
+                      <div className="invalid-feedback d-block">
+                        {String(editForm.errors.vendorId)}
+                      </div>
                     )}
-                    onChange={(selectedOption: any) => {
-                      editForm.setFieldValue(
-                        "vendorId",
-                        selectedOption?.value || null
-                      );
-                    }}
-                    onBlur={() => editForm.setFieldTouched("vendorId", true)}
-                    placeholder={t("Select vendor")}
-                    isClearable
-                    isSearchable
-                    className={
-                      editForm.touched.vendorId && !!editForm.errors.vendorId
-                        ? "is-invalid"
-                        : ""
-                    }
-                  />
-                  {editForm.touched.vendorId && editForm.errors.vendorId && (
-                    <div className="invalid-feedback d-block">
-                      {String(editForm.errors.vendorId)}
-                    </div>
-                  )}
-                </div>
-              </Col>
+                  </div>
+                </Col>
+              ) : (
+                ""
+              )}
 
               {/* Priority Select */}
               <Col xxl={6} md={6} sm={6}>
@@ -1064,8 +1088,34 @@ const AdvertisementsList = ({
                     id="priority"
                     name="priority"
                     className="form-select"
-                    // value={editForm?.values?.priority ?? null}
-                    onChange={editForm.handleChange}
+                    value={
+                      (selectedAd?.priority ??
+                        editForm.values.priority ??
+                        "") as any
+                    }
+                    onChange={(e) => {
+                      editForm.handleChange(e);
+                      const chosen = Number(e.target.value);
+                      const current = Number(selectedAd?.priority ?? NaN);
+                      if (
+                        !Number.isNaN(chosen) &&
+                        !Number.isNaN(current) &&
+                        chosen === current
+                      ) {
+                        editForm.setFieldError(
+                          "priority",
+                          "Priority is already used"
+                        );
+                      } else {
+                        // Clear only our custom error message
+                        if (
+                          editForm.errors.priority ===
+                          "Priority is already used"
+                        ) {
+                          editForm.setFieldError("priority", undefined as any);
+                        }
+                      }
+                    }}
                     onBlur={editForm.handleBlur}
                   >
                     <option value="">{t("Select priority")}</option>
@@ -1075,6 +1125,11 @@ const AdvertisementsList = ({
                     <option value={4}>{t("advertisement 4")}</option>
                     <option value={5}>{t("advertisement 5")}</option>
                   </Input>
+                  {editForm.touched.priority && editForm.errors.priority && (
+                    <div className="invalid-feedback d-block">
+                      {String(editForm.errors.priority)}
+                    </div>
+                  )}
                 </div>
               </Col>
               <Col xxl={6} md={6} sm={6}>

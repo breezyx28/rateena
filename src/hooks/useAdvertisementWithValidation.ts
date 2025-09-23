@@ -3,6 +3,27 @@ import { useFormik } from "formik";
 import * as Yup from "yup";
 import { useAdvertisement } from "./useAdvertisement";
 
+// Safely convert banner string like {en:"External Advertisements",ar:"ُاعلانات خارجية"} into an object
+export function parseBannerToObject(
+  input: unknown
+): { en?: string; ar?: string } | null {
+  if (input == null) return null;
+  if (typeof input === "object") return input as { en?: string; ar?: string };
+  if (typeof input !== "string") return null;
+  // Fast path: valid JSON string
+  try {
+    return JSON.parse(input);
+  } catch {
+    // Normalize to valid JSON by quoting keys: {en:"..", ar:".."} -> {"en":"..","ar":".."}
+    try {
+      const normalized = input.replace(/([\{\s,])(\w+)\s*:/g, '$1"$2":');
+      return JSON.parse(normalized);
+    } catch {
+      return null;
+    }
+  }
+}
+
 // Validation schema from AdvertisementsList.tsx
 const createValidationSchema = (isEdit: boolean = false) => {
   return Yup.object().shape({
@@ -25,12 +46,14 @@ const createValidationSchema = (isEdit: boolean = false) => {
     priority: Yup.number()
       .nullable()
       .when("banner", {
-        is: (val: string) => val !== "External Advertisements",
+        is: (val: string) =>
+          val !== `{en:"External Advertisements",ar:"ُاعلانات خارجية"}`,
         then: (schema) => schema.required("Priority is required"),
         otherwise: (schema) => schema.notRequired(),
       }),
     vendorId: Yup.string().when("banner", {
-      is: (val: string) => val !== "External Advertisements",
+      is: (val: string) =>
+        val !== `{en:"External Advertisements",ar:"ُاعلانات خارجية"}`,
       then: (schema) => schema.required("Vendor is required"),
       otherwise: (schema) => schema.notRequired(),
     }),
@@ -124,11 +147,19 @@ export const useAdvertisementWithValidation = ({
       formik.setStatus(undefined);
       setServerErrors(null);
 
+      const convertBannerToObjct = parseBannerToObject(values.banner);
+
+      console.log("convertBannerToObjct: ", convertBannerToObjct);
+
       const normalizedValues = {
         ...values,
         // Null vendorId when external advertisement type is selected
         vendorId:
-          values.banner === "External Advertisements" ? null : values.vendorId,
+          values.banner ===
+          `{en:"External Advertisements",ar:"ُاعلانات خارجية"}`
+            ? null
+            : values.vendorId,
+        banner: convertBannerToObjct,
         startTime: normalizeTimeToHms(values.startTime as any),
         endTime: normalizeTimeToHms(values.endTime as any),
       };

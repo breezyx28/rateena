@@ -772,5 +772,21 @@
   "Please wait while we disapprove the product": "يرجى الانتظار بينما نرفض المنتج",
   "Please wait while we approve the product": "يرجى الانتظار بينما نوافق على المنتج",
   "Go to Vendors List": "الذهاب إلى قائمة البائعين",
-  "Stay Here": "البقاء هنا"
+  "Stay Here": "البقاء هنا",
+  "Must be a valid URL": "يجب أن يكون رابط صحيح",
+  "URL and Vendor ID cannot both be provided": "لا يمكن تقديم الرابط ومعرف البائع معاً",
+  "Banner type is required": "نوع اللافتة مطلوب",
+  "Error converting time format:": "خطأ في تحويل تنسيق الوقت:",
+  "Advertisement Error in Edit Component:": "خطأ الإعلان في مكون التحرير:",
+  "Error message:": "رسالة الخطأ:",
+  "Error data:": "بيانات الخطأ:",
+  "Error errors:": "أخطاء الخطأ:",
+  "Regular Addons": "الإضافات العادية",
+  "Group Options with Fee": "خيارات المجموعة مع الرسوم",
+  "Uncategorized Options": "خيارات غير مصنفة",
+  "Add New Addon": "إضافة إضافة جديدة",
+  "No product characteristics defined yet": "لم يتم تعريف خصائص المنتج بعد",
+  "options": "خيارات",
+  "Something went wrong": "حدث خطأ ما",
+  "Operation completed successfully": "تمت العملية بنجاح"
 }

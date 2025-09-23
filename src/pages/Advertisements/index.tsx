@@ -138,96 +138,6 @@ const Advertisements = () => {
     }
   }, [vendorsListSuccess]);
 
-  // // Normalize time to HH:mm:ss
-  // const normalizeTimeToHms = (timeString: string) => {
-  //   if (!timeString) return "";
-  //   if (/^\d{2}:\d{2}:\d{2}$/.test(timeString)) return timeString;
-  //   if (/^\d{2}:\d{2}$/.test(timeString)) return `${timeString}:00`;
-  //   try {
-  //     const date = new Date(`1970-01-01T${timeString}`);
-  //     const hh = String(date.getHours()).padStart(2, "0");
-  //     const mm = String(date.getMinutes()).padStart(2, "0");
-  //     const ss = String(date.getSeconds()).padStart(2, "0");
-  //     return `${hh}:${mm}:${ss}`;
-  //   } catch {
-  //     return timeString;
-  //   }
-  // };
-
-  // const addForm = useFormik({
-  //   enableReinitialize: false,
-  //   initialValues: {
-  //     title: "",
-  //     arTitle: "",
-  //     subtitle: "",
-  //     arSubtitle: "",
-  //     startDate: "",
-  //     expireDate: "",
-  //     startTime: "",
-  //     endTime: "",
-  //     url: "",
-  //     banner: "",
-  //     priority: "",
-  //     vendorId: "",
-  //     replacePriority: false,
-  //   },
-  //   validationSchema: Yup.object().shape({
-  //     title: Yup.string().required("English title is required"),
-  //     arTitle: Yup.string().required("Arabic title is required"),
-  //     subtitle: Yup.string().required("English subtitle is required"),
-  //     arSubtitle: Yup.string().required("Arabic subtitle is required"),
-  //     startDate: Yup.date().required("Start date is required"),
-  //     expireDate: Yup.date().required("End date is required"),
-  //     startTime: Yup.string().required("Start time is required"),
-  //     endTime: Yup.string().required("End time is required"),
-  //     // URL optional always; allow empty string by transforming to undefined
-  //     url: Yup.string()
-  //       .transform((value, originalValue) =>
-  //         originalValue === "" ? undefined : value
-  //       )
-  //       .url("Must be a valid URL")
-  //       .notRequired()
-  //       .nullable(),
-  //     vendorId: Yup.string().when("banner", {
-  //       is: (val: string) => val !== "External Advertisements",
-  //       then: (schema) => schema.required("Vendor is required"),
-  //       otherwise: (schema) => schema.notRequired(),
-  //     }),
-  //   }),
-  //   onSubmit: (values) => {
-  //     // clear any previous server error
-  //     addForm.setStatus(undefined);
-  //     dispatch(clearAdvertisementError());
-  //     setIsSubmitting(true);
-
-  //     const normalizedValues = {
-  //       ...values,
-  //       // Null vendorId when external advertisement type is selected
-  //       vendorId:
-  //         values.banner === "External Advertisements" ? null : values.vendorId,
-  //       startTime: normalizeTimeToHms(values.startTime as any),
-  //       endTime: normalizeTimeToHms(values.endTime as any),
-  //     } as typeof values;
-  //     const payload = {
-  //       AdvertisementPayload: normalizedValues,
-  //       adsImage1:
-  //         selectedFiles && selectedFiles.length > 0 ? selectedFiles[0] : null,
-  //     };
-
-  //     const formData = new FormData();
-  //     formData.append(
-  //       "AdvertisementPayload",
-  //       JSON.stringify(payload.AdvertisementPayload)
-  //     );
-
-  //     if (payload.adsImage1) {
-  //       formData.append("adsImage1", payload.adsImage1);
-  //     }
-
-  //     dispatch(addOrUpdateAdvertisementMutation(formData));
-  //   },
-  // });
-
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
       const files = Array.from(e.target.files);
@@ -288,6 +198,7 @@ const Advertisements = () => {
                         data={adsData?.data?.list ?? []}
                         vendorsListSuccess={vendorsListSuccess}
                         onRefresh={fetchAdvertisements}
+                        availableBanners={adsData?.data?.availableBanners ?? []}
                       />
                     </Col>
                   </Row>
@@ -588,7 +499,10 @@ const Advertisements = () => {
                       onChange={(e) => {
                         formik.handleChange(e);
                         const newVal = e.target.value;
-                        if (newVal === "External Advertisements") {
+                        if (
+                          newVal ===
+                          `{en:"External Advertisements",ar:"ُاعلانات خارجية"}`
+                        ) {
                           // clear and null vendorId on external type
                           formik.setFieldValue("vendorId", "");
                         }
@@ -596,18 +510,23 @@ const Advertisements = () => {
                       onBlur={formik.handleBlur}
                     >
                       <option value="">{t("Select advertisement type")}</option>
-                      <option value="External Advertisements">
-                        {t("External Advertisements")}
-                      </option>
-                      <option value="Resturants">{t("Resturants")}</option>
-                      <option value="Grocery">{t("Grocery")}</option>
-                      <option value="Stores">{t("Stores")}</option>
+                      {adsData?.data?.availableBanners?.map(
+                        (
+                          { ar, en }: { ar: string; en: string },
+                          index: number
+                        ) => (
+                          <option key={index} value={`{en:"${en}",ar:"${ar}"}`}>
+                            {i18n.dir() === "rtl" ? ar : en}
+                          </option>
+                        )
+                      )}
                     </Input>
                   </div>
                 </Col>
 
                 {/* Vendor Selection */}
-                {formik.values.banner !== "External Advertisements" && (
+                {formik.values.banner !==
+                  `{en:"External Advertisements",ar:"ُاعلانات خارجية"}` && (
                   <Col xxl={4} md={4}>
                     <div>
                       <Label htmlFor="vendorId" className="form-label">
