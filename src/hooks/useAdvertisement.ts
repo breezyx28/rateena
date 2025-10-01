@@ -41,13 +41,13 @@ const createAxiosInstance = () => {
     (response) => response,
     (error: AxiosError) => {
       console.log("Axios error:", error.response?.data || error.message);
-      
+
       // Handle 401 Unauthorized - redirect to login
       if (error.response?.status === 401) {
         sessionStorage.removeItem("authUser");
         window.location.replace("/login");
       }
-      
+
       return Promise.reject(error);
     }
   );
@@ -105,6 +105,10 @@ export const useAdvertisement = (): UseAdvertisementReturn => {
       // Add image if provided
       if (advertisementData.adsImage1) {
         formData.append("adsImage1", advertisementData.adsImage1);
+      }
+
+      if (advertisementData.AdvertisementPayload.banner === 4) {
+        formData.append("vendorId", "");
       }
 
       console.log("FormData contents:", {

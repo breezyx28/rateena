@@ -598,5 +598,6 @@
   "Approved": "Approved",
   "Not Approved": "Not Approved",
   "Select Publish Status": "Select Publish Status",
-  "Select Approval Status": "Select Approval Status"
+  "Select Approval Status": "Select Approval Status",
+  "Toggle Visibility": "Toggle Visibility"
 }

@@ -40,20 +40,17 @@ const createValidationSchema = (isEdit: boolean = false) => {
         originalValue === "" ? undefined : value
       )
       .url("Must be a valid URL")
-      .notRequired()
       .nullable(),
-    banner: Yup.string().required("Banner type is required"),
+    banner: Yup.number().required("Banner type is required"),
     priority: Yup.number()
       .nullable()
       .when("banner", {
-        is: (val: string) =>
-          val !== `{en:"External Advertisements",ar:"ُاعلانات خارجية"}`,
+        is: (val: any) => val !== 4,
         then: (schema) => schema.required("Priority is required"),
         otherwise: (schema) => schema.notRequired(),
       }),
     vendorId: Yup.string().when("banner", {
-      is: (val: string) =>
-        val !== `{en:"External Advertisements",ar:"ُاعلانات خارجية"}`,
+      is: (val: any) => val !== 4,
       then: (schema) => schema.required("Vendor is required"),
       otherwise: (schema) => schema.notRequired(),
     }),
@@ -105,9 +102,9 @@ export const useAdvertisementWithValidation = ({
     startTime: "",
     endTime: "",
     url: "",
-    banner: "",
+    banner: null,
     priority: null,
-    vendorId: "",
+    vendorId: null,
     replacePriority: null,
   },
   isEdit = false,
@@ -140,26 +137,25 @@ export const useAdvertisementWithValidation = ({
     onSubmit: async (values) => {
       console.log("Form submission started with values:", values);
       console.log("Formik errors:", formik.errors);
-      console.log("Formik touched:", formik.touched);
-      console.log("Formik isValid:", formik.isValid);
 
       // Clear any previous server error
       formik.setStatus(undefined);
       setServerErrors(null);
 
-      const convertBannerToObjct = parseBannerToObject(values.banner);
+      // const convertBannerToObjct = parseBannerToObject(values.banner);
 
-      console.log("convertBannerToObjct: ", convertBannerToObjct);
+      // console.log("convertBannerToObjct: ", convertBannerToObjct);
 
       const normalizedValues = {
         ...values,
         // Null vendorId when external advertisement type is selected
         vendorId:
-          values.banner ===
-          `{en:"External Advertisements",ar:"ُاعلانات خارجية"}`
+          values.banner === 4
+            ? null
+            : values.vendorId === ""
             ? null
             : values.vendorId,
-        banner: convertBannerToObjct,
+        // banner: convertBannerToObjct,
         startTime: normalizeTimeToHms(values.startTime as any),
         endTime: normalizeTimeToHms(values.endTime as any),
       };
@@ -168,6 +164,8 @@ export const useAdvertisementWithValidation = ({
         AdvertisementPayload: normalizedValues,
         adsImage1: values.adsImage1 || null,
       };
+
+      console.log("payload: ", payload);
 
       try {
         await advertisementHook.submit(payload);

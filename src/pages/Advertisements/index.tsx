@@ -27,6 +27,7 @@ import Select from "react-select";
 import { useTranslation } from "react-i18next";
 import { useAdvertisementWithValidation } from "../../hooks/useAdvertisementWithValidation";
 import { useAdvertisementsList } from "hooks";
+import FieldError from "Components/Common/FieldError";
 
 const Advertisements = () => {
   document.title = "Advertisements | Rateena - E-Shop Admin Panel";
@@ -132,12 +133,6 @@ const Advertisements = () => {
     dispatch(vendorsList());
   }, []);
 
-  React.useEffect(() => {
-    if (vendorsListSuccess) {
-      console.log("vendorsListSuccess: ", vendorsListSuccess);
-    }
-  }, [vendorsListSuccess]);
-
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
       const files = Array.from(e.target.files);
@@ -170,10 +165,7 @@ const Advertisements = () => {
                     <Row className="g-0 text-center">
                       {adsData?.data?.availableBanners &&
                         adsData.data.availableBanners.map(
-                          (
-                            { ar, en }: { ar: string; en: string },
-                            index: number
-                          ) => (
+                          ({ name }: { name: string }, index: number) => (
                             <Col xs={6} sm={3} key={index}>
                               <div className="p-3">
                                 <h5 className="mb-1">
@@ -182,7 +174,7 @@ const Advertisements = () => {
                                   </span>
                                 </h5>
                                 <p className="text-muted mb-0">
-                                  {i18n.dir() === "rtl" ? ar : en ?? "---"}
+                                  {name ?? "---"}
                                 </p>
                               </div>
                             </Col>
@@ -260,9 +252,9 @@ const Advertisements = () => {
                           : false
                       }
                     />
+                    <FieldError formik={formik} name="title" />
                   </div>
                 </Col>
-
                 <Col xxl={4} md={4}>
                   <div>
                     <Label htmlFor="arTitle" className="form-label">
@@ -282,6 +274,7 @@ const Advertisements = () => {
                           : false
                       }
                     />
+                    <FieldError formik={formik} name="arTitle" />
                   </div>
                 </Col>
 
@@ -304,6 +297,7 @@ const Advertisements = () => {
                           : false
                       }
                     />
+                    <FieldError formik={formik} name="subtitle" />
                   </div>
                 </Col>
 
@@ -326,6 +320,7 @@ const Advertisements = () => {
                           : false
                       }
                     />
+                    <FieldError formik={formik} name="arSubtitle" />
                   </div>
                 </Col>
 
@@ -348,6 +343,7 @@ const Advertisements = () => {
                           : false
                       }
                     />
+                    <FieldError formik={formik} name="startDate" />
                   </div>
                 </Col>
 
@@ -370,6 +366,7 @@ const Advertisements = () => {
                           : false
                       }
                     />
+                    <FieldError formik={formik} name="expireDate" />
                   </div>
                 </Col>
 
@@ -392,6 +389,7 @@ const Advertisements = () => {
                           : false
                       }
                     />
+                    <FieldError formik={formik} name="startTime" />
                   </div>
                 </Col>
 
@@ -414,6 +412,7 @@ const Advertisements = () => {
                           : false
                       }
                     />
+                    <FieldError formik={formik} name="endTime" />
                   </div>
                 </Col>
 
@@ -432,9 +431,10 @@ const Advertisements = () => {
                       onBlur={formik.handleBlur}
                       value={formik.values.url}
                       invalid={
-                        formik.touched.url && formik.errors.url ? true : false
+                        formik.touched.url && formik?.errors?.url ? true : false
                       }
                     />
+                    <FieldError formik={formik} name="url" />
                   </div>
                 </Col>
 
@@ -498,10 +498,11 @@ const Advertisements = () => {
                       value={formik.values.banner}
                       onChange={(e) => {
                         formik.handleChange(e);
-                        const newVal = e.target.value;
+                        const newVal = e.target.value as any;
                         if (
-                          newVal ===
-                          `{en:"External Advertisements",ar:"ُاعلانات خارجية"}`
+                          newVal === "External Advertisements" ||
+                          newVal === "ُاعلانات خارجية" ||
+                          newVal == 4
                         ) {
                           // clear and null vendorId on external type
                           formik.setFieldValue("vendorId", "");
@@ -512,58 +513,65 @@ const Advertisements = () => {
                       <option value="">{t("Select advertisement type")}</option>
                       {adsData?.data?.availableBanners?.map(
                         (
-                          { ar, en }: { ar: string; en: string },
+                          {
+                            name,
+                            banner_id,
+                          }: { name: string; banner_id: string | number },
                           index: number
                         ) => (
-                          <option key={index} value={`{en:"${en}",ar:"${ar}"}`}>
-                            {i18n.dir() === "rtl" ? ar : en}
+                          <option key={index} value={banner_id}>
+                            {name}
                           </option>
                         )
                       )}
                     </Input>
+                    <FieldError formik={formik} name="banner" />
                   </div>
                 </Col>
 
                 {/* Vendor Selection */}
-                {formik.values.banner !==
-                  `{en:"External Advertisements",ar:"ُاعلانات خارجية"}` && (
-                  <Col xxl={4} md={4}>
-                    <div>
-                      <Label htmlFor="vendorId" className="form-label">
-                        {t("Vendor")}
-                      </Label>
-                      <Select
-                        id="vendorId"
-                        name="vendorId"
-                        options={vendorOptions}
-                        value={vendorOptions.find(
-                          (option: any) =>
-                            option.value === formik.values.vendorId
+                {formik.values.banner !== "External Advertisements" ||
+                  formik.values.banner !== "ُاعلانات خارجية" ||
+                  (formik.values.banner !== 4 && (
+                    <Col xxl={4} md={4}>
+                      <div>
+                        <Label htmlFor="vendorId" className="form-label">
+                          {t("Vendor")}
+                        </Label>
+                        <Select
+                          id="vendorId"
+                          name="vendorId"
+                          options={vendorOptions}
+                          value={vendorOptions.find(
+                            (option: any) =>
+                              option.value === formik.values.vendorId
+                          )}
+                          onChange={(selectedOption: any) => {
+                            formik.setFieldValue(
+                              "vendorId",
+                              selectedOption?.value || ""
+                            );
+                          }}
+                          onBlur={() =>
+                            formik.setFieldTouched("vendorId", true)
+                          }
+                          placeholder={t("Select vendor")}
+                          isClearable
+                          isSearchable
+                          className={
+                            formik.touched.vendorId && formik.errors.vendorId
+                              ? "is-invalid"
+                              : ""
+                          }
+                        />
+                        {formik.touched.vendorId && formik.errors.vendorId && (
+                          <div className="invalid-feedback d-block">
+                            {String(formik.errors.vendorId)}
+                          </div>
                         )}
-                        onChange={(selectedOption: any) => {
-                          formik.setFieldValue(
-                            "vendorId",
-                            selectedOption?.value || ""
-                          );
-                        }}
-                        onBlur={() => formik.setFieldTouched("vendorId", true)}
-                        placeholder={t("Select vendor")}
-                        isClearable
-                        isSearchable
-                        className={
-                          formik.touched.vendorId && formik.errors.vendorId
-                            ? "is-invalid"
-                            : ""
-                        }
-                      />
-                      {formik.touched.vendorId && formik.errors.vendorId && (
-                        <div className="invalid-feedback d-block">
-                          {String(formik.errors.vendorId)}
-                        </div>
-                      )}
-                    </div>
-                  </Col>
-                )}
+                      </div>
+                    </Col>
+                  ))}
 
                 {/* Priority Select */}
                 <Col xxl={4} md={4} sm={6}>
@@ -587,11 +595,7 @@ const Advertisements = () => {
                       <option value={4}>{t("advertisement 4")}</option>
                       <option value={5}>{t("advertisement 5")}</option>
                     </Input>
-                    {formik?.errors?.priority?.[0] && (
-                      <div className="invalid-feedback d-block">
-                        {String(formik?.errors?.priority)}
-                      </div>
-                    )}
+                    <FieldError formik={formik} name="priority" />
                   </div>
                 </Col>
 

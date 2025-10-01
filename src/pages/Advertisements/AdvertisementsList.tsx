@@ -33,6 +33,7 @@ import { clearAdvertisementError } from "slices/advertisements/reducer";
 import { createSelector } from "reselect";
 import { useDeleteAdvertisement, useToggleAdvertisement } from "hooks";
 import { parseBannerToObject } from "hooks/useAdvertisementWithValidation";
+import FieldError from "Components/Common/FieldError";
 
 registerPlugin(FilePondPluginImageExifOrientation, FilePondPluginImagePreview);
 
@@ -275,47 +276,45 @@ const AdvertisementsList = ({
       expireDate: Yup.date(),
       startTime: Yup.string(),
       endTime: Yup.string(),
-      url: Yup.string()
-        .transform((value, originalValue) =>
-          originalValue === "" ? undefined : value
-        )
-        .url("Must be a valid URL")
-        .notRequired()
-        .nullable()
-        .test(
-          "exclusive-url-vendor",
-          "URL and Vendor ID cannot both be provided",
-          function (value) {
-            const { vendorId } = this.parent as any;
-            const hasUrl = !!value;
-            const hasVendor =
-              vendorId !== "" && vendorId !== null && vendorId !== undefined;
-            return !(hasUrl && hasVendor);
-          }
-        ),
+      url: Yup.string().nullable(),
+      // .transform((value, originalValue) =>
+      //   originalValue === "" ? undefined : value
+      // )
+      // .url("Must be a valid URL")
+      // .nullable()
+      // .test(
+      //   "exclusive-url-vendor",
+      //   "URL and Vendor ID cannot both be provided",
+      //   function (value) {
+      //     const { vendorId } = this.parent as any;
+      //     const hasUrl = !!value;
+      //     const hasVendor =
+      //       vendorId !== "" && vendorId !== null && vendorId !== undefined;
+      //     return !(hasUrl && hasVendor);
+      //   }
+      // ),
       vendorId: Yup.string()
+        .nullable()
         .when("banner", {
-          is: (val: string) =>
-            val !== `{en:"External Advertisements",ar:"ُاعلانات خارجية"}`,
+          is: (val: any) => val !== 4,
           then: (schema) => schema.required("Vendor is required"),
           otherwise: (schema) => schema.notRequired(),
-        })
-        .test(
-          "exclusive-vendor-url",
-          "URL and Vendor ID cannot both be provided",
-          function (value) {
-            const { url } = this.parent as any;
-            const hasVendor =
-              value !== "" && value !== null && value !== undefined;
-            const hasUrl = !!url;
-            return !(hasVendor && hasUrl);
-          }
-        ),
+        }),
+      // .test(
+      //   "exclusive-vendor-url",
+      //   "URL and Vendor ID cannot both be provided",
+      //   function (value) {
+      //     const { url } = this.parent as any;
+      //     const hasVendor =
+      //       value !== "" && value !== null && value !== undefined;
+      //     const hasUrl = !!url;
+      //     return !(hasVendor && hasUrl);
+      //   }
+      // ),
       priority: Yup.number()
         .nullable()
         .when("banner", {
-          is: (val: string) =>
-            val !== `{en:"External Advertisements",ar:"ُاعلانات خارجية"}`,
+          is: (val: any) => val !== 4,
           then: (schema) => schema.required("Priority is required"),
           otherwise: (schema) => schema.notRequired(),
         }),
@@ -328,9 +327,9 @@ const AdvertisementsList = ({
 
       const normalizedValues = {
         ...values,
-        vendorId: values.vendorId || null,
+        vendorId: values.vendorId === "" ? null : values.vendorId,
         advertisementId: selectedAd.advertisementId,
-        banner: values.banner ? parseBannerToObject(values.banner) : "",
+        // banner: values.banner ? parseBannerToObject(values.banner) : "",
         startTime: normalizeTimeToHms(values.startTime as any),
         endTime: normalizeTimeToHms(values.endTime as any),
       } as typeof values;
@@ -340,6 +339,8 @@ const AdvertisementsList = ({
         adsImage1:
           selectedFiles && selectedFiles.length > 0 ? selectedFiles[0] : null,
       };
+
+      console.log("update-ads: ", payload);
 
       const formData = new FormData();
       formData.append(
@@ -373,7 +374,7 @@ const AdvertisementsList = ({
 
   // Show success alert when advertisement is updated successfully
   React.useEffect(() => {
-    if (advertisementUpdatedSuccess && !advertisementError) {
+    if (advertisementUpdatedSuccess) {
       Swal.fire({
         title: t("Advertisement updated successfully"),
         icon: "success",
@@ -504,16 +505,10 @@ const AdvertisementsList = ({
                 <thead className="text-muted table-light">
                   <tr>
                     <th>{t("Title")}</th>
-                    {/* <th>Arabic Title</th> */}
                     <th>{t("Subtitle")}</th>
-                    {/* <th>Arabic Subtitle</th> */}
                     <th>{t("Start Date")}</th>
                     <th>{t("End Date")}</th>
-                    {/* <th>Start Time</th> */}
-                    {/* <th>End Time</th> */}
-                    {/* <th>Redirect Link</th> */}
                     <th>{t("Vendor Name")}</th>
-                    {/* <th>Ad Type</th> */}
                     <th>{t("Image")}</th>
                     <th>{t("Visibility")}</th>
                     <th>{t("Actions")}</th>
@@ -543,64 +538,17 @@ const AdvertisementsList = ({
                                 {i18n.dir() === "rtl" ? ad.arTitle : ad.title}
                               </span>
                             </td>
-                            {/* <td>
-                              <span className="fw-medium" dir="rtl">
-                                {ad.arTitle}
-                              </span>
-                            </td> */}
                             <td>
                               {i18n.dir() === "rtl"
                                 ? ad.arSubtitle
                                 : ad.subtitle}
                             </td>
-                            {/* <td>
-                              <span dir="rtl">{ad.arSubtitle}</span>
-                            </td> */}
+
                             <td>{ad.startDate}</td>
                             <td>{ad.expireDate}</td>
-                            {/* <td>{ad.startTime}</td> */}
-                            {/* <td>{ad.endTime}</td> */}
-                            {/* <td>
-                              {ad.url ? (
-                                <a
-                                  href={ad.url}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  className="text-primary"
-                                  style={{
-                                    maxWidth: "150px",
-                                    display: "inline-block",
-                                    overflow: "hidden",
-                                    textOverflow: "ellipsis",
-                                    whiteSpace: "nowrap",
-                                  }}
-                                  title={ad.url}
-                                >
-                                  {ad.url.length > 20
-                                    ? ad.url.substring(0, 20) + "..."
-                                    : ad.url}
-                                </a>
-                              ) : (
-                                <span className="text-muted">No link</span>
-                              )}
-                            </td> */}
+
                             <td>{ad.vendor?.full_name}</td>
-                            {/* <td>
-                              {(() => {
-                                const type = getAdvertisementType(ad.banner);
-                                const badgeClass =
-                                  type === "Internal"
-                                    ? "bg-success"
-                                    : type === "External"
-                                    ? "bg-warning"
-                                    : "bg-info";
-                                return (
-                                  <span className={`badge ${badgeClass}`}>
-                                    {type}
-                                  </span>
-                                );
-                              })()}
-                            </td> */}
+
                             <td>
                               {ad.adsImage1 ? (
                                 <Button
@@ -643,6 +591,7 @@ const AdvertisementsList = ({
                                   dir="ltr"
                                 >
                                   <Input
+                                    title={t("Toggle Visibility")}
                                     type="checkbox"
                                     className="form-check-input"
                                     checked={ad.isShown}
@@ -1015,18 +964,21 @@ const AdvertisementsList = ({
                     id="banner"
                     name="banner"
                     className="form-select"
-                    value={editForm.values.banner}
                     onChange={editForm.handleChange}
                     onBlur={editForm.handleBlur}
+                    // value={selectedAd?.banner_id}
                   >
                     <option value="">{t("Select banner type")}</option>
                     {availableBanners?.map(
                       (
-                        { ar, en }: { ar: string; en: string },
+                        {
+                          name,
+                          banner_id,
+                        }: { name: string; banner_id: string | number },
                         index: number
                       ) => (
-                        <option key={index} value={`{en:"${en}",ar:"${ar}"}`}>
-                          {i18n.dir() === "rtl" ? ar : en}
+                        <option key={index} value={banner_id}>
+                          {name}
                         </option>
                       )
                     )}
@@ -1035,50 +987,54 @@ const AdvertisementsList = ({
               </Col>
 
               {/* Vendor Selection */}
-              {editForm.values.banner !==
-              `{en:"External Advertisements",ar:"ُاعلانات خارجية"}` ? (
-                <Col xxl={6} md={6}>
-                  <div>
-                    <Label htmlFor="vendorId" className="form-label">
-                      {t("Vendor")}
-                    </Label>
-                    <Select
-                      id="vendorId"
-                      name="vendorId"
-                      options={vendorOptions}
-                      value={vendorOptions.find(
-                        (option: any) =>
-                          option.value === editForm.values.vendorId
-                      )}
-                      onChange={(selectedOption: any) => {
-                        editForm.setFieldValue(
-                          "vendorId",
-                          selectedOption?.value || null
-                        );
-                      }}
-                      onBlur={() => editForm.setFieldTouched("vendorId", true)}
-                      placeholder={t("Select vendor")}
-                      isClearable
-                      isSearchable
-                      className={
-                        editForm.touched.vendorId && !!editForm.errors.vendorId
-                          ? "is-invalid"
-                          : ""
-                      }
-                    />
-                    {editForm.touched.vendorId && editForm.errors.vendorId && (
-                      <div className="invalid-feedback d-block">
-                        {String(editForm.errors.vendorId)}
-                      </div>
-                    )}
-                  </div>
-                </Col>
-              ) : (
-                ""
-              )}
+              {selectedAd?.banner_id !== 4 ||
+                editForm.values.banner !== "External Advertisements" ||
+                editForm.values.banner !== "ُاعلانات خارجية" ||
+                (editForm.values.banner !== 4 && (
+                  <Col xxl={6} md={6}>
+                    <div>
+                      <Label htmlFor="vendorId" className="form-label">
+                        {t("Vendor")}
+                      </Label>
+                      <Select
+                        id="vendorId"
+                        name="vendorId"
+                        options={vendorOptions}
+                        value={vendorOptions.find(
+                          (option: any) =>
+                            option.value === editForm.values.vendorId
+                        )}
+                        onChange={(selectedOption: any) => {
+                          editForm.setFieldValue(
+                            "vendorId",
+                            selectedOption?.value || null
+                          );
+                        }}
+                        onBlur={() =>
+                          editForm.setFieldTouched("vendorId", true)
+                        }
+                        placeholder={t("Select vendor")}
+                        isClearable
+                        isSearchable
+                        className={
+                          editForm.touched.vendorId &&
+                          !!editForm.errors.vendorId
+                            ? "is-invalid"
+                            : ""
+                        }
+                      />
+                      {editForm.touched.vendorId &&
+                        editForm.errors.vendorId && (
+                          <div className="invalid-feedback d-block">
+                            {String(editForm.errors.vendorId)}
+                          </div>
+                        )}
+                    </div>
+                  </Col>
+                ))}
 
               {/* Priority Select */}
-              <Col xxl={6} md={6} sm={6}>
+              <Col xxl={4} md={4} sm={6}>
                 <div>
                   <Label htmlFor="priority" className="form-label">
                     {t("Priority")}
@@ -1093,29 +1049,7 @@ const AdvertisementsList = ({
                         editForm.values.priority ??
                         "") as any
                     }
-                    onChange={(e) => {
-                      editForm.handleChange(e);
-                      const chosen = Number(e.target.value);
-                      const current = Number(selectedAd?.priority ?? NaN);
-                      if (
-                        !Number.isNaN(chosen) &&
-                        !Number.isNaN(current) &&
-                        chosen === current
-                      ) {
-                        editForm.setFieldError(
-                          "priority",
-                          "Priority is already used"
-                        );
-                      } else {
-                        // Clear only our custom error message
-                        if (
-                          editForm.errors.priority ===
-                          "Priority is already used"
-                        ) {
-                          editForm.setFieldError("priority", undefined as any);
-                        }
-                      }
-                    }}
+                    onChange={editForm.handleChange}
                     onBlur={editForm.handleBlur}
                   >
                     <option value="">{t("Select priority")}</option>
@@ -1125,14 +1059,11 @@ const AdvertisementsList = ({
                     <option value={4}>{t("advertisement 4")}</option>
                     <option value={5}>{t("advertisement 5")}</option>
                   </Input>
-                  {editForm.touched.priority && editForm.errors.priority && (
-                    <div className="invalid-feedback d-block">
-                      {String(editForm.errors.priority)}
-                    </div>
-                  )}
+                  <FieldError formik={editForm} name="priority" />
                 </div>
               </Col>
-              <Col xxl={6} md={6} sm={6}>
+
+              <Col xxl={4} md={4} sm={6}>
                 <div className="form-check mt-4">
                   <Input
                     className="form-check-input"
@@ -1152,12 +1083,6 @@ const AdvertisementsList = ({
                   <Label className="form-check-label" htmlFor="replacePriority">
                     {t("replace existed priority?")}
                   </Label>
-                  {editForm.touched.replacePriority &&
-                    editForm.errors.replacePriority && (
-                      <div className="invalid-feedback d-block">
-                        {String(editForm.errors.replacePriority)}
-                      </div>
-                    )}
                 </div>
               </Col>
 
