@@ -33,6 +33,7 @@ interface EditAdvertisementModalProps {
   availableBanners: any[];
   vendorOptions: any[];
   onSuccess?: () => void;
+  vendorsListSuccess?: any;
 }
 
 const EditAdvertisementModal: React.FC<EditAdvertisementModalProps> = ({
@@ -42,11 +43,14 @@ const EditAdvertisementModal: React.FC<EditAdvertisementModalProps> = ({
   availableBanners,
   vendorOptions,
   onSuccess,
+  vendorsListSuccess,
 }) => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const dispatch: any = useDispatch();
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+
+  // moved below editForm to avoid "used before declaration"
 
   const selectLayoutState = (state: any) => state.Advertisements;
   const selectLayoutProperties = createSelector(selectLayoutState, (state) => ({
@@ -135,10 +139,7 @@ const EditAdvertisementModal: React.FC<EditAdvertisementModalProps> = ({
       vendorId: Yup.string()
         .nullable()
         .when("banner", {
-          is: (val: any) => {
-            console.log("banner-value: ", val);
-            return val != "4" || val != 4;
-          },
+          is: (val: any) => val != "4" || val != 4,
           then: (schema) =>
             schema.required(t("Vendor is required") || "المورد مطلوب"),
           otherwise: (schema) => schema.nullable(),
@@ -195,6 +196,39 @@ const EditAdvertisementModal: React.FC<EditAdvertisementModalProps> = ({
       }
     },
   });
+
+  const [currentBanner, setCurrentBanner] = React.useState(
+    editForm?.values.banner
+  );
+
+  const filteredVendorOptions = React.useMemo(() => {
+    if (!vendorsListSuccess?.list) return vendorOptions;
+
+    let list = vendorsListSuccess.list;
+
+    if (editForm?.values.banner) {
+      const banner = availableBanners?.find(
+        (b: any) => b.banner_id == editForm?.values.banner
+      );
+      if (banner) {
+        list = list.filter(
+          (vendor: any) =>
+            vendor.vendorType === banner.name ||
+            (banner.name === "RESTAURANT" && vendor.vendorType === "مطاعم") ||
+            (banner.name === "مطاعم" && vendor.vendorType === "RESTAURANT") ||
+            (banner.name === "GROCERY" && vendor.vendorType === "بقالات") ||
+            (banner.name === "بقالات" && vendor.vendorType === "GROCERY") ||
+            (banner.name === "STORE" && vendor.vendorType === "متاجر") ||
+            (banner.name === "متاجر" && vendor.vendorType === "STORE")
+        );
+      }
+    }
+
+    return list.map((vendor: any) => ({
+      value: vendor.vendorId,
+      label: i18n.dir() === "rtl" ? vendor.arFullName : vendor.fullName,
+    }));
+  }, [vendorsListSuccess, editForm, availableBanners, i18n, vendorOptions]);
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(event.target.files || []);
@@ -417,15 +451,13 @@ const EditAdvertisementModal: React.FC<EditAdvertisementModalProps> = ({
                       : ""
                   }`}
                   value={editForm.values.startTime}
-                  onChange={(date) =>
+                  onChange={(date: any) =>
                     editForm.setFieldValue(
                       "startTime",
                       date[0] ? date[0].toTimeString().slice(0, 5) : ""
                     )
                   }
-                  onBlur={() =>
-                    editForm.setFieldTouched("startTime", true)
-                  }
+                  onBlur={() => editForm.setFieldTouched("startTime", true)}
                   options={{
                     enableTime: true,
                     noCalendar: true,
@@ -449,15 +481,13 @@ const EditAdvertisementModal: React.FC<EditAdvertisementModalProps> = ({
                       : ""
                   }`}
                   value={editForm.values.endTime}
-                  onChange={(date) =>
+                  onChange={(date: any) =>
                     editForm.setFieldValue(
                       "endTime",
                       date[0] ? date[0].toTimeString().slice(0, 5) : ""
                     )
                   }
-                  onBlur={() =>
-                    editForm.setFieldTouched("endTime", true)
-                  }
+                  onBlur={() => editForm.setFieldTouched("endTime", true)}
                   options={{
                     enableTime: true,
                     noCalendar: true,
@@ -569,6 +599,7 @@ const EditAdvertisementModal: React.FC<EditAdvertisementModalProps> = ({
                   className="form-select"
                   onChange={(e) => {
                     editForm.handleChange(e);
+                    setCurrentBanner(e.target.value);
                     // Reset vendorId to null when banner value is 4
                     if (e.target.value == "4") {
                       editForm.setFieldValue("vendorId", null);
@@ -607,8 +638,8 @@ const EditAdvertisementModal: React.FC<EditAdvertisementModalProps> = ({
                   <Select
                     id="vendorId"
                     name="vendorId"
-                    options={vendorOptions}
-                    value={vendorOptions.find((option: any) => {
+                    options={filteredVendorOptions}
+                    value={filteredVendorOptions.find((option: any) => {
                       return (
                         option.value ===
                         (editForm.values.vendorId ||

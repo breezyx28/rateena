@@ -129,11 +129,36 @@ const Advertisements = () => {
   const vendorOptions = useMemo(() => {
     if (!vendorsListSuccess?.list) return [];
 
-    return vendorsListSuccess.list.map((vendor: any) => ({
+    let list = vendorsListSuccess.list;
+
+    if (formik.values.banner) {
+      const banner = adsData?.data?.availableBanners?.find(
+        (b: any) => b.banner_id == formik.values.banner
+      );
+      if (banner) {
+        list = list.filter(
+          (vendor: any) =>
+            vendor.vendorType === banner.name ||
+            (banner.name === "RESTAURANT" && vendor.vendorType === "مطاعم") ||
+            (banner.name === "مطاعم" && vendor.vendorType === "RESTAURANT") ||
+            (banner.name === "GROCERY" && vendor.vendorType === "بقالات") ||
+            (banner.name === "بقالات" && vendor.vendorType === "GROCERY") ||
+            (banner.name === "STORE" && vendor.vendorType === "متاجر") ||
+            (banner.name === "متاجر" && vendor.vendorType === "STORE")
+        );
+      }
+    }
+
+    return list.map((vendor: any) => ({
       value: vendor.vendorId,
       label: i18n.dir() === "rtl" ? vendor.arFullName : vendor.fullName,
     }));
-  }, [vendorsListSuccess, i18n]);
+  }, [
+    vendorsListSuccess,
+    i18n,
+    formik.values.banner,
+    adsData?.data?.availableBanners,
+  ]);
 
   React.useEffect(() => {
     dispatch(getAdvertisementsListQuery());
@@ -392,7 +417,7 @@ const Advertisements = () => {
                           : ""
                       }`}
                       value={formik.values.startTime}
-                      onChange={(date) =>
+                      onChange={(date: any) =>
                         formik.setFieldValue(
                           "startTime",
                           date[0] ? date[0].toTimeString().slice(0, 5) : ""
@@ -422,7 +447,7 @@ const Advertisements = () => {
                           : ""
                       }`}
                       value={formik.values.endTime}
-                      onChange={(date) =>
+                      onChange={(date: any) =>
                         formik.setFieldValue(
                           "endTime",
                           date[0] ? date[0].toTimeString().slice(0, 5) : ""
@@ -554,48 +579,44 @@ const Advertisements = () => {
                 </Col>
 
                 {/* Vendor Selection */}
-                {formik.values.banner !== "External Advertisements" ||
-                  formik.values.banner !== "ُاعلانات خارجية" ||
-                  (formik.values.banner !== 4 && (
-                    <Col xxl={4} md={4}>
-                      <div>
-                        <Label htmlFor="vendorId" className="form-label">
-                          {t("Vendor")}
-                        </Label>
-                        <Select
-                          id="vendorId"
-                          name="vendorId"
-                          options={vendorOptions}
-                          value={vendorOptions.find(
-                            (option: any) =>
-                              option.value === formik.values.vendorId
-                          )}
-                          onChange={(selectedOption: any) => {
-                            formik.setFieldValue(
-                              "vendorId",
-                              selectedOption?.value || ""
-                            );
-                          }}
-                          onBlur={() =>
-                            formik.setFieldTouched("vendorId", true)
-                          }
-                          placeholder={t("Select vendor")}
-                          isClearable
-                          isSearchable
-                          className={
-                            formik.touched.vendorId && formik.errors.vendorId
-                              ? "is-invalid"
-                              : ""
-                          }
-                        />
-                        {formik.touched.vendorId && formik.errors.vendorId && (
-                          <div className="invalid-feedback d-block">
-                            {String(formik.errors.vendorId)}
-                          </div>
+                {formik.values.banner !== "4" && formik.values.banner !== 4 && (
+                  <Col xxl={4} md={4}>
+                    <div>
+                      <Label htmlFor="vendorId" className="form-label">
+                        {t("Vendor")}
+                      </Label>
+                      <Select
+                        id="vendorId"
+                        name="vendorId"
+                        options={vendorOptions}
+                        value={vendorOptions.find(
+                          (option: any) =>
+                            option.value === formik.values.vendorId
                         )}
-                      </div>
-                    </Col>
-                  ))}
+                        onChange={(selectedOption: any) => {
+                          formik.setFieldValue(
+                            "vendorId",
+                            selectedOption?.value || ""
+                          );
+                        }}
+                        onBlur={() => formik.setFieldTouched("vendorId", true)}
+                        placeholder={t("Select vendor")}
+                        isClearable
+                        isSearchable
+                        className={
+                          formik.touched.vendorId && formik.errors.vendorId
+                            ? "is-invalid"
+                            : ""
+                        }
+                      />
+                      {formik.touched.vendorId && formik.errors.vendorId && (
+                        <div className="invalid-feedback d-block">
+                          {String(formik.errors.vendorId)}
+                        </div>
+                      )}
+                    </div>
+                  </Col>
+                )}
 
                 {/* Priority Select */}
                 <Col xxl={4} md={4} sm={6}>

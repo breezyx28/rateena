@@ -2,6 +2,7 @@ import { useState, useCallback, useEffect } from "react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import { useAdvertisement } from "./useAdvertisement";
+import { t } from "i18next";
 
 // Safely convert banner string like {en:"External Advertisements",ar:"ُاعلانات خارجية"} into an object
 export function parseBannerToObject(
@@ -36,11 +37,16 @@ const createValidationSchema = (isEdit: boolean = false) => {
     startTime: Yup.string(),
     endTime: Yup.string(),
     url: Yup.string()
-      .transform((value, originalValue) =>
-        originalValue === "" ? undefined : value
-      )
-      .url("Must be a valid URL")
-      .nullable(),
+      .nullable()
+      .test(
+        "url-vendor-conflict",
+        t("Cannot select vendor and URL at sametime") ||
+          "لا يمكن تقديم الرابط ومعرف المتجر معاً",
+        function (value) {
+          const { vendorId } = this.parent;
+          return !(value && vendorId);
+        }
+      ),
     banner: Yup.number().required("Banner type is required"),
     priority: Yup.number()
       .nullable()
@@ -50,7 +56,7 @@ const createValidationSchema = (isEdit: boolean = false) => {
         otherwise: (schema) => schema.notRequired(),
       }),
     vendorId: Yup.string().when("banner", {
-      is: (val: any) => val !== 4,
+      is: (val: any) => val != 4,
       then: (schema) => schema.required("Vendor is required"),
       otherwise: (schema) => schema.notRequired(),
     }),

@@ -423,6 +423,7 @@ const AdvertisementsList = ({
         availableBanners={availableBanners}
         vendorOptions={vendorOptions}
         onSuccess={handleEditSuccess}
+        vendorsListSuccess={vendorsListSuccess}
       />
 
       <DeleteModal
