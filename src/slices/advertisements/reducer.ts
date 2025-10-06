@@ -44,6 +44,9 @@ const advertisementsSlice = createSlice({
       state.advertisementError = null;
       state.error = false;
     },
+    resetAdvertisementState() {
+      return initialState;
+    },
   },
 });
 
@@ -54,6 +57,7 @@ export const {
   advertisementsError,
   advertisementUpdated,
   clearAdvertisementError,
+  resetAdvertisementState,
 } = advertisementsSlice.actions;
 
 export default advertisementsSlice.reducer;

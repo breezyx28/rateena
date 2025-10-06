@@ -789,5 +789,7 @@
   "options": "خيارات",
   "Something went wrong": "حدث خطأ ما",
   "Operation completed successfully": "تمت العملية بنجاح",
-  "Toggle Visibility": "تغيير الظهور"
+  "Toggle Visibility": "تغيير الظهور",
+  "Vendor is required": "المورد مطلوب",
+  "Cannot select vendor and URL at sametime": "لا يمكن تقديم الرابط ومعرف المتجر معاً"
 }

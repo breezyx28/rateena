@@ -24,6 +24,7 @@ import Swal from "sweetalert2";
 // Removed FilePond in favor of simple input uploader like add-product-modal
 import { vendorsList } from "slices/thunks";
 import Select from "react-select";
+import Flatpickr from "react-flatpickr";
 import { useTranslation } from "react-i18next";
 import { useAdvertisementWithValidation } from "../../hooks/useAdvertisementWithValidation";
 import { useAdvertisementsList } from "hooks";
@@ -72,6 +73,12 @@ const Advertisements = () => {
       console.log("adsData: ", adsData?.data);
     }
   }, [adsData?.data]);
+
+  React.useEffect(() => {
+    if (error) {
+      console.log("error: ", error);
+    }
+  }, [error]);
 
   const dispatch: any = useDispatch();
 
@@ -232,6 +239,9 @@ const Advertisements = () => {
                   {String(formik.status.serverError)}
                 </Alert>
               )}
+              {error?.error && (
+                <Alert color="danger">{String(error?.error)}</Alert>
+              )}
               <Row className="gy-4">
                 <Col xxl={4} md={4}>
                   <div>
@@ -375,19 +385,26 @@ const Advertisements = () => {
                     <Label htmlFor="startTime" className="form-label">
                       {t("Start Time")}
                     </Label>
-                    <Input
-                      type="time"
-                      className="form-control"
-                      id="startTime"
-                      name="startTime"
-                      onChange={formik.handleChange}
-                      onBlur={formik.handleBlur}
-                      value={formik.values.startTime}
-                      invalid={
+                    <Flatpickr
+                      className={`form-control ${
                         formik.touched.startTime && formik.errors.startTime
-                          ? true
-                          : false
+                          ? "is-invalid"
+                          : ""
+                      }`}
+                      value={formik.values.startTime}
+                      onChange={(date) =>
+                        formik.setFieldValue(
+                          "startTime",
+                          date[0] ? date[0].toTimeString().slice(0, 5) : ""
+                        )
                       }
+                      onBlur={() => formik.setFieldTouched("startTime", true)}
+                      options={{
+                        enableTime: true,
+                        noCalendar: true,
+                        dateFormat: "H:i",
+                        time_24hr: true,
+                      }}
                     />
                     <FieldError formik={formik} name="startTime" />
                   </div>
@@ -398,19 +415,26 @@ const Advertisements = () => {
                     <Label htmlFor="endTime" className="form-label">
                       {t("End Time")}
                     </Label>
-                    <Input
-                      type="time"
-                      className="form-control"
-                      id="endTime"
-                      name="endTime"
-                      onChange={formik.handleChange}
-                      onBlur={formik.handleBlur}
-                      value={formik.values.endTime}
-                      invalid={
+                    <Flatpickr
+                      className={`form-control ${
                         formik.touched.endTime && formik.errors.endTime
-                          ? true
-                          : false
+                          ? "is-invalid"
+                          : ""
+                      }`}
+                      value={formik.values.endTime}
+                      onChange={(date) =>
+                        formik.setFieldValue(
+                          "endTime",
+                          date[0] ? date[0].toTimeString().slice(0, 5) : ""
+                        )
                       }
+                      onBlur={() => formik.setFieldTouched("endTime", true)}
+                      options={{
+                        enableTime: true,
+                        noCalendar: true,
+                        dateFormat: "H:i",
+                        time_24hr: true,
+                      }}
                     />
                     <FieldError formik={formik} name="endTime" />
                   </div>

@@ -54,6 +54,22 @@ const PersonalDetailsTab: React.FC<PersonalDetailsTabProps> = ({
     }
     if (time.match(/^\d{2}:\d{2}:\d{2}$/)) return time;
     if (time.match(/^\d{2}:\d{2}$/)) return `${time}:00`;
+    
+    // Handle 12-hour format with AM/PM
+    if (time.includes("AM") || time.includes("PM")) {
+      const [timePart, period] = time.split(" ");
+      const [hours, minutes] = timePart.split(":");
+      let hour = parseInt(hours);
+      
+      if (period === "PM" && hour !== 12) {
+        hour += 12;
+      } else if (period === "AM" && hour === 12) {
+        hour = 0;
+      }
+      
+      return `${hour.toString().padStart(2, "0")}:${minutes}:00`;
+    }
+    
     return time;
   };
 
@@ -65,8 +81,8 @@ const PersonalDetailsTab: React.FC<PersonalDetailsTabProps> = ({
     userEmail: vendorInfo?.userEmail || "",
     maxKilometerDelivery: vendorInfo?.maxKilometerDelivery || "",
     minChargeLongDistance: vendorInfo?.minChargeLongDistance || "",
-    openingTime: formatTimeToHis(vendorInfo?.openingTime || ""),
-    closingTime: formatTimeToHis(vendorInfo?.closingTime || ""),
+    openingTime: formatTimeToHis(vendorInfo?.fOpeningTime || ""),
+    closingTime: formatTimeToHis(vendorInfo?.fClosingTime || ""),
     region: vendorInfo?.region || "",
     vendorType: vendorInfo?.vendorType || "",
     always_open: vendorInfo?.always_open || false, // Add always_open field

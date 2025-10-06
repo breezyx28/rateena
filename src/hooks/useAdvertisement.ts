@@ -40,8 +40,6 @@ const createAxiosInstance = () => {
   instance.interceptors.response.use(
     (response) => response,
     (error: AxiosError) => {
-      console.log("Axios error:", error.response?.data || error.message);
-
       // Handle 401 Unauthorized - redirect to login
       if (error.response?.status === 401) {
         sessionStorage.removeItem("authUser");
@@ -111,12 +109,6 @@ export const useAdvertisement = (): UseAdvertisementReturn => {
         formData.append("vendorId", "");
       }
 
-      console.log("FormData contents:", {
-        AdvertisementPayload: advertisementData.AdvertisementPayload,
-        hasImage: !!advertisementData.adsImage1,
-        imageName: advertisementData.adsImage1?.name,
-      });
-
       const response = await axiosInstance.post(
         "/advertisements/save",
         formData,
@@ -131,7 +123,6 @@ export const useAdvertisement = (): UseAdvertisementReturn => {
       setIsSuccess(true);
       setIsError(false);
     } catch (err: any) {
-      console.log("Advertisement API Error: ", err);
       setError(err.response?.data || err.message);
       setIsError(true);
       setIsSuccess(false);
@@ -179,7 +170,6 @@ export const useAdvertisementsList = () => {
       setIsSuccess(true);
       setIsError(false);
     } catch (err: any) {
-      console.log("Advertisements List API Error: ", err);
       setError(err.response?.data || err.message);
       setIsError(true);
       setIsSuccess(false);
@@ -230,7 +220,6 @@ export const useAdvertisementDetail = () => {
         setIsSuccess(true);
         setIsError(false);
       } catch (err: any) {
-        console.log("Advertisement Detail API Error: ", err);
         setError(err.response?.data || err.message);
         setIsError(true);
         setIsSuccess(false);
@@ -283,7 +272,6 @@ export const useDeleteAdvertisement = () => {
         setIsSuccess(true);
         setIsError(false);
       } catch (err: any) {
-        console.log("Delete Advertisement API Error: ", err);
         setError(err.response?.data || err.message);
         setIsError(true);
         setIsSuccess(false);
@@ -336,7 +324,6 @@ export const useToggleAdvertisement = () => {
         setIsSuccess(true);
         setIsError(false);
       } catch (err: any) {
-        console.log("Toggle Advertisement API Error: ", err);
         setError(err.response?.data || err.message);
         setIsError(true);
         setIsSuccess(false);

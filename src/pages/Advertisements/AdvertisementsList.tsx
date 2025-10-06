@@ -1,41 +1,23 @@
 import React, { useMemo, useState } from "react";
-import TableContainer from "../../Components/Common/TableContainerReactTable";
 import {
   Button,
-  Col,
-  Form,
-  FormFeedback,
   Input,
-  Label,
   Modal,
   ModalBody,
   ModalHeader,
-  Row,
   Card,
   CardBody,
   CardHeader,
   Table,
-  Alert,
+  Row,
+  Col,
 } from "reactstrap";
-import { useFormik } from "formik";
-import * as Yup from "yup";
 import Swal from "sweetalert2";
 import DeleteModal from "../../Components/Common/DeleteModal";
+import EditAdvertisementModal from "./EditAdvertisementModal";
 import { imgURL } from "services/api-handles";
-import { FilePond, registerPlugin } from "react-filepond";
-import FilePondPluginImageExifOrientation from "filepond-plugin-image-exif-orientation";
-import FilePondPluginImagePreview from "filepond-plugin-image-preview";
-import Select from "react-select";
 import { useTranslation } from "react-i18next";
-import { useDispatch, useSelector } from "react-redux";
-import { addOrUpdateAdvertisementMutation } from "slices/thunks";
-import { clearAdvertisementError } from "slices/advertisements/reducer";
-import { createSelector } from "reselect";
 import { useDeleteAdvertisement, useToggleAdvertisement } from "hooks";
-import { parseBannerToObject } from "hooks/useAdvertisementWithValidation";
-import FieldError from "Components/Common/FieldError";
-
-registerPlugin(FilePondPluginImageExifOrientation, FilePondPluginImagePreview);
 
 const AdvertisementsList = ({
   data,
@@ -54,12 +36,8 @@ const AdvertisementsList = ({
   const [deleteModal, setDeleteModal] = useState(false);
   const [selectedAd, setSelectedAd] = useState<any>(null);
   const [selectedImage, setSelectedImage] = useState("");
-  const [adImageFiles, setAdImageFiles] = useState<any[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
-  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
-
-  const dispatch: any = useDispatch();
   const {
     deleteAdvertisement,
     isLoading: isDeleting,
@@ -70,21 +48,6 @@ const AdvertisementsList = ({
     isLoading: isToggling,
     isSuccess: toggleSuccess,
   } = useToggleAdvertisement();
-
-  const selectLayoutState = (state: any) => state.Advertisements;
-  const selectLayoutProperties = createSelector(selectLayoutState, (state) => ({
-    success: state.success,
-    error: state.error,
-    advertisementUpdatedSuccess: state.advertisementUpdatedSuccess,
-    advertisementsListSuccess: state.advertisementsListSuccess,
-    advertisementError: state.advertisementError,
-  }));
-  // Inside your component
-  const {
-    advertisementsListSuccess,
-    advertisementError,
-    advertisementUpdatedSuccess,
-  } = useSelector(selectLayoutProperties);
 
   // Create vendor options for react-select
   const vendorOptions = useMemo(() => {
@@ -167,37 +130,6 @@ const AdvertisementsList = ({
   const handleEdit = (ad: any) => {
     setSelectedAd(ad);
     setEditModal(true);
-
-    // Preload defaults
-    setAdImageFiles([]);
-  };
-
-  // Helper function to convert time format from "HH:mm:ss AM/PM" to "HH:mm"
-  const convertTimeFormat = (timeString: string) => {
-    if (!timeString) return "";
-
-    // If already in HH:mm format, return as is
-    if (/^\d{2}:\d{2}$/.test(timeString)) {
-      return timeString;
-    }
-
-    // Convert from "HH:mm:ss AM/PM" to "HH:mm"
-    try {
-      const [time, period] = timeString.split(" ");
-      const [hours, minutes] = time.split(":");
-      let hour = parseInt(hours);
-
-      if (period === "PM" && hour !== 12) {
-        hour += 12;
-      } else if (period === "AM" && hour === 12) {
-        hour = 0;
-      }
-
-      return `${hour.toString().padStart(2, "0")}:${minutes}`;
-    } catch (error) {
-      console.error("Error converting time format:", error);
-      return "";
-    }
   };
 
   const handleDelete = (ad: any) => {
@@ -208,188 +140,18 @@ const AdvertisementsList = ({
   const handleToggleVisibility = (ad: any) => {
     toggleAdvertisement(ad.advertisementId);
   };
-  // Normalize time to HH:mm:ss
-  const normalizeTimeToHms = (timeString: string) => {
-    if (!timeString) return "";
-    if (/^\d{2}:\d{2}:\d{2}$/.test(timeString)) return timeString;
-    if (/^\d{2}:\d{2}$/.test(timeString)) return `${timeString}:00`;
-    try {
-      const date = new Date(`1970-01-01T${timeString}`);
-      const hh = String(date.getHours()).padStart(2, "0");
-      const mm = String(date.getMinutes()).padStart(2, "0");
-      const ss = String(date.getSeconds()).padStart(2, "0");
-      return `${hh}:${mm}:${ss}`;
-    } catch {
-      return timeString;
-    }
+
+  const handleEditSuccess = () => {
+    Swal.fire({
+      title: t("Advertisement updated successfully"),
+      icon: "success",
+      timer: 2000,
+      showConfirmButton: false,
+    });
+    setEditModal(false);
+    setSelectedAd(null);
+    onRefresh?.();
   };
-
-  // Map server validation errors into Formik status/field errors for edit form
-  React.useEffect(() => {
-    if (!advertisementError) return;
-
-    // console.log("Advertisement Error in Edit Component: ", advertisementError);
-    // console.log("Error message: ", advertisementError?.message);
-    // console.log("Error data: ", advertisementError?.data);
-    // console.log("Error errors: ", advertisementError?.errors);
-
-    const serverMessage = advertisementError?.message;
-    const serverErrors = advertisementError?.errors || {};
-    editForm.setStatus({ serverError: serverMessage });
-    if (serverErrors && typeof serverErrors === "object") {
-      Object.entries(serverErrors).forEach(([key, value]) => {
-        const firstMessage = Array.isArray(value)
-          ? String(value[0])
-          : String(value);
-        // Only map to known fields; otherwise keep it as server status
-        if (key in editForm.values) {
-          editForm.setFieldError(key as any, firstMessage);
-        }
-      });
-    }
-  }, [advertisementError]);
-
-  const editForm = useFormik({
-    enableReinitialize: true,
-    initialValues: {
-      title: selectedAd?.title || "",
-      arTitle: selectedAd?.arTitle || "",
-      subtitle: selectedAd?.subtitle || "",
-      arSubtitle: selectedAd?.arSubtitle || "",
-      startDate: selectedAd?.startDate || "",
-      expireDate: selectedAd?.expireDate || "",
-      startTime: convertTimeFormat(selectedAd?.startTime || ""),
-      endTime: convertTimeFormat(selectedAd?.endTime || ""),
-      url: selectedAd?.url || "",
-      banner: selectedAd?.banner || "",
-      priority: null,
-      // priority: selectedAd?.priority || "",
-      vendorId: selectedAd?.vendorId || selectedAd?.vendor?.vendor_id || "",
-      replacePriority: null,
-    },
-    validationSchema: Yup.object().shape({
-      title: Yup.string(),
-      arTitle: Yup.string(),
-      subtitle: Yup.string(),
-      arSubtitle: Yup.string(),
-      startDate: Yup.date(),
-      expireDate: Yup.date(),
-      startTime: Yup.string(),
-      endTime: Yup.string(),
-      url: Yup.string().nullable(),
-      // .transform((value, originalValue) =>
-      //   originalValue === "" ? undefined : value
-      // )
-      // .url("Must be a valid URL")
-      // .nullable()
-      // .test(
-      //   "exclusive-url-vendor",
-      //   "URL and Vendor ID cannot both be provided",
-      //   function (value) {
-      //     const { vendorId } = this.parent as any;
-      //     const hasUrl = !!value;
-      //     const hasVendor =
-      //       vendorId !== "" && vendorId !== null && vendorId !== undefined;
-      //     return !(hasUrl && hasVendor);
-      //   }
-      // ),
-      vendorId: Yup.string()
-        .nullable()
-        .when("banner", {
-          is: (val: any) => val !== 4,
-          then: (schema) => schema.required("Vendor is required"),
-          otherwise: (schema) => schema.notRequired(),
-        }),
-      // .test(
-      //   "exclusive-vendor-url",
-      //   "URL and Vendor ID cannot both be provided",
-      //   function (value) {
-      //     const { url } = this.parent as any;
-      //     const hasVendor =
-      //       value !== "" && value !== null && value !== undefined;
-      //     const hasUrl = !!url;
-      //     return !(hasVendor && hasUrl);
-      //   }
-      // ),
-      priority: Yup.number()
-        .nullable()
-        .when("banner", {
-          is: (val: any) => val !== 4,
-          then: (schema) => schema.required("Priority is required"),
-          otherwise: (schema) => schema.notRequired(),
-        }),
-    }),
-    onSubmit: (values) => {
-      // clear any previous server error
-      editForm.setStatus(undefined);
-      dispatch(clearAdvertisementError());
-      setIsSubmitting(true);
-
-      const normalizedValues = {
-        ...values,
-        vendorId: values.vendorId === "" ? null : values.vendorId,
-        advertisementId: selectedAd.advertisementId,
-        // banner: values.banner ? parseBannerToObject(values.banner) : "",
-        startTime: normalizeTimeToHms(values.startTime as any),
-        endTime: normalizeTimeToHms(values.endTime as any),
-      } as typeof values;
-
-      const payload = {
-        AdvertisementPayload: normalizedValues,
-        adsImage1:
-          selectedFiles && selectedFiles.length > 0 ? selectedFiles[0] : null,
-      };
-
-      console.log("update-ads: ", payload);
-
-      const formData = new FormData();
-      formData.append(
-        "AdvertisementPayload",
-        JSON.stringify(payload.AdvertisementPayload)
-      );
-
-      if (payload.adsImage1) {
-        formData.append("adsImage1", payload.adsImage1);
-      }
-
-      dispatch(addOrUpdateAdvertisementMutation(formData));
-    },
-  });
-
-  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
-
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const files = Array.from(event.target.files || []);
-    setSelectedFiles(files);
-    editForm.setFieldValue(
-      "adsImage1",
-      files && files.length > 0 ? files[0] : null
-    );
-  };
-
-  const removeSelectedFile = () => {
-    setSelectedFiles([]);
-    editForm.setFieldValue("adsImage1", null);
-  };
-
-  // Show success alert when advertisement is updated successfully
-  React.useEffect(() => {
-    if (advertisementUpdatedSuccess) {
-      Swal.fire({
-        title: t("Advertisement updated successfully"),
-        icon: "success",
-        timer: 2000,
-        showConfirmButton: false,
-      });
-      setEditModal(false);
-      editForm.resetForm();
-      setSelectedFiles([]);
-      setIsSubmitting(false);
-      onRefresh?.();
-    } else if (advertisementError) {
-      setIsSubmitting(false);
-    }
-  }, [advertisementUpdatedSuccess, advertisementError]);
 
   // Handle delete success
   React.useEffect(() => {
@@ -651,462 +413,17 @@ const AdvertisementsList = ({
         </ModalBody>
       </Modal>
 
-      <Modal
+      <EditAdvertisementModal
         isOpen={editModal}
         toggle={() => {
           setEditModal(false);
           setSelectedAd(null);
         }}
-        size="lg"
-        centered
-      >
-        <ModalHeader
-          toggle={() => {
-            setEditModal(false);
-            setSelectedAd(null);
-          }}
-        >
-          {t("Edit Advertisement")}
-        </ModalHeader>
-        <ModalBody>
-          <Form
-            onSubmit={(e) => {
-              e.preventDefault();
-              editForm.handleSubmit();
-              return false;
-            }}
-          >
-            {editForm.status?.serverError && (
-              <Alert color="danger">
-                {String(editForm.status.serverError)}
-              </Alert>
-            )}
-            <Row className="gy-4">
-              <Col xxl={6} md={6}>
-                <div>
-                  <Label htmlFor="title" className="form-label">
-                    {t("English Title")}
-                  </Label>
-                  <Input
-                    type="text"
-                    className="form-control"
-                    id="title"
-                    name="title"
-                    onChange={editForm.handleChange}
-                    onBlur={editForm.handleBlur}
-                    value={editForm.values.title}
-                    invalid={
-                      editForm.touched.title && editForm.errors.title
-                        ? true
-                        : false
-                    }
-                  />
-                </div>
-              </Col>
-
-              <Col xxl={6} md={6}>
-                <div>
-                  <Label htmlFor="arTitle" className="form-label">
-                    {t("Arabic Title")}
-                  </Label>
-                  <Input
-                    type="text"
-                    className="form-control"
-                    id="arTitle"
-                    name="arTitle"
-                    onChange={editForm.handleChange}
-                    onBlur={editForm.handleBlur}
-                    value={editForm.values.arTitle}
-                    invalid={
-                      editForm.touched.arTitle && editForm.errors.arTitle
-                        ? true
-                        : false
-                    }
-                  />
-                </div>
-              </Col>
-
-              <Col xxl={6} md={6}>
-                <div>
-                  <Label htmlFor="subtitle" className="form-label">
-                    {t("English Subtitle")}
-                  </Label>
-                  <Input
-                    type="text"
-                    className="form-control"
-                    id="subtitle"
-                    name="subtitle"
-                    onChange={editForm.handleChange}
-                    onBlur={editForm.handleBlur}
-                    value={editForm.values.subtitle}
-                    invalid={
-                      editForm.touched.subtitle && editForm.errors.subtitle
-                        ? true
-                        : false
-                    }
-                  />
-                </div>
-              </Col>
-
-              <Col xxl={6} md={6}>
-                <div>
-                  <Label htmlFor="arSubtitle" className="form-label">
-                    {t("Arabic Subtitle")}
-                  </Label>
-                  <Input
-                    type="text"
-                    className="form-control"
-                    id="arSubtitle"
-                    name="arSubtitle"
-                    onChange={editForm.handleChange}
-                    onBlur={editForm.handleBlur}
-                    value={editForm.values.arSubtitle}
-                    invalid={
-                      editForm.touched.arSubtitle && editForm.errors.arSubtitle
-                        ? true
-                        : false
-                    }
-                  />
-                </div>
-              </Col>
-
-              <Col xxl={6} md={6}>
-                <div>
-                  <Label htmlFor="startDate" className="form-label">
-                    {t("Start Date")}
-                  </Label>
-                  <Input
-                    type="date"
-                    className="form-control"
-                    id="startDate"
-                    name="startDate"
-                    onChange={editForm.handleChange}
-                    onBlur={editForm.handleBlur}
-                    value={editForm.values.startDate}
-                    invalid={
-                      editForm.touched.startDate && editForm.errors.startDate
-                        ? true
-                        : false
-                    }
-                  />
-                </div>
-              </Col>
-
-              <Col xxl={6} md={6}>
-                <div>
-                  <Label htmlFor="expireDate" className="form-label">
-                    {t("End Date")}
-                  </Label>
-                  <Input
-                    type="date"
-                    className="form-control"
-                    id="expireDate"
-                    name="expireDate"
-                    onChange={editForm.handleChange}
-                    onBlur={editForm.handleBlur}
-                    value={editForm.values.expireDate}
-                    invalid={
-                      editForm.touched.expireDate && editForm.errors.expireDate
-                        ? true
-                        : false
-                    }
-                  />
-                </div>
-              </Col>
-
-              <Col xxl={6} md={6}>
-                <div>
-                  <Label htmlFor="startTime" className="form-label">
-                    {t("Start Time")}
-                  </Label>
-                  <Input
-                    type="time"
-                    className="form-control"
-                    id="startTime"
-                    name="startTime"
-                    onChange={editForm.handleChange}
-                    onBlur={editForm.handleBlur}
-                    value={editForm.values.startTime}
-                    invalid={
-                      editForm.touched.startTime && editForm.errors.startTime
-                        ? true
-                        : false
-                    }
-                  />
-                </div>
-              </Col>
-
-              <Col xxl={6} md={6}>
-                <div>
-                  <Label htmlFor="endTime" className="form-label">
-                    {t("End Time")}
-                  </Label>
-                  <Input
-                    type="time"
-                    className="form-control"
-                    id="endTime"
-                    name="endTime"
-                    onChange={editForm.handleChange}
-                    onBlur={editForm.handleBlur}
-                    value={editForm.values.endTime}
-                    invalid={
-                      editForm.touched.endTime && editForm.errors.endTime
-                        ? true
-                        : false
-                    }
-                  />
-                </div>
-              </Col>
-
-              <Col xxl={12} md={12}>
-                <div>
-                  <Label htmlFor="url" className="form-label">
-                    {t("Redirect URL")}
-                  </Label>
-                  <Input
-                    type="url"
-                    className="form-control"
-                    id="url"
-                    name="url"
-                    placeholder="https://example.com"
-                    onChange={editForm.handleChange}
-                    onBlur={editForm.handleBlur}
-                    value={editForm.values.url}
-                    invalid={editForm.touched.url && !!editForm.errors.url}
-                  />
-                  {editForm.touched.url && editForm.errors.url && (
-                    <div className="invalid-feedback d-block">
-                      {String(editForm.errors.url)}
-                    </div>
-                  )}
-                </div>
-              </Col>
-
-              {/* Image Upload (aligned with add-product-modal.tsx) */}
-              <Col xxl={12} md={12}>
-                <div>
-                  <Label htmlFor="adsImage1" className="form-label">
-                    {t("Advertisement Image")}
-                  </Label>
-                  <Input
-                    type="file"
-                    id="adsImage1"
-                    name="adsImage1"
-                    accept="image/*"
-                    onChange={handleFileChange}
-                    className="form-control"
-                  />
-
-                  {/* Show existing image if available */}
-                  {selectedAd?.adsImage1 && selectedFiles.length === 0 && (
-                    <div className="mt-3">
-                      <Label className="form-label text-muted">
-                        {t("Current Image:")}
-                      </Label>
-                      <div className="d-flex gap-2 flex-wrap">
-                        <div className="position-relative">
-                          <img
-                            src={imgURL + "/" + selectedAd.adsImage1}
-                            alt="Current Advertisement"
-                            className="rounded"
-                            style={{
-                              width: "80px",
-                              height: "80px",
-                              objectFit: "cover",
-                            }}
-                          />
-                        </div>
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Show selected new image */}
-                  {selectedFiles.length > 0 && (
-                    <div className="mt-3">
-                      <Label className="form-label text-muted">
-                        {t("Selected Image:")}
-                      </Label>
-                      <div className="d-flex gap-2 flex-wrap">
-                        <div className="position-relative">
-                          <img
-                            src={URL.createObjectURL(selectedFiles[0])}
-                            alt="Selected"
-                            className="rounded"
-                            style={{
-                              width: "80px",
-                              height: "80px",
-                              objectFit: "cover",
-                            }}
-                          />
-                          <button
-                            type="button"
-                            className="btn btn-danger btn-sm position-absolute top-0 end-0"
-                            style={{ transform: "translate(50%, -50%)" }}
-                            onClick={removeSelectedFile}
-                          >
-                            ×
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-                  )}
-                </div>
-              </Col>
-
-              {/* Banner Type Select */}
-              <Col xxl={6} md={6}>
-                <div>
-                  <Label htmlFor="banner" className="form-label">
-                    {t("Banner Type")}
-                  </Label>
-                  <Input
-                    type="select"
-                    id="banner"
-                    name="banner"
-                    className="form-select"
-                    onChange={editForm.handleChange}
-                    onBlur={editForm.handleBlur}
-                    // value={selectedAd?.banner_id}
-                  >
-                    <option value="">{t("Select banner type")}</option>
-                    {availableBanners?.map(
-                      (
-                        {
-                          name,
-                          banner_id,
-                        }: { name: string; banner_id: string | number },
-                        index: number
-                      ) => (
-                        <option key={index} value={banner_id}>
-                          {name}
-                        </option>
-                      )
-                    )}
-                  </Input>
-                </div>
-              </Col>
-
-              {/* Vendor Selection */}
-              {selectedAd?.banner_id !== 4 ||
-                editForm.values.banner !== "External Advertisements" ||
-                editForm.values.banner !== "ُاعلانات خارجية" ||
-                (editForm.values.banner !== 4 && (
-                  <Col xxl={6} md={6}>
-                    <div>
-                      <Label htmlFor="vendorId" className="form-label">
-                        {t("Vendor")}
-                      </Label>
-                      <Select
-                        id="vendorId"
-                        name="vendorId"
-                        options={vendorOptions}
-                        value={vendorOptions.find(
-                          (option: any) =>
-                            option.value === editForm.values.vendorId
-                        )}
-                        onChange={(selectedOption: any) => {
-                          editForm.setFieldValue(
-                            "vendorId",
-                            selectedOption?.value || null
-                          );
-                        }}
-                        onBlur={() =>
-                          editForm.setFieldTouched("vendorId", true)
-                        }
-                        placeholder={t("Select vendor")}
-                        isClearable
-                        isSearchable
-                        className={
-                          editForm.touched.vendorId &&
-                          !!editForm.errors.vendorId
-                            ? "is-invalid"
-                            : ""
-                        }
-                      />
-                      {editForm.touched.vendorId &&
-                        editForm.errors.vendorId && (
-                          <div className="invalid-feedback d-block">
-                            {String(editForm.errors.vendorId)}
-                          </div>
-                        )}
-                    </div>
-                  </Col>
-                ))}
-
-              {/* Priority Select */}
-              <Col xxl={4} md={4} sm={6}>
-                <div>
-                  <Label htmlFor="priority" className="form-label">
-                    {t("Priority")}
-                  </Label>
-                  <Input
-                    type="select"
-                    id="priority"
-                    name="priority"
-                    className="form-select"
-                    value={
-                      (selectedAd?.priority ??
-                        editForm.values.priority ??
-                        "") as any
-                    }
-                    onChange={editForm.handleChange}
-                    onBlur={editForm.handleBlur}
-                  >
-                    <option value="">{t("Select priority")}</option>
-                    <option value={1}>{t("advertisement 1")}</option>
-                    <option value={2}>{t("advertisement 2")}</option>
-                    <option value={3}>{t("advertisement 3")}</option>
-                    <option value={4}>{t("advertisement 4")}</option>
-                    <option value={5}>{t("advertisement 5")}</option>
-                  </Input>
-                  <FieldError formik={editForm} name="priority" />
-                </div>
-              </Col>
-
-              <Col xxl={4} md={4} sm={6}>
-                <div className="form-check mt-4">
-                  <Input
-                    className="form-check-input"
-                    type="checkbox"
-                    id="replacePriority"
-                    name="replacePriority"
-                    checked={
-                      editForm.values.replacePriority as unknown as boolean
-                    }
-                    onChange={(e) =>
-                      editForm.setFieldValue(
-                        "replacePriority",
-                        e.target.checked
-                      )
-                    }
-                  />
-                  <Label className="form-check-label" htmlFor="replacePriority">
-                    {t("replace existed priority?")}
-                  </Label>
-                </div>
-              </Col>
-
-              <Col xxl={12} md={12}>
-                <div className="hstack gap-2 justify-content-end">
-                  <Button
-                    type="button"
-                    color="light"
-                    onClick={() => {
-                      setEditModal(false);
-                      setSelectedAd(null);
-                    }}
-                  >
-                    {t("Cancel")}
-                  </Button>
-                  <Button type="submit" color="success">
-                    {t("Update Advertisement")}
-                  </Button>
-                </div>
-              </Col>
-            </Row>
-          </Form>
-        </ModalBody>
-      </Modal>
+        selectedAd={selectedAd}
+        availableBanners={availableBanners}
+        vendorOptions={vendorOptions}
+        onSuccess={handleEditSuccess}
+      />
 
       <DeleteModal
         show={deleteModal}
