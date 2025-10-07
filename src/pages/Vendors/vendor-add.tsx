@@ -98,6 +98,12 @@ const VendorAdd = () => {
         }).then(() => {
           alertShownRef.current.error = false;
           dispatch(clearVendorError());
+          setFiles({
+            licenseImageFile: null,
+            identityImageFile: null,
+            profileImageFile: null,
+            coverImageFile: null,
+          });
         });
       }
     }
@@ -249,16 +255,16 @@ const VendorAdd = () => {
       const formData = new FormData();
       formData.append("VendorPayload", JSON.stringify(vendorPayload));
 
-      if (files.licenseImageFile) {
+      if (files?.licenseImageFile) {
         formData.append("licenseImage", files.licenseImageFile);
       }
-      if (files.identityImageFile) {
+      if (files?.identityImageFile) {
         formData.append("identityImage", files.identityImageFile);
       }
-      if (files.profileImageFile) {
+      if (files?.profileImageFile) {
         formData.append("profileImage", files.profileImageFile);
       }
-      if (files.coverImageFile) {
+      if (files?.coverImageFile) {
         formData.append("coverImage", files.coverImageFile);
       }
 
