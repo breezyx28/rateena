@@ -153,8 +153,6 @@ const EditAdvertisementModal: React.FC<EditAdvertisementModalProps> = ({
       replacePriority: Yup.mixed().nullable(),
     }),
     onSubmit: (values) => {
-      console.log("values: ", values);
-
       try {
         editForm.setStatus(undefined);
         dispatch(clearAdvertisementError());
@@ -184,11 +182,6 @@ const EditAdvertisementModal: React.FC<EditAdvertisementModalProps> = ({
           formData.append("adsImage1", payload.adsImage1);
         }
 
-        console.log("Payload:", payload);
-        for (let [key, value] of Array.from(formData.entries())) {
-          console.log(key, value);
-        }
-
         dispatch(addOrUpdateAdvertisementMutation(formData));
       } catch (error) {
         console.error("Error:", error);
@@ -214,12 +207,16 @@ const EditAdvertisementModal: React.FC<EditAdvertisementModalProps> = ({
         list = list.filter(
           (vendor: any) =>
             vendor.vendorType === banner.name ||
-            (banner.name === "RESTAURANT" && vendor.vendorType === "مطاعم") ||
+            (banner.name === "Restaurants" && vendor.vendorType === "مطاعم") ||
             (banner.name === "مطاعم" && vendor.vendorType === "RESTAURANT") ||
-            (banner.name === "GROCERY" && vendor.vendorType === "بقالات") ||
+            (banner.name === "Restaurants" &&
+              vendor.vendorType === "RESTAURANT") ||
+            (banner.name === "Groceries" && vendor.vendorType === "بقالات") ||
             (banner.name === "بقالات" && vendor.vendorType === "GROCERY") ||
-            (banner.name === "STORE" && vendor.vendorType === "متاجر") ||
-            (banner.name === "متاجر" && vendor.vendorType === "STORE")
+            (banner.name === "Groceries" && vendor.vendorType === "GROCERY") ||
+            (banner.name === "Stores" && vendor.vendorType === "متاجر") ||
+            (banner.name === "متاجر" && vendor.vendorType === "STORE") ||
+            (banner.name === "Stores" && vendor.vendorType === "STORE")
         );
       }
     }
@@ -252,8 +249,8 @@ const EditAdvertisementModal: React.FC<EditAdvertisementModalProps> = ({
 
     const serverMessage = advertisementError?.message;
     const serverErrors = advertisementError?.errors || {};
-    console.log("Server Message:", serverMessage);
-    console.log("Server Errors:", serverErrors);
+    // console.log("Server Message:", serverMessage);
+    // console.log("Server Errors:", serverErrors);
 
     editForm.setStatus({ serverError: serverMessage });
     if (serverErrors && typeof serverErrors === "object") {
@@ -271,14 +268,12 @@ const EditAdvertisementModal: React.FC<EditAdvertisementModalProps> = ({
 
   React.useEffect(() => {
     if (advertisementUpdatedSuccess) {
-      console.log("Success! Resetting form and calling onSuccess");
       editForm.resetForm();
       setSelectedFiles([]);
       setIsSubmitting(false);
       onSuccess?.();
       dispatch(resetAdvertisementState());
     } else if (advertisementError) {
-      console.log("Error occurred, setting isSubmitting to false");
       setIsSubmitting(false);
     }
   }, [advertisementUpdatedSuccess, advertisementError]);

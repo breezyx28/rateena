@@ -599,5 +599,9 @@
   "Not Approved": "Not Approved",
   "Select Publish Status": "Select Publish Status",
   "Select Approval Status": "Select Approval Status",
-  "Toggle Visibility": "Toggle Visibility"
+  "Toggle Visibility": "Toggle Visibility",
+  "Are you sure ?": "Are you sure ?",
+  "Are you sure you want to remove this record": "Are you sure you want to remove this record",
+  "Close": "Close",
+  "Yes, Delete It!": "Yes, Delete It!"
 }

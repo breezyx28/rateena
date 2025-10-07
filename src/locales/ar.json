@@ -791,5 +791,9 @@
   "Operation completed successfully": "تمت العملية بنجاح",
   "Toggle Visibility": "تغيير الظهور",
   "Vendor is required": "المورد مطلوب",
-  "Cannot select vendor and URL at sametime": "لا يمكن تقديم الرابط ومعرف المتجر معاً"
+  "Cannot select vendor and URL at sametime": "لا يمكن تقديم الرابط ومعرف المتجر معاً",
+  "Are you sure ?": "هل أنت متأكد؟",
+  "Are you sure you want to remove this record": "هل أنت متأكد من أنك تريد حذف هذا السجل",
+  "Close": "إغلاق",
+  "Yes, Delete It!": "نعم، احذفه!"
 }
