@@ -146,7 +146,7 @@ const VendorAdd = () => {
         cancelButtonColor: "#6c757d",
       }).then((result) => {
         // formik.resetForm();
-        // resetVendor();
+        resetVendor();
         // setFiles({
         //   licenseImageFile: null,
         //   identityImageFile: null,
