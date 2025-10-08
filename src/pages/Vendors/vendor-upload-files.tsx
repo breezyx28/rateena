@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { Card, CardBody, CardHeader, Col, Row, Input } from "reactstrap";
-import { useFormikContext } from "formik";
 import { useTranslation } from "react-i18next";
 import { imgURL } from "services/api-handles";
 
@@ -18,15 +17,16 @@ type VendorUploadFilesProps = {
     profile: string | null;
     cover: string | null;
   } | null;
+  errors?: any;
 };
 
 const VendorUploadFiles: React.FC<VendorUploadFilesProps> = ({
   files,
   uploadedFiles,
   defaultValues,
+  errors = {},
 }) => {
   const { t } = useTranslation();
-  const { errors } = useFormikContext<any>();
   const [licenseImageFile, setLicenseImageFile] = useState<File | null>(null);
   const [identityImageFile, setIdentityImageFile] = useState<File | null>(null);
   const [profileImageFile, setProfileImageFile] = useState<File | null>(null);
