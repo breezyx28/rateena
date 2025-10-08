@@ -98,12 +98,6 @@ const VendorAdd = () => {
         }).then(() => {
           alertShownRef.current.error = false;
           dispatch(clearVendorError());
-          setFiles({
-            licenseImageFile: null,
-            identityImageFile: null,
-            profileImageFile: null,
-            coverImageFile: null,
-          });
         });
       }
     }
@@ -269,14 +263,14 @@ const VendorAdd = () => {
       }
 
       dispatch(addVendorMutation(formData));
-      resetForm();
-      setFiles({
-        licenseImageFile: null,
-        identityImageFile: null,
-        profileImageFile: null,
-        coverImageFile: null,
-      });
-      setSelectedCoords(undefined);
+      // resetForm();
+      // setFiles({
+      //   licenseImageFile: null,
+      //   identityImageFile: null,
+      //   profileImageFile: null,
+      //   coverImageFile: null,
+      // });
+      // setSelectedCoords(undefined);
     }
     setSubmitting(false);
   };
