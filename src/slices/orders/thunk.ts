@@ -85,6 +85,6 @@ export const changeOrderInvoiceQuery =
     } catch (error: any) {
       console.log("errors: ", error);
 
-      dispatch(ordersListError(error));
+      dispatch(ordersError(error));
     }
   };

@@ -48,7 +48,10 @@ const CustomersOrders = () => {
                   <h5 className="card-title mb-0">{t("Search")}</h5>
                 </CardHeader>
                 <CardBody>
-                  <OrdersList data={ordersListSuccess?.list ?? []} />
+                  <OrdersList
+                    data={ordersListSuccess?.list ?? []}
+                    orderListQuery={getOrdersListQuery}
+                  />
                 </CardBody>
               </Card>
             </Col>

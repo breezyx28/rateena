@@ -14,14 +14,27 @@ import * as XLSX from "xlsx";
 import { Link } from "react-router-dom";
 import { TOrderStatus } from "types";
 import { useTranslation } from "react-i18next";
-import { useDispatch, useSelector } from "react-redux";
-import { createSelector } from "reselect";
-import { changeOrderInvoiceQuery } from "slices/orders/thunk";
+import { useOrderStatus } from "../../hooks/useOrders";
 import Swal from "sweetalert2";
+import { useDispatch } from "react-redux";
 
-const OrdersList = ({ data }: { data: any[] }) => {
-  const { t } = useTranslation();
+const OrdersList = ({
+  data,
+  orderListQuery,
+}: {
+  data: any[];
+  orderListQuery: (...args: any) => any;
+}) => {
   const dispatch: any = useDispatch();
+  const { t } = useTranslation();
+  const {
+    changeStatus,
+    data: orderUpdatedData,
+    error: orderError,
+    isSuccess,
+    isError,
+    isLoading,
+  } = useOrderStatus();
   const [statusFilter, setStatusFilter] = useState("");
   const [vendorTypeFilter, setVendorTypeFilter] = useState("");
   const [startDate, setStartDate] = useState("");
@@ -29,20 +42,10 @@ const OrdersList = ({ data }: { data: any[] }) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [statusModal, setStatusModal] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState<any>(null);
-  const [isUpdating, setIsUpdating] = useState(false);
-
-  const selectLayoutState = (state: any) => state.Orders;
-  const selectLayoutProperties = createSelector(selectLayoutState, (state) => ({
-    orderUpdatedData: state.orderUpdatedData,
-    ordersListError: state.ordersListError,
-  }));
-  const { orderUpdatedData, ordersListError } = useSelector(
-    selectLayoutProperties
-  );
 
   React.useEffect(() => {
-    if (orderUpdatedData) {
-      setIsUpdating(false);
+    if (isSuccess) {
+      dispatch(orderListQuery());
       Swal.fire({
         title: t("Order status updated successfully"),
         icon: "success",
@@ -54,20 +57,19 @@ const OrdersList = ({ data }: { data: any[] }) => {
         setSelectedOrder(null);
       }, 3000);
     }
-  }, [orderUpdatedData]);
+  }, [isSuccess]);
 
   React.useEffect(() => {
-    if (ordersListError) {
-      setIsUpdating(false);
+    if (isError) {
       Swal.fire({
         title: t("Error"),
-        text: ordersListError?.message || t("Failed to update order status"),
+        text: orderError?.message || t("Failed to update order status"),
         icon: "error",
         timer: 3000,
         showConfirmButton: false,
       });
     }
-  }, [ordersListError]);
+  }, [isError, orderError]);
 
   const handleStatusChange = (newStatus: TOrderStatus) => {
     if (newStatus === selectedOrder?.status) return;
@@ -83,8 +85,7 @@ const OrdersList = ({ data }: { data: any[] }) => {
       cancelButtonText: t("Cancel"),
     }).then((result) => {
       if (result.isConfirmed) {
-        setIsUpdating(true);
-        dispatch(changeOrderInvoiceQuery(selectedOrder.orderId, newStatus));
+        changeStatus(selectedOrder.orderId, newStatus);
       }
     });
   };
@@ -209,7 +210,7 @@ const OrdersList = ({ data }: { data: any[] }) => {
         cell: (cell: any) => {
           const row = cell.row.original;
           return (
-            <div>
+            <div key={"order-data-" + row.orderId}>
               <div className="text-warning">
                 {t("Ordered:")} {cell.getValue()}
               </div>
@@ -235,13 +236,24 @@ const OrdersList = ({ data }: { data: any[] }) => {
           const row = cell.row.original;
           const currentStatus = cell.getValue();
           return (
-            <div className="d-flex flex-column gap-2">
+            <div
+              className="d-flex flex-column gap-2"
+              key={"order-status-" + row.orderId}
+            >
               {statusCellBadge(currentStatus)}
               <Button
                 color="primary"
                 size="sm"
                 onClick={() => openStatusModal(row)}
+                disabled={isLoading}
               >
+                {isLoading && selectedOrder?.orderId === row.orderId && (
+                  <span
+                    className="spinner-border spinner-border-sm me-2"
+                    role="status"
+                    aria-hidden="true"
+                  ></span>
+                )}
                 {t("Change Status")}
               </Button>
             </div>
@@ -252,11 +264,14 @@ const OrdersList = ({ data }: { data: any[] }) => {
         header: t("Total"),
         accessorKey: "total",
         enableColumnFilter: false,
-        cell: (cell: any) => (
-          <span key={"order-total-" + cell.getValue()}>
-            {cell.getValue() + ".00" + " AED"}
-          </span>
-        ),
+        cell: (cell: any) => {
+          const row = cell.row.original;
+          return (
+            <span key={"order-total-" + row.orderId}>
+              {cell.getValue() + ".00" + " AED"}
+            </span>
+          );
+        },
       },
       {
         header: t("Invoice"),
@@ -273,7 +288,7 @@ const OrdersList = ({ data }: { data: any[] }) => {
         ),
       },
     ],
-    []
+    [t, isLoading, selectedOrder]
   );
 
   return (
@@ -361,42 +376,42 @@ const OrdersList = ({ data }: { data: any[] }) => {
             <Button
               color="warning"
               onClick={() => handleStatusChange("WAITING")}
-              disabled={isUpdating || selectedOrder?.status === "WAITING"}
+              disabled={isLoading || selectedOrder?.status === "WAITING"}
             >
               {t("WAITING")}
             </Button>
             <Button
               color="success"
               onClick={() => handleStatusChange("CONFIRMED")}
-              disabled={isUpdating || selectedOrder?.status === "CONFIRMED"}
+              disabled={isLoading || selectedOrder?.status === "CONFIRMED"}
             >
               {t("CONFIRMED")}
             </Button>
             <Button
               color="info"
               onClick={() => handleStatusChange("PROGRESSING")}
-              disabled={isUpdating || selectedOrder?.status === "PROGRESSING"}
+              disabled={isLoading || selectedOrder?.status === "PROGRESSING"}
             >
               {t("PROGRESSING")}
             </Button>
             <Button
               color="info"
               onClick={() => handleStatusChange("PROCESSING")}
-              disabled={isUpdating || selectedOrder?.status === "PROCESSING"}
+              disabled={isLoading || selectedOrder?.status === "PROCESSING"}
             >
               {t("PROCESSING")}
             </Button>
             <Button
               color="success"
               onClick={() => handleStatusChange("DELIVERED")}
-              disabled={isUpdating || selectedOrder?.status === "DELIVERED"}
+              disabled={isLoading || selectedOrder?.status === "DELIVERED"}
             >
               {t("DELIVERED")}
             </Button>
             <Button
               color="danger"
               onClick={() => handleStatusChange("CANCELED")}
-              disabled={isUpdating || selectedOrder?.status === "CANCELED"}
+              disabled={isLoading || selectedOrder?.status === "CANCELED"}
             >
               {t("CANCELED")}
             </Button>

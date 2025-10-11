@@ -101,6 +101,9 @@ const VendorAdd = () => {
     },
     validationSchema,
     onSubmit: async (values) => {
+      // Clear any previous server error
+      formik.setStatus(undefined);
+      
       const vendorPayload = {
         fullName: values.fullName,
         arFullName: values.arFullName,
@@ -161,17 +164,48 @@ const VendorAdd = () => {
     }
   }, [isSuccess]);
 
-  // Handle error
+  // Handle server errors and map them to formik field errors
   React.useEffect(() => {
-    if (isError) {
+    if (error) {
+      const serverMessage = error?.message;
+      const serverErrors = error?.errors || {};
+
+      // Set server error in formik status
+      formik.setStatus({ serverError: serverMessage });
+
+      // Map server errors to formik field errors
+      if (serverErrors && typeof serverErrors === "object") {
+        Object.entries(serverErrors).forEach(([key, value]) => {
+          const firstMessage = Array.isArray(value)
+            ? String(value[0])
+            : String(value);
+
+          const fieldMapping: any = {
+            identityImage: "identityImageFile",
+            licenseImage: "licenseImageFile", 
+            profileImage: "profileImageFile",
+            coverImage: "coverImageFile",
+            phone: "userPhone",
+            email: "userEmail",
+          };
+
+          const mappedKey = fieldMapping[key] || key;
+          
+          // Only map to known fields; otherwise keep it as server status
+          if (mappedKey in formik.values) {
+            formik.setFieldError(mappedKey as any, firstMessage);
+          }
+        });
+      }
+
       Swal.fire({
         icon: "error",
         title: t("Error!"),
-        text: error?.message || t("Failed to add vendor. Please try again."),
+        text: serverMessage || t("Failed to add vendor. Please try again."),
         confirmButtonText: t("OK"),
       });
     }
-  }, [isError, error]);
+  }, [error]);
 
   const handleSubmit = async () => {
     const result = await Swal.fire({
