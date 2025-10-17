@@ -103,18 +103,23 @@ const EditProductModal = ({
     enableReinitialize: true,
     initialValues: {
       name: productData?.name || "",
-      arName: productData?.arName || "",
+      arName: productData?.arName || productData?.a_name || "",
       quantity: productData?.quantity || "",
       isFood:
         productData?.isFood !== undefined
           ? productData.isFood
-          : productData?.vendor?.vendorType === "RESTURANT",
+          : productData?.vendor?.vendor?.vendorType === "RESTAURANT",
       price: productData?.price || "",
-      companyProfit: productData?.companyProfit || "",
+      companyProfit:
+        productData?.companyProfit || productData?.company_profit || "",
       duration: productData?.duration || "",
-      category_id: productData?.category?.category_id || "",
+      category_id:
+        productData?.category?.categoryId ||
+        productData?.category?.category_id ||
+        "",
       description: productData?.description || "",
-      ar_description: productData?.arDescription || "",
+      ar_description:
+        productData?.arDescription || productData?.ar_description || "",
       options: productData?.options || [],
     },
     validationSchema: UpdateVendorProductvalidationSchema(),
@@ -128,6 +133,9 @@ const EditProductModal = ({
       const productPayload = {
         productId: productData.productId,
         vendor_id: Number(vendorId),
+        ar_name: values.arName,
+        company_profit: values.companyProfit,
+        is_food: values.isFood,
         ...values,
       };
 

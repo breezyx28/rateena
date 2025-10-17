@@ -121,7 +121,7 @@ const RecentOrders = ({ details }: { details: any }) => {
                       <tr key={key}>
                         <td>
                           <Link
-                            to="/apps-ecommerce-order-details"
+                            to={`/dashboard/customers/orders/${item.order_id}`}
                             className="fw-medium link-primary"
                           >
                             {item.order_number}

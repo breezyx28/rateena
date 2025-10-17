@@ -31,6 +31,7 @@ import {
   clearVendorError,
   resetVendorStates,
   vendorProductUpdated,
+  vendorLoading,
 } from "./reducer";
 import { deleteProduct } from "services/products";
 
@@ -330,6 +331,7 @@ export const addVendorProductMutation =
   (body: any, vendorId: any, action: "update" | "add" | null | undefined) =>
   async (dispatch: any) => {
     try {
+      dispatch(vendorLoading());
       let response;
 
       response = postAddVendorProduct(body);

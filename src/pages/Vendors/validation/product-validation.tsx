@@ -55,7 +55,7 @@ export const UpdateVendorProductvalidationSchema =
   (): Yup.ObjectSchema<any> => {
     return Yup.object({
       name: Yup.string(),
-      arName: Yup.string(),
+      ar_name: Yup.string(),
       duration: Yup.string(),
       isFood: Yup.boolean().required(),
       companyProfit: Yup.number()

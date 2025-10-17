@@ -16,7 +16,7 @@ import {
 import Swal from "sweetalert2";
 import { addVendorProductMutation } from "slices/thunks";
 import { useDispatch, useSelector } from "react-redux";
-import { clearVendorError } from "slices/vendors/reducer";
+import { clearVendorError, resetVendorStates } from "slices/vendors/reducer";
 import { useParams } from "react-router-dom";
 import { createSelector } from "reselect";
 import {
@@ -54,10 +54,16 @@ const AddProductModal = ({
     vendorCategories: state.vendorCategories,
     error: state.error,
     vendorData: state.vendorData,
+    loading: state.loading,
   }));
   // Inside your component
-  const { vendorError, vendorProductSuccess, vendorCategories, vendorData } =
-    useSelector(selectLayoutProperties);
+  const {
+    vendorError,
+    vendorProductSuccess,
+    vendorCategories,
+    vendorData,
+    loading,
+  } = useSelector(selectLayoutProperties);
 
   React.useEffect(() => {
     if (vendorProductSuccess) {
@@ -68,8 +74,9 @@ const AddProductModal = ({
         showConfirmButton: false,
       }).then(() => {
         setSelectedFiles([]);
+        validation.resetForm();
         tog_standard();
-        // dispatch(resetVendorStates());
+        dispatch(resetVendorStates());
       });
     }
     if (vendorError?.message) {
@@ -649,10 +656,12 @@ const AddProductModal = ({
           </Button>
           <Button
             color="primary"
+            disabled={loading}
             onClick={() => {
               document.getElementById("add-vendor-product-btn")?.click();
             }}
           >
+            {loading && <i className="bx bx-loader bx-spin me-2"></i>}
             {t("Save changes")}
           </Button>
         </div>

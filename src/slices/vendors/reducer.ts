@@ -27,6 +27,9 @@ const vendorsSlice = createSlice({
       state.success = true;
       state.error = false;
     },
+    vendorLoading(state) {
+      state.loading = true;
+    },
     vendorUsersSuccess(state, action) {
       state.vendorUsers = action.payload;
       state.success = true;
@@ -46,11 +49,13 @@ const vendorsSlice = createSlice({
       state.vendorProductSuccess = true;
       state.success = true;
       state.error = false;
+      state.loading = false;
     },
     vendorProductUpdated(state) {
       state.vendorProductUpdateSuccess = true;
       state.success = true;
       state.error = false;
+      state.loading = false;
     },
     vendorsListSuccess(state, action) {
       state.vendorsListSuccess = action.payload;
@@ -76,11 +81,13 @@ const vendorsSlice = createSlice({
       state.vendorError = action.payload;
       state.success = false;
       state.error = true;
+      state.loading = false;
     },
     vendorsError(state, action) {
       state.vendorError = action.payload;
       state.success = false;
       state.error = true;
+      state.loading = false;
     },
     clearVendorError(state) {
       state.vendorError = null;
@@ -89,6 +96,7 @@ const vendorsSlice = createSlice({
     resetVendorStates(state) {
       state.vendorUserAddedSuccess = false;
       state.vendorCategoriesSuccess = false;
+      state.vendorProductUpdateSuccess = false;
       state.vendorProductSuccess = false;
       state.vendorUpdatedSuccess = false;
       state.success = false;
@@ -101,6 +109,7 @@ const vendorsSlice = createSlice({
 export const {
   vendorsListSuccess,
   vendorsListError,
+  vendorLoading,
   vendorCategoriesSuccess,
   vendorSuccess,
   vendorUpdatedSuccess,
