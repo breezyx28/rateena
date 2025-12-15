@@ -149,12 +149,12 @@ const OrdersList = ({
             {t("CONFIRMED")}
           </span>
         );
-      case "PROGRESSING":
-        return (
-          <span className="badge bg-info-subtle text-info">
-            {t("PROGRESSING")}
-          </span>
-        );
+      // case "PROGRESSING":
+      //   return (
+      //     <span className="badge bg-info-subtle text-info">
+      //       {t("PROGRESSING")}
+      //     </span>
+      //   );
       case "PROCESSING":
         return (
           <span className="badge bg-info-subtle text-info">
@@ -387,13 +387,13 @@ const OrdersList = ({
             >
               {t("CONFIRMED")}
             </Button>
-            <Button
+            {/* <Button
               color="info"
               onClick={() => handleStatusChange("PROGRESSING")}
               disabled={isLoading || selectedOrder?.status === "PROGRESSING"}
             >
               {t("PROGRESSING")}
-            </Button>
+            </Button> */}
             <Button
               color="info"
               onClick={() => handleStatusChange("PROCESSING")}
